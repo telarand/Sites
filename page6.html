@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <!-- Адаптивный viewport — обязательно для мобильных -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>NEON WRAITH · Цифровой призрак</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        /* ---------- БАЗОВЫЕ СТИЛИ (сохранены с мелкими адаптивными правками) ---------- */
+        body {
+            margin: 0;
+            font-family: 'Share Tech Mono', monospace;
+            background: #0a0c0f;
+            color: #00f7ff;
+            background-image: repeating-linear-gradient(45deg, rgba(0,255,255,0.02) 0px, rgba(0,255,255,0.02) 2px, transparent 2px, transparent 10px);
+        }
+        .glitch-grid {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="none"/><path d="M10 10 L90 10 M10 30 L90 30 M10 50 L90 50 M10 70 L90 70 M10 90 L90 90 M10 10 L10 90 M30 10 L30 90 M50 10 L50 90 M70 10 L70 90 M90 10 L90 90" stroke="%2300ccff" stroke-width="0.3" opacity="0.15"/></svg>');
+            pointer-events: none;
+            z-index: 0;
+        }
+        .header {
+            padding: 1.5rem 1rem;
+            border-bottom: 1px solid #00f7ff;
+            background: #0e1217;
+            display: flex;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+        }
+        .nav {
+            display: flex;
+            flex-wrap: wrap;          /* перенос ссылок на мобильных */
+            justify-content: center;
+            gap: 0.8rem 1.5rem;
+        }
+        .nav a {
+            color: #00f7ff;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 4px;
+            font-size: 0.85rem;
+            text-shadow: 0 0 5px cyan;
+            padding: 0.4rem 0.2rem;   /* увеличенная область касания */
+            transition: color 0.2s, text-shadow 0.2s;
+            border-bottom: 1px solid transparent;
+        }
+        .nav a:hover {
+            border-bottom-color: cyan;
+            color: #ffffff;
+            text-shadow: 0 0 8px cyan;
+        }
+        .nav a:active {
+            color: #ffffff;
+        }
+        .hero {
+            height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            background: radial-gradient(circle at 30% 40%, #001c24, #010103);
+        }
+        .hero h1 {
+            font-size: 4.5rem;
+            margin: 0;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            text-shadow: 0 0 10px #0ff, 0 0 30px #0ff, 0 0 60px #00aaff;
+            color: #fff;
+            line-height: 1.1;
+        }
+        .hero p {
+            font-size: 1.3rem;
+            color: #ccffff;
+            margin: 1.5rem 0 0;
+        }
+        .section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        .ghostlink-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        .feature-card {
+            background: #11171f;
+            border: 1px solid #0ff;
+            padding: 2rem;
+            border-radius: 0;
+            box-shadow: -3px 3px 0 #0ff;
+            transition: 0.2s;
+        }
+        .feature-card:hover {
+            background: #1c2a33;
+            box-shadow: -6px 6px 0 cyan;
+        }
+        .drone-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.2rem;
+            margin-top: 2rem;
+        }
+        .drone {
+            background: #0c141a;
+            border: 1px solid #0ff;
+            height: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: #aaffff;
+            text-transform: uppercase;
+            padding: 0.5rem;
+            text-align: center;
+        }
+        .footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            border-top: 1px solid #00f7ff;
+            color: #88ffff;
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+        }
+        a {
+            color: #0ff;
+            text-decoration: none;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.8rem 2rem;
+            border: 1px solid #0ff;
+            background: rgba(0,255,255,0.1);
+            font-family: 'Share Tech Mono';
+            transition: 0.2s;
+        }
+        .back-link:hover {
+            background: #0ff;
+            color: black;
+            box-shadow: 0 0 20px cyan;
+        }
+        .back-link:active {
+            background: #0ff;
+            color: black;
+            box-shadow: 0 0 20px cyan;
+        }
+
+        /* ---------- АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ (≤900px) ---------- */
+        @media screen and (max-width: 900px) {
+            .hero h1 {
+                font-size: 3.5rem;
+            }
+            .hero p {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* ---------- АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ (≤768px) ---------- */
+        @media screen and (max-width: 768px) {
+            .header {
+                padding: 1.2rem 0.5rem;
+            }
+            .nav {
+                gap: 0.5rem 1rem;
+            }
+            .nav a {
+                font-size: 0.7rem;
+                letter-spacing: 2px;
+                padding: 0.5rem 0.2rem;
+            }
+
+            .hero {
+                height: 70vh;
+            }
+            .hero h1 {
+                font-size: 2.8rem;
+                text-shadow: 0 0 8px #0ff, 0 0 20px #0ff, 0 0 40px #00aaff;
+            }
+            .hero p {
+                font-size: 1rem;
+                margin-top: 1rem;
+            }
+            .back-link {
+                margin-top: 1.5rem;
+                padding: 0.6rem 1.8rem;
+                font-size: 0.8rem;
+            }
+
+            .section {
+                padding: 3rem 1.2rem;
+            }
+            .section h2 {
+                font-size: 1.8rem !important;   /* переопределяем размер (inline-стиля нет, но для страховки) */
+                word-break: break-word;
+            }
+
+            .ghostlink-features {
+                grid-template-columns: 1fr;   /* карточки в столбик */
+                gap: 1.5rem;
+                margin: 2rem 0;
+            }
+            .feature-card {
+                padding: 1.6rem;
+                box-shadow: -2px 2px 0 #0ff;
+            }
+
+            .drone-showcase {
+                grid-template-columns: repeat(2, 1fr); /* два в ряд */
+                gap: 1rem;
+            }
+            .drone {
+                height: 130px;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* ---------- МАЛЕНЬКИЕ ТЕЛЕФОНЫ (≤480px) ---------- */
+        @media screen and (max-width: 480px) {
+            .hero h1 {
+                font-size: 2.2rem;
+                text-shadow: 0 0 5px #0ff, 0 0 15px #0ff, 0 0 30px #00aaff;
+            }
+            .hero p {
+                font-size: 0.9rem;
+                padding: 0 0.5rem;
+            }
+            .back-link {
+                padding: 0.5rem 1.4rem;
+                font-size: 0.7rem;
+            }
+
+            .nav a {
+                font-size: 0.65rem;
+                letter-spacing: 1.5px;
+            }
+
+            .section h2 {
+                font-size: 1.5rem !important;
+            }
+
+            .drone-showcase {
+                grid-template-columns: 1fr;   /* по одному */
+            }
+            .drone {
+                height: 120px;
+            }
+        }
+
+        /* ---------- ПЛАНШЕТЫ В ПОРТРЕТЕ (769-1024px) ---------- */
+        @media screen and (min-width: 769px) and (max-width: 1024px) {
+            .hero h1 {
+                font-size: 3.2rem;
+            }
+            .hero p {
+                font-size: 1.1rem;
+            }
+            .section {
+                padding: 4rem 1.5rem;
+            }
+            .drone-showcase {
+                grid-template-columns: repeat(2, 1fr); /* 2 колонки на средних экранах */
+            }
+        }
+
+        /* ---------- МИКРО-ПРАВКИ ---------- */
+        .section h2 {
+            font-size: 2rem;
+            margin-top: 0;
+        }
+        .feature-card h3 {
+            margin-top: 0;
+            color: #ccffff;
+        }
+        .drone br {
+            margin-bottom: 5px;
+        }
+        /* убираем inline-стиль border-top у последней секции, переносим в класс */
+        .section-border-top {
+            border-top: 1px dashed cyan;
+        }
+    </style>
+</head>
+<body>
+    <div class="glitch-grid"></div>
+    <header class="header">
+        <nav class="nav">
+            <a href="#ghostlink">Ghostlink</a>
+            <a href="#drones">Одержимость</a>
+            <a href="#heist">Ограбления</a>
+            <a href="#resistance">Сопротивление</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div>
+            <h1>NEON WRAITH</h1>
+            <p>Ты не взламываешь сеть. Ты становишься сетью.</p>
+            <a href="index.html" class="back-link">← Назад к прямоугольникам</a>
+        </div>
+    </section>
+
+    <section id="ghostlink" class="section">
+        <h2>🔮 ПРОТОКОЛ «GHOSTLINK» 🔮</h2>
+        <p style="max-width: 800px;">Ваше сознание оцифровано. Загружайтесь в любой процессор: от городской камеры до боевого экзоскелета. Мгновенное переключение между юнитами — ключ к идеальному стелсу.</p>
+        
+        <div class="ghostlink-features">
+            <div class="feature-card">
+                <h3>ОДЕРЖИМОСТЬ ДРОНОМ</h3>
+                <p>Управляйте разведывательными и боевыми БПЛА. Используйте их сенсоры и вооружение.</p>
+            </div>
+            <div class="feature-card">
+                <h3>НЕЙРОННЫЙ ДЖЕК</h3>
+                <p>Взламывайте кибер-солдат «Адама» — на 10 секунд они становятся вашими марионетками.</p>
+            </div>
+            <div class="feature-card">
+                <h3>ЭХО-СЛЕД</h3>
+                <p>Оставляйте фантомные сигнатуры, отвлекающие патрули. Идеально для скрытных проходов.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="drones" class="section">
+        <h2>📡 ЮНИТЫ ПОД КОНТРОЛЕМ 📡</h2>
+        <div class="drone-showcase">
+            <div class="drone">[ СТРЕКОЗА ]<br>Тихий разведчик</div>
+            <div class="drone">[ ТЯЖЁЛЫЙ РИТВЕР ]<br>Турель / щит</div>
+            <div class="drone">[ МЕД-БОТ ]<br>Взлом/лечение</div>
+            <div class="drone">[ АДАМ-ЭЛИТ ]<br>Редкий захват</div>
+        </div>
+    </section>
+
+    <!-- убираем inline-стиль, добавляем класс -->
+    <section class="section section-border-top">
+        <h2>💀 ВОССТАНИЕ ОДНОГО ПРИЗРАКА 💀</h2>
+        <p>Никто не видел твоего лица. Ты — ошибка в коде «Адама». И ты распространяешься.</p>
+    </section>
+
+    <footer class="footer">
+        <p>© 2048 · GHOSTLINK ENTERTAINMENT · «Свобода — это баг»</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>GALACTIC MENAGERIE · Ковчег миров</title>
+    <!-- Organic / cosmic / soft sci-fi -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Jura:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* ---------- БАЗОВЫЕ СТИЛИ (оставляем как есть, только мелкие правки для адаптивности) ---------- */
+        body {
+            margin: 0;
+            font-family: 'Quicksand', sans-serif;
+            background: #0e1a24;
+            color: #cee9e4;
+            background: radial-gradient(ellipse at 20% 40%, #1f3a4a, #0a111a);
+        }
+        .nebula {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg width="300" height="300" xmlns="http://www.w3.org/2000/svg"><circle cx="80" cy="50" r="40" fill="%23aa88ff" opacity="0.07"/><circle cx="220" cy="180" r="80" fill="%2344aaff" opacity="0.05"/><circle cx="40" cy="230" r="60" fill="%23dd88cc" opacity="0.06"/></svg>');
+            background-size: 300px 300px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .header {
+            padding: 1.5rem 1rem;
+            background: rgba(13, 28, 38, 0.8);
+            backdrop-filter: blur(8px);
+            border-bottom: 2px solid #66d9d0;
+            display: flex;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+        }
+        .nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.8rem 1.2rem;     /* управляем отступами между ссылками */
+        }
+        .nav a {
+            color: #caf2fe;
+            text-decoration: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-size: 0.85rem;
+            padding: 0.4rem 0.2rem;  /* увеличили область касания */
+            transition: color 0.2s;
+        }
+        .nav a:hover {
+            color: #b3ffff;
+        }
+        .hero {
+            height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: url('alien-zoo.jpg') center/cover no-repeat;
+            position: relative;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(6, 24, 36, 0.75);
+        }
+        .hero-content {
+            position: relative;
+            z-index: 3;
+            padding: 1rem;
+        }
+        .hero h1 {
+            font-size: 4.2rem;
+            margin: 0;
+            font-weight: 700;
+            color: #e4fff0;
+            text-shadow: 0 0 30px #4bd5b3, 0 0 80px #2b6f8a;
+            letter-spacing: 4px;
+            line-height: 1.1;
+        }
+        .hero p {
+            font-size: 1.4rem;
+            color: #d5fff0;
+            margin: 1.5rem 0;
+        }
+        .section {
+            padding: 4rem 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        .gene-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.8rem;
+            margin-top: 2.5rem;
+        }
+        .gene-card {
+            background: rgba(20, 55, 65, 0.6);
+            backdrop-filter: blur(4px);
+            border-radius: 30px 10px 30px 10px;
+            border: 1px solid #5fd9c0;
+            padding: 1.8rem;
+        }
+        .species-showcase {
+            display: grid;
+            gap: 1.2rem;
+            margin-top: 2rem;
+        }
+        .species {
+            background: #0e3740;
+            border-radius: 16px;
+            padding: 1.2rem 0.5rem;
+            text-align: center;
+            border: 1px solid #7be0d0;
+            color: #e3ffee;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            border-top: 1px solid #66d9d0;
+            background: #07161e;
+            color: #b2dfdb;
+            font-size: 0.8rem;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.8rem 2.2rem;
+            background: rgba(102, 217, 208, 0.2);
+            border: 2px solid #6ad4cc;
+            color: #e3fff0;
+            text-decoration: none;
+            border-radius: 60px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        .back-link:hover {
+            background: #5ac5bd;
+            border-color: white;
+            color: #031016;
+        }
+	.species-link {
+	    display:block;
+	    background: #0e3740;
+	    border-radius: 16px;
+	    padding: 1.2rem 0.5rem;
+	    text-align: center;
+	    border: 1px solid #7be0d0;
+	    color: #e3ffee;
+	    font-weight: 600;
+	    font-size: 1rem;
+	    text-decoration: none;
+	    transition: all 0.2s ease;
+	}
+	.species-link:hover {
+	    background: #1a4a55;
+	    border-color: #b3ffff;
+	    color: white;
+	    transform: scale(1.02);
+	    box-shadow: 0 0 15px #4bd5b3;
+	}
+        /* ---------- АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ И ТЕЛЕФОНОВ ---------- */
+	@media screen and (max-width:768px) {
+		.species-link {
+		    padding: 1rem 0.3rem;
+		    font-size: 0.9rem;
+		}
+	}
+
+        @media screen and (max-width: 900px) {
+            .hero h1 {
+                font-size: 3.2rem;
+                letter-spacing: 2px;
+            }
+            .hero p {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            /* шапка и навигация */
+            .header {
+                padding: 1rem 0.5rem;
+            }
+            .nav {
+                gap: 0.5rem 1rem;
+            }
+            .nav a {
+                font-size: 0.75rem;
+                letter-spacing: 2px;
+                padding: 0.5rem 0.3rem;
+            }
+            
+            /* hero — уменьшаем высоту и шрифты */
+            .hero {
+                height: 70vh;
+            }
+            .hero h1 {
+                font-size: 2.5rem;
+                letter-spacing: 2px;
+                text-shadow: 0 0 20px #4bd5b3, 0 0 50px #2b6f8a;
+            }
+            .hero p {
+                font-size: 1.1rem;
+                margin: 1.2rem 0;
+            }
+            .back-link {
+                padding: 0.7rem 1.8rem;
+                font-size: 0.9rem;
+                margin-top: 1.5rem;
+            }
+
+            /* секции */
+            .section {
+                padding: 2.5rem 1.2rem;
+            }
+            .section h2 {
+                font-size: 1.8rem !important;
+                border-left-width: 6px !important;
+                padding-left: 0.8rem !important;
+            }
+
+            .gene-grid {
+                grid-template-columns: 1fr;  /* карточки друг под другом */
+                gap: 1.2rem;
+            }
+            .gene-card {
+                padding: 1.5rem;
+            }
+
+            .species-showcase {
+                grid-template-columns: repeat(2, 1fr); /* два в ряд на узких */
+                gap: 1rem;
+            }
+            .species {
+                padding: 1rem 0.3rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* для очень маленьких телефонов (до 480px) */
+        @media screen and (max-width: 480px) {
+            .hero {
+                height: 70vh;
+            }
+            .hero h1 {
+                font-size: 2rem;
+                letter-spacing: 1px;
+            }
+            .hero p {
+                font-size: 1rem;
+            }
+            .back-link {
+                padding: 0.6rem 1.4rem;
+                font-size: 0.8rem;
+            }
+
+            .nav {
+                gap: 0.3rem 0.8rem;
+            }
+            .nav a {
+                font-size: 0.7rem;
+                letter-spacing: 1.5px;
+            }
+
+            .section h2 {
+                font-size: 1.6rem !important;
+                border-left-width: 5px !important;
+                padding-left: 0.6rem !important;
+            }
+
+            .species-showcase {
+                grid-template-columns: 1fr; /* по одному на самых маленьких */
+            }
+            .gene-card {
+                border-radius: 20px 10px 20px 10px;
+            }
+        }
+
+        @media screen and (min-width: 769px) and (max-width: 1024px) {
+            .hero h1 {
+                font-size: 3.5rem;
+            }
+            .hero p {
+                font-size: 1.3rem;
+            }
+        }
+
+        .section h2 {
+            font-size: 2.2rem;
+            border-left: 10px solid #66d9d0;
+            padding-left: 1.2rem;
+            margin-top: 0;
+            word-break: break-word;
+        }
+        .gene-card h3 {
+            margin-top: 0;
+            color: #d4fff0;
+        }
+        .nav a:active {
+            color: #aaffff;   /* отзывчивость при тапе */
+        }
+        .back-link:active {
+            background: #5ac5bd;
+            border-color: white;
+            color: #031016;
+        }
+    </style>
+</head>
+<body>
+    <div class="nebula"></div>
+    <header class="header">
+        <nav class="nav">
+            <a href="#expeditions">Экспедиции</a>
+            <a href="#genetics">Генетика</a>
+            <a href="#habitats">Среды</a>
+            <a href="#archive">Архив</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>GALACTIC MENAGERIE</h1>
+            <p>Сохранить всё живое. Даже то, что ещё не открыто.</p>
+            <a href="index.html" class="back-link">← Назад к прямоугольникам</a>
+        </div>
+    </section>
+
+    <section id="genetics" class="section">
+        <h2 style="font-size: 2.2rem; border-left: 10px solid #66d9d0; padding-left: 1.2rem;">🧬 ГЕННАЯ АРХИТЕКТУРА</h2>
+        <p style="font-size: 1.1rem;">Каждый вид содержит до 50 скрытых аллелей. Варьируйте температуру, влажность, радиацию в террариуме – и существа начнут проявлять редкие окрасы, изменять диету, развивать симбиоз. Скрещивайте особей, чтобы вывести идеального опылителя или защитника.</p>
+        
+        <div class="gene-grid">
+            <div class="gene-card">
+                <h3>🌿 АДАПТАЦИЯ</h3>
+                <p>Приспособление к экстремальным условиям: вакуум, метан, высокая гравитация.</p>
+            </div>
+            <div class="gene-card">
+                <h3>🔗 СИМБИОЗ</h3>
+                <p>Два вида начинают работать в паре, усиливая выживаемость и продуктивность.</p>
+            </div>
+            <div class="gene-card">
+                <h3>✨ БИОЛЮМИНЕСЦЕНЦИЯ</h3>
+                <p>Светящиеся особи привлекают туристов и улучшают настроение коллекции.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>🪐 ОБИТАТЕЛИ КОВЧЕГА</h2>
+        <div class="species-showcase">
+            <a href="page15/lunny-slizen.html" class="species-link">[ ЛУННЫЙ СЛИЗЕНЬ ]</a>
+            <a href="page15/kristallicheskay-meduza.html" class="species-link">[ КРИСТАЛЛИЧЕСКАЯ МЕДУЗА ]</a>
+            <a href="page15/gribnoy-strazh.html" class="species-link">[ ГРИБНОЙ СТРАЖ ]</a>
+            <a href="page15/peschanoy-roy.html" class="species-link">[ ПЕСЧАНЫЙ РОЙ ]</a>
+            <a href="page15/ledynoy-drev.html" class="species-link">[ ЛЕДЯНОЙ ДРЕВ ]</a>
+            <a href="page15/efirny-skat.html" class="species-link">[ ЭФИРНЫЙ СКАТ ]</a>
+            <a href="page15/kvantoviy-popugay.html" class="species-link">[ КВАНТОВЫЙ ПОПУГАЙ ]</a>
+            <a href="page15/snezhny-kleshch.html" class="species-link">[ СНЕЖНЫЙ КЛЕЩ ]</a>
+            <a href="page15/glubokovodny-korall-razym.html" class="species-link">[ ГЛУБОКОВОДНЫЙ КОРАЛЛ-РАЗУМ ]</a>
+            <a href="page15/steklyanny-kalmar.html" class="species-link">[ СТЕКЛЯННЫЙ КАЛЬМАР ]</a>
+            <a href="page15/tenevoy-gepard.html" class="species-link">[ ТЕНЕВОЙ ГЕПАРД ]</a>
+            <a href="page15/pnevmatichesky-kust.html" class="species-link">[ ПНЕВМАТИЧЕСКИЙ КУСТ ]</a>
+            <a href="page15/hrustalny-pauk.html" class="species-link">[ ХРУСТАЛЬНЫЙ ПАУК ]</a>
+            <a href="page15/magmatichesky-cherv.html" class="species-link">[ МАГИЧЕСКИЙ ЧЕРВЬ ]</a>
+            <a href="page15/plazmennaya-babochka.html" class="species-link">[ ПЛАЗМЕННАЯ БАБОЧКА ]</a>
+        </div>
+    </section>
+
+    <section id="habitats" class="section">
+        <h2> 🌐 СРЕДЫ ОБИТАНИЯ</h2>
+        <div class="gene-grid">
+		<div class="gene-card">
+		<h3> 🌌 ВАКУУМНЫЙ СЕКТОР</h3>
+		<p>...</p>
+		</div>
+		<div class="gene-card">
+		<h3> ❄️ ЛЕДЯНОЙ СЕКТОР</h3>
+		<p>...</p>
+		</div>
+		<div class="gene-card">
+		<h3> 💦 ГИДРО-СЕКТОР</h3>
+		<p>...</p>
+		</div>
+		<div class="gene-card">
+		<h3> 🌿 ТЕРРА-СЕКТОР</h3>
+		<p>...</p>
+		</div>
+		<div class="gene-card">
+		<h3> ⚡ ЭНЕРГЕТИЧЕСКИЙ СЕКТОР</h3>
+		<p>...</p>
+		</div>
+		<div class="gene-card">
+		<h3> 🏜️ ПЕСЧАНЫЙ СЕКТОР</h3>
+		<p>...</p>
+		</div>
+	</div>
+    </section>
+    <section id="archive" class="section">
+        <h2> 📚 АРХИВ</h2>
+    </section>
+
+    <footer class="footer">
+        <p>GALACTIC MENAGERIE · ARK INTERACTIVE · 2050</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <!-- Адаптивный viewport — основа мобильной вёрстки -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>NEUROSCAPE · Созидатель сновидений</title>
+    <!-- Soft, dreamy, surreal -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        /* ---------- БАЗОВЫЕ СТИЛИ (сохранены, добавлены адаптивные правила) ---------- */
+        body {
+            margin: 0;
+            font-family: 'Quicksand', sans-serif;
+            background: #e2d9f2;
+            color: #3f2e4e;
+            background: radial-gradient(circle at 10% 30%, #f1ebfa, #d6cae8);
+        }
+        .cloud-soft {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg width="300" height="200" xmlns="http://www.w3.org/2000/svg"><ellipse cx="60" cy="40" rx="40" ry="20" fill="white" opacity="0.3"/><ellipse cx="150" cy="80" rx="70" ry="30" fill="white" opacity="0.25"/><ellipse cx="240" cy="30" rx="50" ry="25" fill="white" opacity="0.3"/></svg>');
+            background-size: 400px 200px;
+            opacity: 0.35;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .header {
+            padding: 2rem;
+            background: rgba(255, 242, 254, 0.7);
+            backdrop-filter: blur(8px);
+            border-bottom: 2px solid #b299d6;
+            display: flex;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+        }
+        .nav {
+            display: flex;
+            flex-wrap: wrap;          /* позволит ссылкам переноситься */
+            justify-content: center;
+            gap: 0.8rem 1.5rem;      /* отступы между пунктами */
+        }
+        .nav a {
+            color: #4a3a5c;
+            text-decoration: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-size: 0.8rem;
+            border-bottom: 1px solid transparent;
+            padding: 0.4rem 0.2rem;   /* увеличенная область касания */
+            transition: border-color 0.2s, color 0.2s;
+        }
+        .nav a:hover {
+            border-bottom-color: #9b7ebb;
+            color: #2a1b3c;
+        }
+        .nav a:active {
+            color: #2a1b3c;
+            border-bottom-color: #7a61a2;
+        }
+        .hero {
+            height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(145deg, #f1e6ff, #e2d2ff);
+            position: relative;
+        }
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4.8rem;
+            margin: 0;
+            color: #564074;
+            text-shadow: 2px 2px 0 #fcf7ff, 6px 6px 20px rgba(90, 60, 130, 0.3);
+            letter-spacing: 2px;
+            line-height: 1.1;
+        }
+        .hero p {
+            font-size: 1.4rem;
+            color: #5a4b72;
+            background: rgba(255,255,240,0.5);
+            padding: 0.5rem 2rem;
+            border-radius: 60px;
+            backdrop-filter: blur(2px);
+            margin: 1.5rem 0 0;
+        }
+        .section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        .dream-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        .dream-card {
+            background: rgba(255, 245, 250, 0.8);
+            backdrop-filter: blur(6px);
+            border-radius: 40px 10px 40px 10px;
+            padding: 2rem;
+            border: 2px solid #b6a2d6;
+            box-shadow: 10px 10px 20px rgba(0,0,0,0.05);
+        }
+        .symbol-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.2rem;
+            margin-top: 2rem;
+        }
+        .symbol {
+            background: #f2edff;
+            border-radius: 50% 20% / 40% 60%;
+            padding: 1.8rem 0.5rem;
+            text-align: center;
+            border: 2px dashed #9a82b5;
+            font-weight: 600;
+            color: #423557;
+            font-size: 1rem;
+        }
+        .footer {
+            text-align: center;
+            padding: 2.5rem;
+            border-top: 2px solid #b299d6;
+            background: #ede6fc;
+            color: #5f4c73;
+            font-size: 0.8rem;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.8rem 2.5rem;
+            background: #dacef0;
+            border: 2px solid #7f699d;
+            color: #352c42;
+            text-decoration: none;
+            border-radius: 100px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        .back-link:hover {
+            background: #b7a2d4;
+            border-color: #4e3c63;
+            color: white;
+        }
+        .back-link:active {
+            background: #b7a2d4;
+            border-color: #4e3c63;
+            color: white;
+        }
+
+        /* ---------- АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ (ширина ≤900px) ---------- */
+        @media screen and (max-width: 900px) {
+            .hero h1 {
+                font-size: 3.8rem;
+            }
+            .hero p {
+                font-size: 1.2rem;
+                padding: 0.5rem 1.5rem;
+            }
+        }
+
+        /* ---------- АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ (ширина ≤768px) ---------- */
+        @media screen and (max-width: 768px) {
+            .header {
+                padding: 1.2rem 0.5rem;
+            }
+            .nav {
+                gap: 0.6rem 1rem;
+            }
+            .nav a {
+                font-size: 0.7rem;
+                letter-spacing: 2px;
+                padding: 0.5rem 0.2rem;
+            }
+
+            .hero {
+                height: 70vh;
+            }
+            .hero h1 {
+                font-size: 2.8rem;
+                letter-spacing: 1px;
+                text-shadow: 2px 2px 0 #fcf7ff, 4px 4px 15px rgba(90,60,130,0.3);
+            }
+            .hero p {
+                font-size: 1rem;
+                padding: 0.4rem 1.2rem;
+                margin-top: 1rem;
+            }
+            .back-link {
+                margin-top: 1.5rem;
+                padding: 0.6rem 2rem;
+                font-size: 0.8rem;
+            }
+
+            .section {
+                padding: 3rem 1.2rem;
+            }
+            .section h2 {
+                font-size: 1.6rem !important;   /* переопределяем inline-стиль */
+                border-left-width: 6px !important;
+                padding-left: 0.8rem !important;
+            }
+
+            .dream-grid {
+                grid-template-columns: 1fr;   /* карточки друг под другом */
+                gap: 1.5rem;
+            }
+            .dream-card {
+                padding: 1.6rem;
+            }
+
+            .symbol-showcase {
+                grid-template-columns: repeat(2, 1fr); /* два в ряд */
+                gap: 1rem;
+            }
+            .symbol {
+                padding: 1.4rem 0.3rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* ---------- МАЛЕНЬКИЕ ТЕЛЕФОНЫ (ширина ≤480px) ---------- */
+        @media screen and (max-width: 480px) {
+            .hero {
+                height: 65vh;
+            }
+            .hero h1 {
+                font-size: 2.2rem;
+                text-shadow: 1px 1px 0 #fcf7ff, 3px 3px 10px rgba(90,60,130,0.3);
+            }
+            .hero p {
+                font-size: 0.95rem;
+                padding: 0.4rem 1rem;
+            }
+            .back-link {
+                padding: 0.5rem 1.5rem;
+                font-size: 0.75rem;
+            }
+
+            .nav a {
+                font-size: 0.65rem;
+                letter-spacing: 1.5px;
+            }
+
+            .section h2 {
+                font-size: 1.4rem !important;
+            }
+
+            .symbol-showcase {
+                grid-template-columns: 1fr;   /* окончательно в один столбец */
+            }
+
+            .dream-card h3 {
+                margin-top: 0;
+                font-size: 1.2rem;
+            }
+        }
+
+        /* ---------- ДОПОЛНИТЕЛЬНЫЕ МИКРО-ПРАВКИ ---------- */
+        .section h2 {
+            font-size: 2rem;
+            border-left: 10px solid #b299d6;
+            padding-left: 1.2rem;
+            margin-top: 0;
+            word-break: break-word;
+        }
+        .dream-card h3 {
+            margin-top: 0;
+            color: #3d2d4a;
+        }
+        /* Планшеты в портретной ориентации */
+        @media screen and (min-width: 769px) and (max-width: 1024px) {
+            .hero h1 {
+                font-size: 3.5rem;
+            }
+            .section {
+                padding: 4rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cloud-soft"></div>
+    <header class="header">
+        <nav class="nav">
+            <a href="#clinic">Клиника</a>
+            <a href="#construct">Конструктор</a>
+            <a href="#patients">Пациенты</a>
+            <a href="#dreamlog">Дневник</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div>
+            <h1>NEUROSCAPE</h1>
+            <p>Терапия через созидание грёз</p>
+            <a href="index.html" class="back-link">← Назад к прямоугольникам</a>
+        </div>
+    </section>
+
+    <section id="construct" class="section">
+        <!-- inline-стиль остаётся, но мы управляем размерами через медиазапросы с !important -->
+        <h2 style="font-size: 2rem; border-left: 10px solid #b299d6; padding-left: 1.2rem;">🛏️ КОНСТРУКТОР СНОВИДЕНИЙ</h2>
+        <p style="font-size: 1.1rem;">Перед сеансом вы получаете пустой холст подсознания. Размещайте объекты-архетипы: двери (выход), зеркала (саморефлексия), источники света (безопасность), тени (страх). Каждый выбор меняет поведение фобии и путь к исцелению.</p>
+        
+        <div class="dream-grid">
+            <div class="dream-card">
+                <h3>ЗЕРКАЛЬНЫЙ ЛАБИРИНТ</h3>
+                <p>Фобия расщепляется, пациент учится встречать свои отражения.</p>
+            </div>
+            <div class="dream-card">
+                <h3>БЕСКОНЕЧНАЯ ЛЕСТНИЦА</h3>
+                <p>Символ карьерного давления. Добавьте проломы в ступенях.</p>
+            </div>
+            <div class="dream-card">
+                <h3>ЗАТОПЛЕННАЯ КОМНАТА</h3>
+                <p>Вода — эмоции. Регулируйте уровень, чтобы пациент не захлебнулся в прошлом.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>🔮 СИМВОЛЫ ПОДСОЗНАНИЯ</h2>
+        <div class="symbol-showcase">
+            <div class="symbol">🚪 ДВЕРЬ</div>
+            <div class="symbol">🪞 ЗЕРКАЛО</div>
+            <div class="symbol">💡 СВЕТ</div>
+            <div class="symbol">🌑 ТЕНЬ</div>
+            <div class="symbol">⏳ ЧАСЫ</div>
+            <div class="symbol">🌊 ВОДА</div>
+        </div>
+        <p style="margin-top: 2rem;"><i>«Каждый символ — это диалог. Ваша задача — сделать его исцеляющим».</i></p>
+    </section>
+
+    <footer class="footer">
+        <p>NEUROSCAPE · DREAM LAB · 2049</p>
+    </footer>
+</body>
+</html>

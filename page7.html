@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <!-- Адаптивный viewport для идеального отображения на телефонах -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>MECH DREADNOUGHT · Титаны стали</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        /* ---------- БАЗОВЫЕ СТИЛИ (оригинал с адаптивными улучшениями) ---------- */
+        body {
+            margin: 0;
+            font-family: 'Rajdhani', sans-serif;
+            background: #1f1f1f;
+            color: #ffb347;
+            background: linear-gradient(145deg, #2b2b2b 0%, #1a1a1a 100%);
+        }
+        .metal-texture {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="%23333333" /><path d="M0 0 L100 100 M100 0 L0 100" stroke="%23444444" stroke-width="0.8" opacity="0.3"/><circle cx="50" cy="50" r="2" fill="%23ffaa33" opacity="0.2"/></svg>');
+            background-size: 80px 80px;
+            opacity: 0.15;
+            z-index: 0;
+        }
+        .header {
+            padding: 1.8rem 1rem;
+            background: #0e0e0e;
+            border-bottom: 4px solid #ff8c00;
+            display: flex;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+        }
+        .nav {
+            display: flex;
+            flex-wrap: wrap;          /* перенос ссылок на мобильных */
+            justify-content: center;
+            gap: 0.8rem 1.8rem;
+        }
+        .nav a {
+            color: #ffb347;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-family: 'Bebas Neue', cursive;
+            text-shadow: 0 0 5px #ff5500;
+            padding: 0.4rem 0.2rem;   /* увеличенная область касания */
+            transition: color 0.2s, text-shadow 0.2s;
+            border-bottom: 1px solid transparent;
+        }
+        .nav a:hover {
+            color: #ffcc80;
+            text-shadow: 0 0 8px #ff8c00;
+            border-bottom-color: #ff8c00;
+        }
+        .nav a:active {
+            color: #ffcc80;
+        }
+        .hero {
+            height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: radial-gradient(circle at 70% 30%, #5a3a1a, #0a0a0a);
+            position: relative;
+        }
+        .hero h1 {
+            font-size: 5rem;
+            margin: 0;
+            font-family: 'Bebas Neue', cursive;
+            color: #ffa500;
+            text-shadow: 6px 6px 0 #5a3a1a, 0 0 40px #ff8c00;
+            letter-spacing: 8px;
+            line-height: 1.1;
+        }
+        .hero p {
+            font-size: 1.5rem;
+            color: #ffcc80;
+            margin: 1.5rem 0 0;
+        }
+        .section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        .modular-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        .part-card {
+            background: #2a2a2a;
+            border-left: 6px solid #ff8c00;
+            padding: 1.8rem;
+            box-shadow: 0 10px 10px rgba(0,0,0,0.7);
+            transition: 0.2s;
+        }
+        .part-card:hover {
+            border-left-color: #ffd700;
+            background: #3a3a3a;
+        }
+        .arsenal {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.2rem;
+            margin-top: 3rem;
+        }
+        .weapon {
+            background: #1e1e1e;
+            border: 1px solid #ff8c00;
+            height: 160px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #ffcc99;
+            padding: 0.5rem;
+            text-align: center;
+        }
+        .footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            border-top: 2px solid #ff8c00;
+            background: #0c0c0c;
+            color: #ccaa77;
+            font-size: 0.9rem;
+        }
+        a {
+            color: #ffb347;
+        }
+        .back-button {
+            background: #3a2a1a;
+            padding: 0.8rem 2rem;
+            border: 2px solid #ff8c00;
+            font-weight: bold;
+            margin-top: 2rem;
+            display: inline-block;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+        .back-button:hover {
+            background: #ff8c00;
+            color: black;
+            border-color: white;
+        }
+        .back-button:active {
+            background: #ff8c00;
+            color: black;
+            border-color: white;
+        }
+
+        /* ---------- АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ (≤900px) ---------- */
+        @media screen and (max-width: 900px) {
+            .hero h1 {
+                font-size: 4rem;
+                letter-spacing: 6px;
+            }
+            .hero p {
+                font-size: 1.3rem;
+            }
+        }
+
+        /* ---------- АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ (≤768px) ---------- */
+        @media screen and (max-width: 768px) {
+            .header {
+                padding: 1.2rem 0.5rem;
+            }
+            .nav {
+                gap: 0.5rem 1.2rem;
+            }
+            .nav a {
+                font-size: 0.9rem;
+                letter-spacing: 2px;
+                padding: 0.5rem 0.2rem;
+            }
+
+            .hero {
+                height: 70vh;
+            }
+            .hero h1 {
+                font-size: 3rem;
+                letter-spacing: 4px;
+                text-shadow: 4px 4px 0 #5a3a1a, 0 0 30px #ff8c00;
+            }
+            .hero p {
+                font-size: 1.1rem;
+                margin-top: 1rem;
+            }
+            .back-button {
+                margin-top: 1.5rem;
+                padding: 0.6rem 1.8rem;
+                font-size: 0.9rem;
+            }
+
+            .section {
+                padding: 3rem 1.2rem;
+            }
+            .section h2 {
+                font-size: 1.8rem !important;   /* переопределяем inline-стиль */
+                border-bottom-width: 1px !important;
+            }
+
+            .modular-grid {
+                grid-template-columns: 1fr;   /* карточки в столбик */
+                gap: 1.5rem;
+            }
+            .part-card {
+                padding: 1.6rem;
+            }
+
+            .arsenal {
+                grid-template-columns: repeat(2, 1fr); /* два в ряд */
+                gap: 1rem;
+            }
+            .weapon {
+                height: 140px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* ---------- МАЛЕНЬКИЕ ТЕЛЕФОНЫ (≤480px) ---------- */
+        @media screen and (max-width: 480px) {
+            .hero h1 {
+                font-size: 2.2rem;
+                letter-spacing: 2px;
+                text-shadow: 3px 3px 0 #5a3a1a, 0 0 20px #ff8c00;
+            }
+            .hero p {
+                font-size: 0.95rem;
+                padding: 0 0.5rem;
+            }
+            .back-button {
+                padding: 0.5rem 1.4rem;
+                font-size: 0.8rem;
+            }
+
+            .nav a {
+                font-size: 0.8rem;
+                letter-spacing: 1.5px;
+            }
+
+            .section h2 {
+                font-size: 1.5rem !important;
+            }
+
+            .arsenal {
+                grid-template-columns: 1fr;   /* один в ряд */
+            }
+            .weapon {
+                height: 120px;
+            }
+        }
+
+        /* ---------- ПЛАНШЕТЫ В ПОРТРЕТЕ (769-1024px) ---------- */
+        @media screen and (min-width: 769px) and (max-width: 1024px) {
+            .hero h1 {
+                font-size: 3.8rem;
+            }
+            .hero p {
+                font-size: 1.2rem;
+            }
+            .section {
+                padding: 4rem 1.5rem;
+            }
+            .arsenal {
+                grid-template-columns: repeat(2, 1fr); /* 2 колонки на средних экранах */
+            }
+        }
+
+        /* ---------- МИКРО-ПРАВКИ ---------- */
+        .section h2 {
+            font-size: 2.4rem;
+            border-bottom: 2px solid #ff8c00;
+            display: inline-block;
+            margin-top: 0;
+            word-break: break-word;
+        }
+        .part-card h3 {
+            margin-top: 0;
+            color: #ffd280;
+        }
+        .weapon br {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="metal-texture"></div>
+    <header class="header">
+        <nav class="nav">
+            <a href="#forge">Верфь</a>
+            <a href="#modular">Модули</a>
+            <a href="#colossus">Колоссы</a>
+            <a href="#pilot">Пилоты</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div>
+            <h1>MECH DREADNOUGHT</h1>
+            <p>Собери титана. Сокруши Колосса.</p>
+            <a href="index.html" class="back-button">← Назад к прямоугольникам</a>
+        </div>
+    </section>
+
+    <section id="forge" class="section">
+        <h2 style="font-size: 2.4rem; border-bottom: 2px solid #ff8c00; display: inline-block;">⚙️ ГЕФЕСТ-ВЕРФЬ ⚙️</h2>
+        <p style="font-size: 1.2rem;">Более 150 сменных деталей: торсы, ноги, руки, орудийные платформы, генераторы щитов. Каждая деталь меняет анимации, массу, инерцию и стиль боя.</p>
+    </section>
+
+    <section id="modular" class="section">
+        <h2>🧩 МОДУЛЬНАЯ БОЕВАЯ СИСТЕМА 🧩</h2>
+        <div class="modular-grid">
+            <div class="part-card">
+                <h3>НОГИ-РЕССОРЫ</h3>
+                <p>Высокие прыжки, удар при приземлении. Слаб к кинетике.</p>
+            </div>
+            <div class="part-card">
+                <h3>ГУСЕНИЧНАЯ БАЗА</h3>
+                <p>Медленно, но огромная грузоподъёмность. Стабилизатор стрельбы.</p>
+            </div>
+            <div class="part-card">
+                <h3>МАНИПУЛЯТОРЫ «ТИТАН»</h3>
+                <p>Схват с врагом, швыряние объектов. Усиливает ближний бой.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>💥 АРСЕНАЛ ПЕРВОЙ ФАЗЫ 💥</h2>
+        <div class="arsenal">
+            <div class="weapon">[ ПЛАЗМОРЕЗ ]<br>Ближний/пробитие брони</div>
+            <div class="weapon">[ РАКЕТНЫЙ ВЕЕР ]<br>Залп 12 ракет</div>
+            <div class="weapon">[ ИМПУЛЬСНАЯ ПУШКА ]<br>Дальний/оглушение</div>
+            <div class="weapon">[ ТЕРМО-КОПЬЁ ]<br>Пробивает Колоссов</div>
+        </div>
+        <p style="margin-top: 2rem;"><i>— В реальном бою можно отстрелить сломанную руку и прикрепить новую из инвентаря. Решение за долю секунды.</i></p>
+    </section>
+
+    <footer class="footer">
+        <p>MECH DREADNOUGHT © 2048 · HEPHAESTUS STUDIO · «Твоя сборка — твоя легенда»</p>
+    </footer>
+</body>
+</html>

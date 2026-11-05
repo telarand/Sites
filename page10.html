@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <!-- Адаптивный viewport для мобильных устройств -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>MINDSCAPE · Лабиринты сознания</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Source+Code+Pro:wght@300;500&display=swap" rel="stylesheet">
+    <style>
+        /* ---------- БАЗОВЫЕ СТИЛИ (сохранены с небольшими адаптивными правками) ---------- */
+        body {
+            margin: 0;
+            font-family: 'Quicksand', sans-serif;
+            background: #1a142b;
+            color: #b7b1c9;
+            background: linear-gradient(145deg, #21172e, #130e1e);
+        }
+        .static {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="%23332244" /><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="1" stitchTiles="stitch"/><feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.1 0"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.1"/></svg>');
+            background-size: 150px 150px;
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .header {
+            padding: 1.8rem 1rem;
+            background: #241d33;
+            border-bottom: 1px solid #7c6f9e;
+            display: flex;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+        }
+        .nav {
+            display: flex;
+            flex-wrap: wrap;          /* перенос ссылок на узких экранах */
+            justify-content: center;
+            gap: 0.8rem 1.5rem;
+        }
+        .nav a {
+            color: #d7cce6;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            padding: 0.4rem 0.2rem;   /* область касания */
+            transition: color 0.2s, border-bottom 0.2s;
+            border-bottom: 1px solid transparent;
+        }
+        .nav a:hover {
+            color: #f0e4ff;
+            border-bottom-color: #a792c4;
+        }
+        .nav a:active {
+            color: #f0e4ff;
+        }
+        .hero {
+            height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: radial-gradient(circle at 30% 40%, #392f4a, #150f20);
+            position: relative;
+        }
+        .hero h1 {
+            font-size: 4.2rem;
+            margin: 0;
+            font-weight: 700;
+            color: #e6daff;
+            text-shadow: 0 0 15px #a28ec2, 0 0 40px #58457a;
+            letter-spacing: 2px;
+            line-height: 1.1;
+        }
+        .hero p {
+            font-size: 1.3rem;
+            font-family: 'Source Code Pro', monospace;
+            color: #cfc1e8;
+            margin: 1.5rem 0 0;
+        }
+        .section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        .perception-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        .role-card {
+            background: rgba(40, 30, 55, 0.8);
+            backdrop-filter: blur(4px);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid #9580b4;
+            box-shadow: 0 0 25px rgba(149, 128, 180, 0.3);
+        }
+        .fear-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.2rem;
+            margin-top: 2.5rem;
+        }
+        .fear {
+            background: #2e2440;
+            border: 1px solid #a792c4;
+            height: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 1rem;
+            border-radius: 12px;
+            color: #d9cef0;
+            font-weight: 500;
+        }
+        .footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            border-top: 1px solid #7c6f9e;
+            background: #171123;
+            color: #a292b5;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.9rem 2.2rem;
+            background: transparent;
+            border: 2px solid #b7a2d4;
+            color: #e4d7f5;
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 6px;
+            transition: 0.2s;
+        }
+        .back-link:hover {
+            background: #8f7ab3;
+            border-color: #d9c6ff;
+            color: #0b0821;
+        }
+        .back-link:active {
+            background: #8f7ab3;
+            border-color: #d9c6ff;
+            color: #0b0821;
+        }
+
+        /* ---------- АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ (≤900px) ---------- */
+        @media screen and (max-width: 900px) {
+            .hero h1 {
+                font-size: 3.5rem;
+            }
+            .hero p {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* ---------- АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ (≤768px) ---------- */
+        @media screen and (max-width: 768px) {
+            .header {
+                padding: 1.2rem 0.5rem;
+            }
+            .nav {
+                gap: 0.5rem 1rem;
+            }
+            .nav a {
+                font-size: 0.7rem;
+                letter-spacing: 2px;
+                padding: 0.5rem 0.2rem;
+            }
+
+            .hero {
+                height: 70vh;
+            }
+            .hero h1 {
+                font-size: 2.6rem;
+                text-shadow: 0 0 10px #a28ec2, 0 0 30px #58457a;
+            }
+            .hero p {
+                font-size: 1rem;
+                margin-top: 1rem;
+            }
+            .back-link {
+                margin-top: 1.5rem;
+                padding: 0.6rem 1.8rem;
+                font-size: 0.8rem;
+            }
+
+            .section {
+                padding: 3rem 1.2rem;
+            }
+            .section h2 {
+                font-size: 1.8rem !important;   /* переопределяем inline-стиль */
+            }
+
+            .perception-grid {
+                grid-template-columns: 1fr;   /* карточки в столбик */
+                gap: 1.5rem;
+            }
+            .role-card {
+                padding: 1.6rem;
+            }
+
+            .fear-showcase {
+                grid-template-columns: repeat(2, 1fr); /* два в ряд */
+                gap: 1rem;
+            }
+            .fear {
+                height: 130px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* ---------- МАЛЕНЬКИЕ ТЕЛЕФОНЫ (≤480px) ---------- */
+        @media screen and (max-width: 480px) {
+            .hero h1 {
+                font-size: 2rem;
+                letter-spacing: 1px;
+            }
+            .hero p {
+                font-size: 0.9rem;
+                padding: 0 0.5rem;
+            }
+            .back-link {
+                padding: 0.5rem 1.4rem;
+                font-size: 0.7rem;
+            }
+
+            .nav a {
+                font-size: 0.65rem;
+                letter-spacing: 1.5px;
+            }
+
+            .section h2 {
+                font-size: 1.5rem !important;
+            }
+
+            .fear-showcase {
+                grid-template-columns: 1fr;   /* по одному */
+            }
+            .fear {
+                height: 120px;
+            }
+        }
+
+        /* ---------- ПЛАНШЕТЫ В ПОРТРЕТЕ (769-1024px) ---------- */
+        @media screen and (min-width: 769px) and (max-width: 1024px) {
+            .hero h1 {
+                font-size: 3.2rem;
+            }
+            .section {
+                padding: 4rem 1.5rem;
+            }
+        }
+
+        /* ---------- МИКРО-ПРАВКИ ---------- */
+        .section h2 {
+            font-size: 2rem;
+            margin-top: 0;
+            word-break: break-word;
+        }
+        .role-card h3 {
+            margin-top: 0;
+            color: #dacef0;
+        }
+        .fear br {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="static"></div>
+    <header class="header">
+        <nav class="nav">
+            <a href="#therapist">Терапевты</a>
+            <a href="#perception">Восприятие</a>
+            <a href="#trauma">Травмы</a>
+            <a href="#awaken">Пробуждение</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div>
+            <h1>MINDSCAPE</h1>
+            <p>Сознание пациента — многослойный лабиринт. Не заблудитесь.</p>
+            <a href="index.html" class="back-link">← Назад к прямоугольникам</a>
+        </div>
+    </section>
+
+    <section id="perception" class="section">
+        <!-- inline-стиль управляется через медиазапросы с !important -->
+        <h2 style="font-size: 2rem;">🧠 АСИММЕТРИЧНЫЙ КООПЕРАТИВ</h2>
+        <p>Каждый игрок видит уникальный слой реальности. Только вместе вы сложите пазл.</p>
+        <div class="perception-grid">
+            <div class="role-card">
+                <h3>РАЦИОНАЛ</h3>
+                <p>Видит логические связи, скрытые двери и рычаги. Слеп к монстрам.</p>
+            </div>
+            <div class="role-card">
+                <h3>ЭМПАТ</h3>
+                <p>Чувствует эмоциональные якоря, слышит шёпот прошлого. Не видит ловушек.</p>
+            </div>
+            <div class="role-card">
+                <h3>СТРАЖ</h3>
+                <p>Замечает угрозы и может временно ослепить их. Без подсказок находит тупики.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>📁 ФОБИИ ПАЦИЕНТА</h2>
+        <div class="fear-showcase">
+            <div class="fear">[ ТЕНЕБРА ]<br>Боязнь темноты</div>
+            <div class="fear">[ ГИГАНТ ]<br>Страх высоты</div>
+            <div class="fear">[ СИРЕНА ]<br>Акустикофобия</div>
+            <div class="fear">[ ЗЕРКАЛО ]<br>Автофобия</div>
+        </div>
+        <p style="margin-top: 2rem;"><i>«Не пытайтесь рационализировать кошмар. Просто пройдите его вместе.»</i></p>
+    </section>
+
+    <footer class="footer">
+        <p>MINDSCAPE © 2048 · DREAMCATCHER GAMES · «Исцеление требует команды»</p>
+    </footer>
+</body>
+</html>

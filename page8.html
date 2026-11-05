@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <!-- Адаптивный viewport — основа мобильной вёрстки -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>ABYSS VANGUARD · Зов бездны</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Source+Code+Pro:wght@300&display=swap" rel="stylesheet">
+    <style>
+        /* ---------- БАЗОВЫЕ СТИЛИ (сохранены, добавлены адаптивные правила) ---------- */
+        body {
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+            background: #00131c;
+            color: #7fd1e0;
+            background: radial-gradient(circle at 20% 30%, #002a3a, #000a12);
+        }
+        .water-ripple {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle cx="30" cy="30" r="10" fill="none" stroke="%2300aacc" opacity="0.1" stroke-width="1"/><circle cx="150" cy="80" r="20" fill="none" stroke="%2300aacc" opacity="0.08" stroke-width="1"/><circle cx="70" cy="170" r="15" fill="none" stroke="%2300aacc" opacity="0.12" stroke-width="1"/></svg>');
+            background-size: 180px 180px;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+        .header {
+            padding: 1.8rem 1rem;
+            background: #021016;
+            border-bottom: 2px solid #1e90a0;
+            display: flex;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+        }
+        .nav {
+            display: flex;
+            flex-wrap: wrap;          /* перенос ссылок на мобильных */
+            justify-content: center;
+            gap: 0.8rem 1.5rem;
+        }
+        .nav a {
+            color: #9fd9e6;
+            text-decoration: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+            padding: 0.4rem 0.2rem;   /* увеличенная область касания */
+            transition: color 0.2s, border-bottom 0.2s;
+            border-bottom: 1px solid transparent;
+        }
+        .nav a:hover {
+            border-bottom-color: #1e90a0;
+            color: #caf2fe;
+        }
+        .nav a:active {
+            color: #caf2fe;
+        }
+        .hero {
+            height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: url('abyss-trench.jpg') center/cover no-repeat;
+            position: relative;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to bottom, rgba(0,40,60,0.7), rgba(0,10,20,0.9));
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            padding: 1rem;
+        }
+        .hero h1 {
+            font-size: 4rem;
+            margin: 0;
+            font-weight: 900;
+            color: #b3f0ff;
+            text-shadow: 0 0 20px #0088aa, 0 0 60px #004466;
+            line-height: 1.1;
+        }
+        .hero p {
+            font-size: 1.3rem;
+            font-family: 'Source Code Pro', monospace;
+            color: #caf2fe;
+            margin: 1.5rem 0 0;
+        }
+        .section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        .pressure-card {
+            background: rgba(4, 30, 44, 0.7);
+            backdrop-filter: blur(3px);
+            border: 1px solid #2aa0b0;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+        }
+        .abyss-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.8rem;
+            margin-top: 3rem;
+        }
+        .threat {
+            background: #05222b;
+            border: 1px solid #3fbbc0;
+            padding: 1.5rem;
+            border-bottom: 6px solid #008f9c;
+            text-align: center;
+        }
+        .sonar-img {
+            background: #01161e;
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 1rem;
+            border: 2px solid #37e0ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: #9feaff;
+        }
+        /* класс для сетки форм жизни — вместо inline-стилей */
+        .life-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .life-card {
+            background: #03232e;
+            padding: 1.5rem 0.5rem;
+            text-align: center;
+            border: 1px solid #3fbbc0;
+            border-radius: 8px;
+            color: #caf2fe;
+        }
+        .footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            border-top: 1px solid #1e90a0;
+            background: #010f15;
+            color: #6ba5b0;
+            font-size: 0.8rem;
+        }
+        a {
+            color: #aaf0ff;
+        }
+        .abyss-link {
+            background: #003f4f;
+            padding: 0.8rem 2rem;
+            border: 1px solid #4fd0e0;
+            display: inline-block;
+            margin-top: 2rem;
+            text-decoration: none;
+            border-radius: 40px;
+            transition: 0.3s;
+        }
+        .abyss-link:hover {
+            background: #1e90a0;
+            color: black;
+            box-shadow: 0 0 30px #00bcd4;
+        }
+        .abyss-link:active {
+            background: #1e90a0;
+            color: black;
+            box-shadow: 0 0 30px #00bcd4;
+        }
+
+        /* ---------- АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ (≤900px) ---------- */
+        @media screen and (max-width: 900px) {
+            .hero h1 {
+                font-size: 3.2rem;
+            }
+            .hero p {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* ---------- АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ (≤768px) ---------- */
+        @media screen and (max-width: 768px) {
+            .header {
+                padding: 1.2rem 0.5rem;
+            }
+            .nav {
+                gap: 0.5rem 1rem;
+            }
+            .nav a {
+                font-size: 0.7rem;
+                letter-spacing: 2px;
+                padding: 0.5rem 0.2rem;
+            }
+
+            .hero {
+                height: 70vh;
+            }
+            .hero h1 {
+                font-size: 2.6rem;
+                text-shadow: 0 0 15px #0088aa, 0 0 40px #004466;
+            }
+            .hero p {
+                font-size: 1rem;
+                margin-top: 1rem;
+            }
+            .abyss-link {
+                margin-top: 1.5rem;
+                padding: 0.6rem 1.8rem;
+                font-size: 0.8rem;
+            }
+
+            .section {
+                padding: 3rem 1.2rem;
+            }
+            .section h2 {
+                font-size: 1.8rem !important;   /* переопределяем inline-стиль */
+            }
+
+            .abyss-grid {
+                grid-template-columns: 1fr;   /* карточки в столбик */
+                gap: 1.5rem;
+            }
+            .sonar-img {
+                width: 80px;
+                height: 80px;
+                font-size: 0.7rem;
+            }
+
+            .life-grid {
+                grid-template-columns: 1fr;   /* на мобильных — один в ряд */
+                gap: 1rem;
+            }
+        }
+
+        /* ---------- МАЛЕНЬКИЕ ТЕЛЕФОНЫ (≤480px) ---------- */
+        @media screen and (max-width: 480px) {
+            .hero h1 {
+                font-size: 2rem;
+                text-shadow: 0 0 10px #0088aa, 0 0 30px #004466;
+            }
+            .hero p {
+                font-size: 0.9rem;
+                padding: 0 0.5rem;
+            }
+            .abyss-link {
+                padding: 0.5rem 1.4rem;
+                font-size: 0.7rem;
+            }
+
+            .nav a {
+                font-size: 0.65rem;
+                letter-spacing: 1.5px;
+            }
+
+            .section h2 {
+                font-size: 1.5rem !important;
+            }
+
+            .threat {
+                padding: 1.2rem;
+            }
+        }
+
+        /* ---------- ПЛАНШЕТЫ В ПОРТРЕТЕ (769-1024px) ---------- */
+        @media screen and (min-width: 769px) and (max-width: 1024px) {
+            .hero h1 {
+                font-size: 3rem;
+            }
+            .section {
+                padding: 4rem 1.5rem;
+            }
+            .life-grid {
+                grid-template-columns: repeat(2, 1fr); /* 2 колонки на средних экранах */
+            }
+        }
+
+        /* ---------- МИКРО-ПРАВКИ ---------- */
+        .section h2 {
+            font-size: 2rem;
+            margin-top: 0;
+            word-break: break-word;
+        }
+        .threat h3 {
+            margin-top: 0;
+            color: #b3f0ff;
+            font-size: 1.3rem;
+        }
+        .life-card {
+            background: #03232e;
+            padding: 1.2rem 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="water-ripple"></div>
+    <header class="header">
+        <nav class="nav">
+            <a href="#expedition">Экспедиция</a>
+            <a href="#pressure">Давление</a>
+            <a href="#life">Аборигены</a>
+            <a href="#logs">Аудио-логи</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>ABYSS VANGUARD</h1>
+            <p>14 километров тишины. Ты не один.</p>
+            <a href="index.html" class="abyss-link">← Назад к прямоугольникам</a>
+        </div>
+    </section>
+
+    <section id="expedition" class="section">
+        <!-- inline-стиль управляется медиазапросами через !important -->
+        <h2 style="font-size: 2rem;">🌊 СТАНЦИЯ «КРОЛАР-1» 🌊</h2>
+        <div class="pressure-card">
+            <p style="font-size: 1.2rem;">Глубоководный батискаф «Вэнгард» — последняя связь с поверхностью. Ваша задача: картографировать руины, отбирать пробы, выживать. Каждый метр вниз умножает тонны давления на корпус и рассудок.</p>
+        </div>
+    </section>
+
+    <section id="pressure" class="section">
+        <h2>🌀 СИСТЕМА ДАВЛЕНИЯ И ГИДРОАКУСТИКИ 🌀</h2>
+        <div class="abyss-grid">
+            <div class="threat">
+                <div class="sonar-img">[СОНАР]</div>
+                <h3>АКТИВНЫЙ ПИНГ</h3>
+                <p>Показывает врагов сквозь тьму, но привлекает стаи. Шёпот в эфире усиливается.</p>
+            </div>
+            <div class="threat">
+                <div class="sonar-img">[МАНОМЕТР]</div>
+                <h3>КРИТИЧЕСКОЕ ДАВЛЕНИЕ</h3>
+                <p>Ниже 800 бар — трещины в иллюминаторе. Снижается скорость, появляются галлюцинации.</p>
+            </div>
+            <div class="threat">
+                <div class="sonar-img">[БИОЛЮМ]</div>
+                <h3>ФОТОФОРЫ</h3>
+                <p>Некоторые существа реагируют только на движение. Другие — на свет. Выбирайте тактику.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="life" class="section">
+        <h2>🧬 ФОРМЫ ЖИЗНИ ( НЕ ОПИСАННЫЕ В ПРОТОКОЛАХ ) 🧬</h2>
+        <!-- заменяем inline-стили на класс .life-grid и .life-card для полной адаптивности -->
+        <div class="life-grid">
+            <div class="life-card">«ЛЕВИАФАН»<br>Биолюм. хищник</div>
+            <div class="life-card">«НЕМО»<br>Рой мелких существ</div>
+            <div class="life-card">«СТРАЖ РУИН»<br>Древний механизм</div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>ABYSS VANGUARD · DEEP OCEAN STUDIOS · «Тьма помнит»</p>
+    </footer>
+</body>
+</html>

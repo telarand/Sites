@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <!-- Оптимизированный viewport для телефонов -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>WASTELAND SYMBIOSIS · Эволюция хаоса</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* ---------- БАЗОВЫЕ СТИЛИ ---------- */
+        body {
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+            background: #1f3a2b;
+            color: #d6e68a;
+            background: linear-gradient(145deg, #1c3622, #142015);
+        }
+        .biohazard {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><circle cx="60" cy="60" r="10" fill="%23aaff44" opacity="0.1"/><path d="M60 20 L70 45 L95 45 L75 60 L85 85 L60 70 L35 85 L45 60 L25 45 L50 45 Z" fill="%23aadd44" opacity="0.05"/></svg>');
+            background-size: 100px 100px;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+        .header {
+            padding: 2rem 1rem;
+            background: #0e1f14;
+            border-bottom: 3px solid #b9d86c;
+            display: flex;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+        }
+        .nav {
+            display: flex;
+            flex-wrap: wrap;          /* перенос ссылок на мобильных */
+            justify-content: center;
+            gap: 0.8rem 1.5rem;
+        }
+        .nav a {
+            color: #e6f2b0;
+            text-decoration: none;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+            padding: 0.4rem 0.2rem;   /* комфортное нажатие */
+            transition: color 0.2s;
+            border-bottom: 1px solid transparent;
+        }
+        .nav a:hover {
+            color: #f4ffb0;
+            border-bottom-color: #b9d86c;
+        }
+        .nav a:active {
+            color: #f0ffa0;
+        }
+        .hero {
+            height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: radial-gradient(circle at 60% 40%, #385a34, #162012);
+            position: relative;
+        }
+        .hero h1 {
+            font-size: 4.5rem;
+            margin: 0;
+            font-family: 'Bebas Neue', cursive;
+            color: #eaf7b1;
+            text-shadow: 0 0 20px #7fa83d, 0 0 60px #4f7a2a;
+            letter-spacing: 8px;
+            line-height: 1.1;
+        }
+        .hero p {
+            font-size: 1.3rem;
+            color: #d1e68a;
+            margin: 1.5rem 0 0;
+        }
+        .section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        .mutation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        .limb-card {
+            background: #1e3522;
+            border: 2px solid #9acd4c;
+            border-radius: 20px 0 20px 0;
+            padding: 2rem;
+            box-shadow: 8px 8px 0 #4a6a2c;
+        }
+        .creature-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.2rem;
+            margin-top: 2rem;
+        }
+        .creature {
+            background: #172e1c;
+            border: 1px solid #aad15e;
+            height: 160px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0.5rem;
+            font-weight: 500;
+            color: #ddf0a5;
+            border-radius: 8px;
+        }
+        .footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            border-top: 2px solid #b9d86c;
+            background: #0d1c10;
+            color: #aabd70;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.8rem 2.5rem;
+            background: #3c5e2b;
+            border: 2px solid #c8f06b;
+            color: #faffd4;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+        .back-link:hover {
+            background: #b5e05b;
+            border-color: white;
+            color: #142015;
+        }
+        .back-link:active {
+            background: #b5e05b;
+            border-color: white;
+            color: #142015;
+        }
+
+        /* ---------- АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ (≤900px) ---------- */
+        @media screen and (max-width: 900px) {
+            .hero h1 {
+                font-size: 3.5rem;
+                letter-spacing: 6px;
+            }
+            .hero p {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* ---------- АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ (≤768px) ---------- */
+        @media screen and (max-width: 768px) {
+            .header {
+                padding: 1.2rem 0.5rem;
+            }
+            .nav {
+                gap: 0.5rem 1rem;
+            }
+            .nav a {
+                font-size: 0.7rem;
+                letter-spacing: 2px;
+                padding: 0.5rem 0.2rem;
+            }
+
+            .hero {
+                height: 70vh;
+            }
+            .hero h1 {
+                font-size: 2.8rem;
+                letter-spacing: 4px;
+                text-shadow: 0 0 15px #7fa83d, 0 0 40px #4f7a2a;
+            }
+            .hero p {
+                font-size: 1.1rem;
+                margin-top: 1rem;
+            }
+            .back-link {
+                margin-top: 1.5rem;
+                padding: 0.6rem 1.8rem;
+                font-size: 0.8rem;
+            }
+
+            .section {
+                padding: 3rem 1.2rem;
+            }
+            .section h2 {
+                font-size: 1.8rem !important;   /* переопределяем inline-стиль */
+                border-left-width: 8px !important;
+                padding-left: 0.8rem !important;
+            }
+
+            .mutation-grid {
+                grid-template-columns: 1fr;   /* карточки в столбик */
+                gap: 1.5rem;
+            }
+            .limb-card {
+                padding: 1.6rem;
+                box-shadow: 6px 6px 0 #4a6a2c;
+            }
+
+            .creature-showcase {
+                grid-template-columns: repeat(2, 1fr); /* два в ряд */
+                gap: 1rem;
+            }
+            .creature {
+                height: 140px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* ---------- МАЛЕНЬКИЕ ТЕЛЕФОНЫ (≤480px) ---------- */
+        @media screen and (max-width: 480px) {
+            .hero h1 {
+                font-size: 2.2rem;
+                letter-spacing: 2px;
+                text-shadow: 0 0 10px #7fa83d, 0 0 30px #4f7a2a;
+            }
+            .hero p {
+                font-size: 1rem;
+                padding: 0 0.5rem;
+            }
+            .back-link {
+                padding: 0.5rem 1.4rem;
+                font-size: 0.7rem;
+            }
+
+            .nav a {
+                font-size: 0.65rem;
+                letter-spacing: 1.5px;
+            }
+
+            .section h2 {
+                font-size: 1.5rem !important;
+            }
+
+            .creature-showcase {
+                grid-template-columns: 1fr;   /* по одному */
+            }
+            .creature {
+                height: 120px;
+            }
+        }
+
+        /* ---------- ПЛАНШЕТЫ В ПОРТРЕТЕ (769-1024px) ---------- */
+        @media screen and (min-width: 769px) and (max-width: 1024px) {
+            .hero h1 {
+                font-size: 3.2rem;
+            }
+            .section {
+                padding: 4rem 1.5rem;
+            }
+        }
+
+        /* ---------- МИКРО-ПРАВКИ ---------- */
+        .section h2 {
+            font-size: 2.4rem;
+            border-left: 12px solid #9acd4c;
+            padding-left: 1rem;
+            margin-top: 0;
+            word-break: break-word;
+        }
+        .limb-card h3 {
+            margin-top: 0;
+            color: #e2f58c;
+            font-size: 1.5rem;
+        }
+        .creature br {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="biohazard"></div>
+    <header class="header">
+        <nav class="nav">
+            <a href="#mutate">Мутации</a>
+            <a href="#symbiosis">Симбиоз</a>
+            <a href="#hunters">Охотники</a>
+            <a href="#reactor">Реактор</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div>
+            <h1>WASTELAND SYMBIOSIS</h1>
+            <p>Ты — то, что ты поглощаешь.</p>
+            <a href="index.html" class="back-link">← Назад к прямоугольникам</a>
+        </div>
+    </section>
+
+    <section id="mutate" class="section">
+        <h2 style="font-size: 2.4rem; border-left: 12px solid #9acd4c; padding-left: 1rem;">🧬 ДИНАМИЧЕСКАЯ ЭВОЛЮЦИЯ</h2>
+        <p style="font-size: 1.2rem;">Убивая врагов, вы открываете их гены и чертежи. Мгновенно заменяйте конечности, пассивные умения и органы чувств.</p>
+        <div class="mutation-grid">
+            <div class="limb-card">
+                <h3>РУКА-ПУШКА</h3>
+                <p>Дальний бой, пробивает броню. Медленная перезарядка.</p>
+            </div>
+            <div class="limb-card">
+                <h3>ПАУЧЬИ НОГИ</h3>
+                <p>Лазанье по стенам, уклонение, повышенная манёвренность.</p>
+            </div>
+            <div class="limb-card">
+                <h3>ХИТИНОВЫЙ ПАНЦИРЬ</h3>
+                <p>Снижает входящий урон, но замедляет передвижение.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>☣️ ФАУНА ПУСТОШИ</h2>
+        <div class="creature-showcase">
+            <div class="creature">[ КЛЕЩ-ТИТАН ]<br>Поглощает электричество</div>
+            <div class="creature">[ РАД-ШЕРШЕНЬ ]<br>Ядовитые рои</div>
+            <div class="creature">[ КИБЕР-ВАРАН ]<br>Быстрый, слабый к плазме</div>
+        </div>
+        <p style="margin-top: 2rem;"><i>Каждое существо — новый слот мутации.</i></p>
+    </section>
+
+    <footer class="footer">
+        <p>WASTELAND SYMBIOSIS · MUTATION CORE · 2048</p>
+    </footer>
+</body>
+</html>
