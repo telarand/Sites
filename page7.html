@@ -2,351 +2,734 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <!-- Адаптивный viewport для идеального отображения на телефонах -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>MECH DREADNOUGHT · Титаны стали</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MECH DREADNOUGHT · Собери титана. Сокруши Колосса.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* ---------- БАЗОВЫЕ СТИЛИ (оригинал с адаптивными улучшениями) ---------- */
-        body {
-            margin: 0;
-            font-family: 'Rajdhani', sans-serif;
-            background: #1f1f1f;
-            color: #ffb347;
-            background: linear-gradient(145deg, #2b2b2b 0%, #1a1a1a 100%);
+        :root {
+            --bg-void: #050505;
+            --bg-coal: #0e0e0e;
+            --bg-dark: #141414;
+            --bg-steel: #1e1e1e;
+            --bg-steel-light: #2a2a2a;
+            --shadow-machine: #5a3a1a;
+            --accent-orange: #ff8c00;
+            --accent-orange-dim: rgba(255, 140, 0, 0.2);
+            --text-amber: #ffb347;
+            --text-amber-light: #ffcc80;
+            --alert-heat: #ff5500;
+            --gold-trophy: #ffd700;
+            --grid-line: rgba(255, 140, 0, 0.05);
         }
-        .metal-texture {
+
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--bg-void);
+            color: var(--text-amber);
+            overflow-x: hidden;
+            line-height: 1.6;
+            cursor: none;
+        }
+
+        /* КАСТОМНЫЙ КУРСОР */
+        .cursor-dot, .cursor-ring {
+            position: fixed;
+            top: 0; left: 0;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: transform 0.15s ease-out, width 0.3s, height 0.3s, border-color 0.3s;
+        }
+        .cursor-dot {
+            width: 6px; height: 6px;
+            background: var(--accent-orange);
+            box-shadow: 0 0 10px var(--accent-orange);
+        }
+        .cursor-ring {
+            width: 40px; height: 40px;
+            border: 1px solid var(--text-amber);
+            transition: transform 0.2s ease-out, width 0.3s, height 0.3s, border-color 0.3s, background 0.3s;
+        }
+        .cursor-ring.hover {
+            width: 60px; height: 60px;
+            border-color: var(--alert-heat);
+            background: rgba(255, 85, 0, 0.1);
+        }
+
+        /* ФОН И СЕТКА */
+        .bg-layer {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="%23333333" /><path d="M0 0 L100 100 M100 0 L0 100" stroke="%23444444" stroke-width="0.8" opacity="0.3"/><circle cx="50" cy="50" r="2" fill="%23ffaa33" opacity="0.2"/></svg>');
-            background-size: 80px 80px;
-            opacity: 0.15;
-            z-index: 0;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 80% 10%, rgba(90, 58, 26, 0.15), transparent 50%),
+                radial-gradient(circle at 10% 90%, rgba(255, 85, 0, 0.05), transparent 50%),
+                var(--bg-void);
         }
-        .header {
-            padding: 1.8rem 1rem;
-            background: #0e0e0e;
-            border-bottom: 4px solid #ff8c00;
+        .grid-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(var(--grid-line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+        }
+
+        /* НАВИГАЦИЯ */
+        header {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            background: linear-gradient(to bottom, rgba(5, 5, 5, 0.9), transparent);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            padding: 1.5rem 4rem;
             display: flex;
-            justify-content: center;
-            position: relative;
-            z-index: 2;
+            justify-content: space-between;
+            align-items: center;
+            transition: padding 0.3s;
         }
-        .nav {
-            display: flex;
-            flex-wrap: wrap;          /* перенос ссылок на мобильных */
-            justify-content: center;
-            gap: 0.8rem 1.8rem;
+        header.scrolled {
+            padding: 1rem 4rem;
+            background: rgba(5, 5, 5, 0.95);
+            border-bottom: 1px solid var(--bg-steel-light);
         }
-        .nav a {
-            color: #ffb347;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 1.1rem;
-            letter-spacing: 3px;
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 1.4rem;
             text-transform: uppercase;
-            font-family: 'Bebas Neue', cursive;
-            text-shadow: 0 0 5px #ff5500;
-            padding: 0.4rem 0.2rem;   /* увеличенная область касания */
-            transition: color 0.2s, text-shadow 0.2s;
-            border-bottom: 1px solid transparent;
-        }
-        .nav a:hover {
-            color: #ffcc80;
-            text-shadow: 0 0 8px #ff8c00;
-            border-bottom-color: #ff8c00;
-        }
-        .nav a:active {
-            color: #ffcc80;
-        }
-        .hero {
-            height: 80vh;
+            letter-spacing: 3px;
+            color: #fff;
             display: flex;
             align-items: center;
+            gap: 0.5rem;
+        }
+        .logo span { color: var(--accent-orange); }
+        nav ul { display: flex; list-style: none; gap: 2.5rem; }
+        nav a {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--text-amber);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            transition: color 0.3s;
+        }
+        nav a:hover { color: #fff; }
+        nav a::before {
+            content: '> ';
+            color: var(--accent-orange);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        nav a:hover::before { opacity: 1; }
+
+        /* HERO СЕКЦИЯ */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
             justify-content: center;
-            text-align: center;
-            background: radial-gradient(circle at 70% 30%, #5a3a1a, #0a0a0a);
+            padding: 0 4rem;
             position: relative;
         }
+        .hero-tag {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-orange);
+            font-size: 1rem;
+            letter-spacing: 4px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .hero-tag::before {
+            content: ''; width: 40px; height: 2px; background: var(--accent-orange);
+        }
         .hero h1 {
-            font-size: 5rem;
-            margin: 0;
-            font-family: 'Bebas Neue', cursive;
-            color: #ffa500;
-            text-shadow: 6px 6px 0 #5a3a1a, 0 0 40px #ff8c00;
-            letter-spacing: 8px;
-            line-height: 1.1;
-        }
-        .hero p {
-            font-size: 1.5rem;
-            color: #ffcc80;
-            margin: 1.5rem 0 0;
-        }
-        .section {
-            padding: 5rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(4rem, 12vw, 11rem);
+            line-height: 0.9;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: #fff;
             position: relative;
             z-index: 2;
         }
-        .modular-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
+        .hero h1 span {
+            display: block;
+            color: transparent;
+            -webkit-text-stroke: 2px var(--text-amber);
         }
-        .part-card {
-            background: #2a2a2a;
-            border-left: 6px solid #ff8c00;
-            padding: 1.8rem;
-            box-shadow: 0 10px 10px rgba(0,0,0,0.7);
-            transition: 0.2s;
+        .hero-sub {
+            margin-top: 2rem;
+            font-size: 1.5rem;
+            max-width: 600px;
+            color: var(--text-amber-light);
+            border-left: 4px solid var(--alert-heat);
+            padding-left: 1.5rem;
         }
-        .part-card:hover {
-            border-left-color: #ffd700;
-            background: #3a3a3a;
-        }
-        .arsenal {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.2rem;
-            margin-top: 3rem;
-        }
-        .weapon {
-            background: #1e1e1e;
-            border: 1px solid #ff8c00;
-            height: 160px;
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem; left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            color: var(--text-amber);
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: #ffcc99;
-            padding: 0.5rem;
-            text-align: center;
+            gap: 0.5rem;
+            opacity: 0.6;
         }
-        .footer {
-            text-align: center;
-            padding: 2rem 1rem;
-            border-top: 2px solid #ff8c00;
-            background: #0c0c0c;
-            color: #ccaa77;
+        .scroll-indicator::after {
+            content: ''; width: 1px; height: 40px;
+            background: linear-gradient(to bottom, var(--accent-orange), transparent);
+            animation: scrollDown 2s infinite;
+        }
+        @keyframes scrollDown {
+            0% { transform: scaleY(0); transform-origin: top; }
+            50% { transform: scaleY(1); transform-origin: top; }
+            51% { transform: scaleY(1); transform-origin: bottom; }
+            100% { transform: scaleY(0); transform-origin: bottom; }
+        }
+
+        /* СЕКЦИИ */
+        .section {
+            padding: 8rem 4rem;
+            max-width: 1600px;
+            margin: 0 auto;
+            position: relative;
+        }
+        .section-header {
+            margin-bottom: 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-bottom: 1px solid var(--bg-steel-light);
+            padding-bottom: 2rem;
+        }
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            text-transform: uppercase;
+            color: #fff;
+            font-weight: 700;
+        }
+        .section-id {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-orange);
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+        }
+        .section-desc {
+            max-width: 800px;
+            font-size: 1.2rem;
+            color: var(--text-amber-light);
+            margin-bottom: 4rem;
+        }
+
+        /* СТОЛПЫ (ПРАВИЛА) */
+        .rules-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+        .rule-card {
+            background: linear-gradient(145deg, var(--bg-dark), var(--bg-void));
+            border: 1px solid var(--bg-steel);
+            padding: 2.5rem;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+            overflow: hidden;
+        }
+        .rule-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--accent-orange);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.5s ease;
+        }
+        .rule-card:hover {
+            border-color: var(--accent-orange);
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+        .rule-card:hover::before { transform: scaleX(1); }
+        .rule-num {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--bg-steel-light);
+            position: absolute;
+            top: 1rem; right: 1.5rem;
+            transition: color 0.3s;
+        }
+        .rule-card:hover .rule-num { color: rgba(255, 140, 0, 0.2); }
+        .rule-card h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: #fff;
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            position: relative;
+            z-index: 2;
+        }
+        .rule-card p {
+            color: var(--text-amber-light);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ВЕРФЬ И АРСЕНАЛ (СЕТКА МОДУЛЕЙ) */
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .module-card {
+            background: var(--bg-dark);
+            border: 1px solid var(--bg-steel);
+            padding: 2rem;
+            position: relative;
+            clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+            transition: all 0.3s;
+        }
+        .module-card:hover {
+            background: var(--bg-steel);
+            border-color: var(--accent-orange);
+        }
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px dashed var(--bg-steel-light);
+            padding-bottom: 1rem;
+        }
+        .module-name {
+            font-family: 'Orbitron', sans-serif;
+            color: #fff;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+        }
+        .module-class {
+            color: var(--accent-orange);
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .module-stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
             font-size: 0.9rem;
         }
-        a {
-            color: #ffb347;
+        .stat {
+            background: rgba(0,0,0,0.5);
+            padding: 0.2rem 0.6rem;
+            border: 1px solid var(--bg-steel-light);
+            color: var(--text-amber-light);
         }
-        .back-button {
-            background: #3a2a1a;
-            padding: 0.8rem 2rem;
-            border: 2px solid #ff8c00;
-            font-weight: bold;
-            margin-top: 2rem;
+        .module-desc {
+            font-size: 1rem;
+            color: #aaa;
+        }
+
+        /* КАМПАНИЯ И ЗОНЫ */
+        .zones-wrapper {
+            position: relative;
+            padding-left: 2rem;
+            border-left: 2px solid var(--bg-steel);
+        }
+        .zone-item {
+            position: relative;
+            padding: 2rem 0 2rem 3rem;
+            transition: all 0.3s;
+        }
+        .zone-item::before {
+            content: '';
+            position: absolute;
+            left: -2.5rem; top: 2.5rem;
+            width: 1rem; height: 1rem;
+            background: var(--bg-void);
+            border: 2px solid var(--text-amber);
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+        .zone-item:hover::before {
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 15px var(--accent-orange);
+            background: var(--accent-orange);
+        }
+        .zone-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .zone-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            color: #fff;
+            text-transform: uppercase;
+        }
+        .zone-boss {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--gold-trophy);
+            font-size: 0.9rem;
+            text-align: right;
+        }
+        .zone-boss span { display: block; color: #666; font-size: 0.75rem; }
+        .zone-rule {
             display: inline-block;
-            text-decoration: none;
-            transition: 0.2s;
-        }
-        .back-button:hover {
-            background: #ff8c00;
-            color: black;
-            border-color: white;
-        }
-        .back-button:active {
-            background: #ff8c00;
-            color: black;
-            border-color: white;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--alert-heat);
+            border: 1px solid var(--alert-heat);
+            padding: 0.2rem 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        /* ---------- АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ (≤900px) ---------- */
-        @media screen and (max-width: 900px) {
-            .hero h1 {
-                font-size: 4rem;
-                letter-spacing: 6px;
-            }
-            .hero p {
-                font-size: 1.3rem;
-            }
+        /* ПОДВАЛ */
+        footer {
+            margin-top: 8rem;
+            border-top: 1px solid var(--bg-steel);
+            padding: 4rem;
+            text-align: center;
+            background: linear-gradient(to bottom, transparent, var(--bg-coal));
+        }
+        .footer-quote {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            color: #fff;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+            letter-spacing: 4px;
+        }
+        .footer-meta {
+            font-size: 0.9rem;
+            color: #555;
+            letter-spacing: 2px;
+            text-transform: uppercase;
         }
 
-        /* ---------- АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ (≤768px) ---------- */
-        @media screen and (max-width: 768px) {
-            .header {
-                padding: 1.2rem 0.5rem;
-            }
-            .nav {
-                gap: 0.5rem 1.2rem;
-            }
-            .nav a {
-                font-size: 0.9rem;
-                letter-spacing: 2px;
-                padding: 0.5rem 0.2rem;
-            }
-
-            .hero {
-                height: 70vh;
-            }
-            .hero h1 {
-                font-size: 3rem;
-                letter-spacing: 4px;
-                text-shadow: 4px 4px 0 #5a3a1a, 0 0 30px #ff8c00;
-            }
-            .hero p {
-                font-size: 1.1rem;
-                margin-top: 1rem;
-            }
-            .back-button {
-                margin-top: 1.5rem;
-                padding: 0.6rem 1.8rem;
-                font-size: 0.9rem;
-            }
-
-            .section {
-                padding: 3rem 1.2rem;
-            }
-            .section h2 {
-                font-size: 1.8rem !important;   /* переопределяем inline-стиль */
-                border-bottom-width: 1px !important;
-            }
-
-            .modular-grid {
-                grid-template-columns: 1fr;   /* карточки в столбик */
-                gap: 1.5rem;
-            }
-            .part-card {
-                padding: 1.6rem;
-            }
-
-            .arsenal {
-                grid-template-columns: repeat(2, 1fr); /* два в ряд */
-                gap: 1rem;
-            }
-            .weapon {
-                height: 140px;
-                font-size: 0.9rem;
-            }
+        /* АНИМАЦИИ ПОЯВЛЕНИЯ */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        /* ---------- МАЛЕНЬКИЕ ТЕЛЕФОНЫ (≤480px) ---------- */
-        @media screen and (max-width: 480px) {
-            .hero h1 {
-                font-size: 2.2rem;
-                letter-spacing: 2px;
-                text-shadow: 3px 3px 0 #5a3a1a, 0 0 20px #ff8c00;
-            }
-            .hero p {
-                font-size: 0.95rem;
-                padding: 0 0.5rem;
-            }
-            .back-button {
-                padding: 0.5rem 1.4rem;
-                font-size: 0.8rem;
-            }
-
-            .nav a {
-                font-size: 0.8rem;
-                letter-spacing: 1.5px;
-            }
-
-            .section h2 {
-                font-size: 1.5rem !important;
-            }
-
-            .arsenal {
-                grid-template-columns: 1fr;   /* один в ряд */
-            }
-            .weapon {
-                height: 120px;
-            }
+        /* АДАПТИВ */
+        @media (max-width: 1024px) {
+            .rules-grid { grid-template-columns: 1fr; }
+            .section, .hero { padding-left: 2rem; padding-right: 2rem; }
+            header { padding: 1rem 2rem; }
         }
-
-        /* ---------- ПЛАНШЕТЫ В ПОРТРЕТЕ (769-1024px) ---------- */
-        @media screen and (min-width: 769px) and (max-width: 1024px) {
-            .hero h1 {
-                font-size: 3.8rem;
-            }
-            .hero p {
-                font-size: 1.2rem;
-            }
-            .section {
-                padding: 4rem 1.5rem;
-            }
-            .arsenal {
-                grid-template-columns: repeat(2, 1fr); /* 2 колонки на средних экранах */
-            }
-        }
-
-        /* ---------- МИКРО-ПРАВКИ ---------- */
-        .section h2 {
-            font-size: 2.4rem;
-            border-bottom: 2px solid #ff8c00;
-            display: inline-block;
-            margin-top: 0;
-            word-break: break-word;
-        }
-        .part-card h3 {
-            margin-top: 0;
-            color: #ffd280;
-        }
-        .weapon br {
-            margin-bottom: 5px;
+        @media (max-width: 768px) {
+            body { cursor: auto; }
+            .cursor-dot, .cursor-ring { display: none; }
+            nav ul { display: none; }
+            .section-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+            .module-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <div class="metal-texture"></div>
-    <header class="header">
-        <nav class="nav">
-            <a href="#forge">Верфь</a>
-            <a href="#modular">Модули</a>
-            <a href="#colossus">Колоссы</a>
-            <a href="#pilot">Пилоты</a>
+    <!-- Кастомный курсор -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-ring"></div>
+
+    <!-- Фоновые слои -->
+    <div class="bg-layer"></div>
+    <div class="grid-bg"></div>
+
+    <!-- Навигация -->
+    <header id="header">
+        <div class="logo">M<span>D</span> // HEPHAESTUS</div>
+        <nav>
+            <ul>
+                <li><a href="#rules">Устав</a></li>
+                <li><a href="#forge">Верфь</a></li>
+                <li><a href="#arsenal">Арсенал</a></li>
+                <li><a href="#campaign">Кампания</a></li>
+            </ul>
         </nav>
     </header>
 
+    <!-- HERO -->
     <section class="hero">
-        <div>
-            <h1>MECH DREADNOUGHT</h1>
-            <p>Собери титана. Сокруши Колосса.</p>
-            <a href="index.html" class="back-button">← Назад к прямоугольникам</a>
+        <div class="hero-tag">ПРОЕКТ: MECH DREADNOUGHT // ВЕРСИЯ 0.1</div>
+        <h1>СОБЕРИ<br><span>ТИТАНА</span></h1>
+        <div class="hero-sub">
+            Симулятор сборки мехов и охоты на Колоссов. То, что ты собрал в цеху, честно вернётся в бою массой, инерцией и анимациями.
+        </div>
+        <div class="scroll-indicator">SCROLL TO INITIATE</div>
+    </section>
+
+    <!-- ПРАВИЛА ВСЕЛЕННОЙ -->
+    <section id="rules" class="section">
+        <div class="section-header reveal">
+            <div>
+                <div class="section-id">// 01_УСТАВ_ВЕРФИ</div>
+                <div class="section-title">Три правила вселенной</div>
+            </div>
+        </div>
+        <p class="section-desc reveal">Ограничения — источник решений, а не помеха. Исключения для боссов, зон или сложности запрещены.</p>
+        
+        <div class="rules-grid">
+            <div class="rule-card reveal">
+                <div class="rule-num">01</div>
+                <h3>Честная масса</h3>
+                <p>Мех весит то, что на нём закреплено. Масса, инерция и грузоподъёмность считаются по каждой детали. Избыток массы не запрещён, но наказан инерцией.</p>
+            </div>
+            <div class="rule-card reveal">
+                <div class="rule-num">02</div>
+                <h3>Бой — это ремонт</h3>
+                <p>Броня не «чинится в меню». Есть узлы, каждый со своим состоянием. Вернуть узел в строй можно только отстрелив его и прикрепив новый.</p>
+            </div>
+            <div class="rule-card reveal">
+                <div class="rule-num">03</div>
+                <h3>Своя сборка</h3>
+                <p>Каждый Колосс требует своей сборки. Универсальной машины не существует. Броня гигантов приспосабливается к повторяющимся схемам урона.</p>
+            </div>
         </div>
     </section>
 
+    <!-- ГЕФЕСТ-ВЕРФЬ -->
     <section id="forge" class="section">
-        <h2 style="font-size: 2.4rem; border-bottom: 2px solid #ff8c00; display: inline-block;">⚙️ ГЕФЕСТ-ВЕРФЬ ⚙️</h2>
-        <p style="font-size: 1.2rem;">Более 150 сменных деталей: торсы, ноги, руки, орудийные платформы, генераторы щитов. Каждая деталь меняет анимации, массу, инерцию и стиль боя.</p>
-    </section>
+        <div class="section-header reveal">
+            <div>
+                <div class="section-id">// 02_СБОРКА</div>
+                <div class="section-title">Гефест-Верфь</div>
+            </div>
+        </div>
+        <p class="section-desc reveal">Более 150 сменных деталей. Сборка происходит в реальном времени: деталь поднимается краном, встаёт на стапель, и машина физически меняет силуэт.</p>
 
-    <section id="modular" class="section">
-        <h2>🧩 МОДУЛЬНАЯ БОЕВАЯ СИСТЕМА 🧩</h2>
-        <div class="modular-grid">
-            <div class="part-card">
-                <h3>НОГИ-РЕССОРЫ</h3>
-                <p>Высокие прыжки, удар при приземлении. Слаб к кинетике.</p>
+        <div class="module-grid">
+            <div class="module-card reveal">
+                <div class="module-header">
+                    <div class="module-name">Ноги-рессоры</div>
+                    <div class="module-class">CLASS A</div>
+                </div>
+                <div class="module-stats">
+                    <div class="stat">МАССА: НИЗКАЯ</div>
+                    <div class="stat">ГРУЗ: СРЕДНИЙ</div>
+                </div>
+                <div class="module-desc">Высокие прыжки, удар при приземлении. Лёгкая инерция и резкий разворот. Слабость к кинетике оплачена мобильностью.</div>
             </div>
-            <div class="part-card">
-                <h3>ГУСЕНИЧНАЯ БАЗА</h3>
-                <p>Медленно, но огромная грузоподъёмность. Стабилизатор стрельбы.</p>
+            <div class="module-card reveal">
+                <div class="module-header">
+                    <div class="module-name">Гусеничная база</div>
+                    <div class="module-class">CLASS C</div>
+                </div>
+                <div class="module-stats">
+                    <div class="stat">МАССА: ВЫСОКАЯ</div>
+                    <div class="stat">ГРУЗ: МАКС</div>
+                </div>
+                <div class="module-desc">Скорость ниже средней, огромная грузоподъёмность. Стабилизатор стрельбы. Платформы держат вес без просадки.</div>
             </div>
-            <div class="part-card">
-                <h3>МАНИПУЛЯТОРЫ «ТИТАН»</h3>
-                <p>Схват с врагом, швыряние объектов. Усиливает ближний бой.</p>
+            <div class="module-card reveal">
+                <div class="module-header">
+                    <div class="module-name">Манипуляторы «Титан»</div>
+                    <div class="module-class">CLASS B</div>
+                </div>
+                <div class="module-stats">
+                    <div class="stat">МАССА: СРЕДНЯЯ</div>
+                    <div class="stat">СЛОТЫ: 2</div>
+                </div>
+                <div class="module-desc">Схват с врагом, швыряние объектов. Усиливает ближний бой. Скорость анимаций рук задаёт темп боя в упор.</div>
             </div>
         </div>
     </section>
 
-    <section class="section">
-        <h2>💥 АРСЕНАЛ ПЕРВОЙ ФАЗЫ 💥</h2>
-        <div class="arsenal">
-            <div class="weapon">[ ПЛАЗМОРЕЗ ]<br>Ближний/пробитие брони</div>
-            <div class="weapon">[ РАКЕТНЫЙ ВЕЕР ]<br>Залп 12 ракет</div>
-            <div class="weapon">[ ИМПУЛЬСНАЯ ПУШКА ]<br>Дальний/оглушение</div>
-            <div class="weapon">[ ТЕРМО-КОПЬЁ ]<br>Пробивает Колоссов</div>
+    <!-- АРСЕНАЛ -->
+    <section id="arsenal" class="section">
+        <div class="section-header reveal">
+            <div>
+                <div class="section-id">// 03_ВООРУЖЕНИЕ</div>
+                <div class="section-title">Арсенал первой фазы</div>
+            </div>
         </div>
-        <p style="margin-top: 2rem;"><i>— В реальном бою можно отстрелить сломанную руку и прикрепить новую из инвентаря. Решение за долю секунды.</i></p>
+        <p class="section-desc reveal">Каждое орудие открывает класс задач. Глубина приходит не из количества стволов, а из матрицы синергий сборки.</p>
+
+        <div class="module-grid">
+            <div class="module-card reveal">
+                <div class="module-header">
+                    <div class="module-name">Плазморез</div>
+                    <div class="module-class">БЛИЖНИЙ</div>
+                </div>
+                <div class="module-stats">
+                    <div class="stat">УРОН: ВЫСОКИЙ</div>
+                    <div class="stat">ТЕПЛО: +18</div>
+                </div>
+                <div class="module-desc">Непрерывная дуга, пробитие брони. Перегревает руки. Синергия с манипуляторами «Титан».</div>
+            </div>
+            <div class="module-card reveal">
+                <div class="module-header">
+                    <div class="module-name">Ракетный веер</div>
+                    <div class="module-class">ЗАЛП</div>
+                </div>
+                <div class="module-stats">
+                    <div class="stat">РАКЕТ: 12</div>
+                    <div class="stat">ЭНЕРГИЯ: 25</div>
+                </div>
+                <div class="module-desc">Залп по площади. Подавление групп и стад. Кассеты — расходник. Раскрывается на гусеницах.</div>
+            </div>
+            <div class="module-card reveal">
+                <div class="module-header">
+                    <div class="module-name">Импульсная пушка</div>
+                    <div class="module-class">ДАЛЬНИЙ</div>
+                </div>
+                <div class="module-stats">
+                    <div class="stat">ЭФФЕКТ: ОГЛУШ</div>
+                    <div class="stat">ОТКАТ: 6С</div>
+                </div>
+                <div class="module-desc">Контроль дистанции, оглушение узлов. Глохнет в электромагнитную бурю (зона 4).</div>
+            </div>
+            <div class="module-card reveal">
+                <div class="module-header">
+                    <div class="module-name">Термокопьё</div>
+                    <div class="module-class">БОСС</div>
+                </div>
+                <div class="module-stats">
+                    <div class="stat">УРОН: КОЛОСС</div>
+                    <div class="stat">ЭНЕРГИЯ: 40</div>
+                </div>
+                <div class="module-desc">Пробитие брони Колоссов, режим удержания. Ключ к боссам. Требует позиции и энергии.</div>
+            </div>
+        </div>
     </section>
 
-    <footer class="footer">
-        <p>MECH DREADNOUGHT © 2048 · HEPHAESTUS STUDIO · «Твоя сборка — твоя легенда»</p>
+    <!-- КАМПАНИЯ -->
+    <section id="campaign" class="section">
+        <div class="section-header reveal">
+            <div>
+                <div class="section-id">// 04_МАРШРУТ</div>
+                <div class="section-title">Операционные зоны</div>
+            </div>
+        </div>
+        <p class="section-desc reveal">Пять зон от дома к источнику угрозы. Смена состояния меняет не декорации, а поведение: работу оружия, замену в поле, доступные трофеи.</p>
+
+        <div class="zones-wrapper">
+            <div class="zone-item reveal">
+                <div class="zone-header">
+                    <div class="zone-name">Верфь Гефеста</div>
+                    <div class="zone-boss"><span>ХАБ</span> Обучение</div>
+                </div>
+                <p>Сборочные цеха, испытательный полигон, склад 150+ деталей.</p>
+                <div class="zone-rule">Бесплатная пересборка</div>
+            </div>
+            <div class="zone-item reveal">
+                <div class="zone-header">
+                    <div class="zone-name">Ржавые Пустоши</div>
+                    <div class="zone-boss"><span>БОСС АКТА I</span> «Недолитой»</div>
+                </div>
+                <p>Открытые равнины, патрули старых машин. Пыльная буря снижает видимость.</p>
+                <div class="zone-rule">Лут-детали с поля</div>
+            </div>
+            <div class="zone-item reveal">
+                <div class="zone-header">
+                    <div class="zone-name">Каньон Резака</div>
+                    <div class="zone-boss"><span>БОСС АКТА II</span> «Пастырь»</div>
+                </div>
+                <p>Узкие скальные коридоры, засады лёгких мехов. Обвалы рушат козырьки.</p>
+                <div class="zone-rule">Гусеницам тесно</div>
+            </div>
+            <div class="zone-item reveal">
+                <div class="zone-header">
+                    <div class="zone-name">Штормовой Берег</div>
+                    <div class="zone-boss"><span>БОСС АКТА II</span> «Громобой»</div>
+                </div>
+                <p>Прибрежная линия с электромагнитными бурями и платформами обороны.</p>
+                <div class="zone-rule">Глушит электронику</div>
+            </div>
+            <div class="zone-item reveal">
+                <div class="zone-header">
+                    <div class="zone-name">Крепость Колоссов</div>
+                    <div class="zone-boss"><span>ФИНАЛ</span> «Литейщица» / «Прародитель»</div>
+                </div>
+                <p>Производственные линии врага. Конвейеры льют подкрепления в бой.</p>
+                <div class="zone-rule" style="border-color: var(--alert-heat); color: var(--alert-heat);">Ремонт запрещён</div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-quote">«Твоя сборка — твоя легенда»</div>
+        <div class="footer-meta">MECH DREADNOUGHT © 2026 · HEPHAESTUS STUDIO · UNITY 6 LTS</div>
     </footer>
+
+    <script>
+        // КАСТОМНЫЙ КУРСОР
+        const dot = document.querySelector('.cursor-dot');
+        const ring = document.querySelector('.cursor-ring');
+        let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+
+        window.addEventListener('mousemove', e => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            dot.style.left = mouseX + 'px';
+            dot.style.top = mouseY + 'px';
+        });
+
+        function animateRing() {
+            ringX += (mouseX - ringX) * 0.15;
+            ringY += (mouseY - ringY) * 0.15;
+            ring.style.left = ringX + 'px';
+            ring.style.top = ringY + 'px';
+            requestAnimationFrame(animateRing);
+        }
+        animateRing();
+
+        document.querySelectorAll('a, .rule-card, .module-card, .zone-item').forEach(el => {
+            el.addEventListener('mouseenter', () => ring.classList.add('hover'));
+            el.addEventListener('mouseleave', () => ring.classList.remove('hover'));
+        });
+
+        // АНИМАЦИИ ПОЯВЛЕНИЯ ПРИ СКРОЛЛЕ
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => {
+            observer.observe(el);
+        });
+
+        // ИЗМЕНЕНИЕ ХЕДЕРА ПРИ СКРОЛЛЕ
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+    </script>
 </body>
 </html>

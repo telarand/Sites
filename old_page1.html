@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <!-- Адаптивный viewport для мобильных устройств -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>CHRONO COMMANDOS | Тактический хроно-шутер</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* ---------- БАЗОВЫЕ СТИЛИ (адаптированы) ---------- */
+        body {
+            margin: 0;
+            font-family: 'Orbitron', sans-serif;
+            background: #0a0a1a url('grid-pattern.png');
+            color: #00f3ff;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        .header {
+            background: linear-gradient(to bottom, rgba(10, 20, 40, 0.95), transparent);
+            padding: 2rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid #00f3ff;
+            position: relative;
+            z-index: 2;
+        }
+        .nav {
+            display: flex;
+            flex-wrap: wrap;          /* перенос ссылок на мобильных */
+            justify-content: center;
+            gap: 0.8rem 2rem;
+        }
+        .nav a {
+            color: #00f3ff;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            padding: 0.4rem 0.2rem;   /* увеличенная область касания */
+            transition: color 0.2s, text-shadow 0.2s, border-bottom 0.2s;
+            border-bottom: 1px solid transparent;
+        }
+        .nav a:hover {
+            color: #ffffff;
+            text-shadow: 0 0 8px #00f3ff;
+            border-bottom-color: #00f3ff;
+        }
+        .nav a:active {
+            color: #ffffff;
+        }
+        .hero {
+            height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            background: url('chrono-hero-bg.jpg') center/cover no-repeat;
+            position: relative;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 20, 40, 0.8);
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            padding: 1.5rem;
+            max-width: 800px;
+        }
+        .hero h1 {
+            font-size: 4rem;
+            margin: 0;
+            text-shadow: 0 0 10px #00f3ff, 0 0 20px #0088ff;
+            letter-spacing: 4px;
+            line-height: 1.1;
+        }
+        .hero p {
+            font-size: 1.5rem;
+            margin-top: 1rem;
+            margin-bottom: 2rem;
+            color: #c0f0ff;
+        }
+        .section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        .feature-card {
+            background: rgba(0, 30, 60, 0.6);
+            padding: 2rem;
+            border: 1px solid #00f3ff;
+            border-radius: 5px;
+            backdrop-filter: blur(2px);
+            transition: 0.2s;
+        }
+        .feature-card:hover {
+            background: rgba(0, 60, 100, 0.7);
+            border-color: #88ffff;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+        }
+        .screenshots {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+        .screenshot {
+            background: #001a33;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #00f3ff;
+            color: #aaddff;
+            text-align: center;
+            padding: 0.5rem;
+            transition: 0.2s;
+        }
+        .screenshot:hover {
+            border-color: #88ffff;
+            background: #002a4a;
+        }
+        .footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            border-top: 1px solid #00f3ff;
+            font-size: 0.8rem;
+            color: #88ddff;
+        }
+
+        /* ---------- СТИЛИЗОВАННАЯ КНОПКА НАЗАД (хроно-стиль) ---------- */
+        .back-link {
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: 0.9rem 2.4rem;
+            background: transparent;
+            border: 2px solid #00f3ff;
+            color: #00f3ff;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            border-radius: 0;          /* строгий тактический стиль */
+            transition: 0.3s;
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+            text-shadow: 0 0 5px #00f3ff;
+        }
+        .back-link:hover {
+            background: #00f3ff;
+            color: #0a0a1a;
+            border-color: #ffffff;
+            box-shadow: 0 0 30px #00f3ff;
+            text-shadow: none;
+        }
+        .back-link:active {
+            background: #00aacc;
+            border-color: #ffffff;
+            color: #0a0a1a;
+        }
+
+        /* ---------- АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ (≤900px) ---------- */
+        @media screen and (max-width: 900px) {
+            .hero h1 {
+                font-size: 3.2rem;
+            }
+            .hero p {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* ---------- АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ (≤768px) ---------- */
+        @media screen and (max-width: 768px) {
+            .header {
+                padding: 1.2rem 0.5rem;
+            }
+            .nav {
+                gap: 0.5rem 1.2rem;
+            }
+            .nav a {
+                font-size: 0.8rem;
+                letter-spacing: 1px;
+                padding: 0.5rem 0.2rem;
+            }
+
+            .hero {
+                height: 70vh;
+            }
+            .hero h1 {
+                font-size: 2.5rem;
+                letter-spacing: 2px;
+            }
+            .hero p {
+                font-size: 1rem;
+                margin-top: 0.8rem;
+                margin-bottom: 1.5rem;
+            }
+            .back-link {
+                padding: 0.7rem 1.8rem;
+                font-size: 0.9rem;
+                letter-spacing: 2px;
+            }
+
+            .section {
+                padding: 3rem 1.2rem;
+            }
+            .section h2 {
+                font-size: 1.8rem !important;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;   /* карточки в столбик */
+                gap: 1.5rem;
+            }
+            .feature-card {
+                padding: 1.5rem;
+            }
+
+            .screenshots {
+                grid-template-columns: 1fr;   /* один в ряд */
+                gap: 1rem;
+            }
+            .screenshot {
+                height: 160px;
+            }
+        }
+
+        /* ---------- МАЛЕНЬКИЕ ТЕЛЕФОНЫ (≤480px) ---------- */
+        @media screen and (max-width: 480px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            .hero p {
+                font-size: 0.9rem;
+            }
+            .back-link {
+                padding: 0.6rem 1.4rem;
+                font-size: 0.8rem;
+            }
+
+            .nav a {
+                font-size: 0.7rem;
+            }
+
+            .section h2 {
+                font-size: 1.5rem !important;
+            }
+
+            .screenshot {
+                height: 140px;
+            }
+        }
+
+        /* ---------- ПЛАНШЕТЫ В ПОРТРЕТЕ (769-1024px) ---------- */
+        @media screen and (min-width: 769px) and (max-width: 1024px) {
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+            .hero p {
+                font-size: 1.1rem;
+            }
+            .section {
+                padding: 4rem 1.5rem;
+            }
+            .screenshots {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* ---------- МИКРО-ПРАВКИ ---------- */
+        .section h2 {
+            font-size: 2rem;
+            margin-top: 0;
+            word-break: break-word;
+        }
+        .feature-card h3 {
+            margin-top: 0;
+            color: #aaffff;
+        }
+        /* убираем кнопку-ссылку, которая была в исходном коде, заменяем на стилизованную */
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <a href="#about">Миссия</a>
+            <a href="#equipment">Экипировка</a>
+            <a href="#screenshots">Кадры</a>
+            <a href="#pre-order">Предзаказ</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>CHRONO COMMANDOS</h1>
+            <p>Будущее — это поле боя. Прошлое — ваше оружие.</p>
+            <!-- Стилизованная кнопка операции (оставлена как была, но можно улучшить) -->
+            <button style="background: #00f3ff; color: #0a0a1a; border: 2px solid #00f3ff; padding: 0.9rem 2.4rem; font-size: 1.1rem; margin-top: 1rem; cursor: pointer; font-family: 'Orbitron'; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; border-radius: 0; transition: 0.2s; box-shadow: 0 0 10px #00f3ff;">Присоединиться к операции</button>
+            <!-- Вместо второй кнопки со ссылкой — стилизованная ссылка назад -->
+            <div style="margin-top: 1rem;">
+                <a href="index.html" class="back-link">← Назад к прямоугольникам</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="section">
+        <h2>Миссия "Хронос"</h2>
+        <p style="font-size: 1.1rem; max-width: 800px;">2045 год. Человечество на грани исчезновения. Раса Кронофагов пожирает временные линии, стирая нас из истории. Ваш отряд — последняя надежда. Используйте экспериментальные хроно-костюмы, чтобы сражаться в разных эпохах и уничтожить источник вторжения.</p>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>Тактическое сканирование</h3>
+                <p>Замораживайте время на 5 секунд для планирования атак и координации с отрядом.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Фазовая телепортация</h3>
+                <p>Мгновенно перемещайтесь по полю боя, используя временные разрывы.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Временные петли</h3>
+                <p>Создавайте тактические ловушки, зацикливая гранаты и другие предметы.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="screenshots" class="section">
+        <h2>Хроно-зона операций</h2>
+        <div class="screenshots">
+            <div class="screenshot">[ИЗОБРАЖЕНИЕ: Отряд в хроно-костюмах в древнем храме]</div>
+            <div class="screenshot">[ИЗОБРАЖЕНИЕ: Интерфейс тактического сканирования]</div>
+            <div class="screenshot">[ИЗОБРАЖЕНИЕ: Бой с Кронофагом в современном городе]</div>
+            <div class="screenshot">[ИЗОБРАЖЕНИЕ: Временная аномалия в действии]</div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>CHRONO COMMANDOS © 2045 КОРПУС ВРЕМЕННОЙ ОБОРОНЫ</p>
+        <p>Все хронологические нарушения отслеживаются и караются по закону.</p>
+    </footer>
+</body>
+</html>

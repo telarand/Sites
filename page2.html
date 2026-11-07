@@ -2,350 +2,561 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <!-- Адаптивный viewport для мобильных устройств -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SANDS OF WAR | Две эпохи. Одна судьба.</title>
-    <!-- Подключаем Google Fonts: Cinzel -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Spectral:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
     <style>
-        /* ---------- БАЗОВЫЕ СТИЛИ (с адаптивными улучшениями) ---------- */
-        body {
+        :root {
+            --parchment: #F4E4BC;
+            --umber: #8C6D46;
+            --dark-saffron: #5C4A30;
+            --past-blue: #92B0C1;
+            --present-terracotta: #A9815D;
+            --gold: #E9C46A;
+            --gold-glow: rgba(233, 196, 106, 0.6);
+            --void-ash: #1A1612;
+        }
+
+        * {
             margin: 0;
-            font-family: 'Cinzel', serif;
-            background: #f4e4bc;
-            color: #8c6d46;
-            background-image: url('parchment-texture.jpg'); /* фон сохраняется */
-            background-attachment: fixed;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .header {
-            padding: 2rem 1rem;
-            text-align: center;
-            border-bottom: 2px solid #8c6d46;
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Spectral', serif;
+            background-color: var(--void-ash);
+            color: var(--parchment);
+            overflow-x: hidden;
         }
-        .nav {
+
+        /* Глобальный шум для эффекта папируса */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.4;
+        }
+
+        /* Навигация */
+        header {
+            position: fixed;
+            top: 0; width: 100%;
+            z-index: 1000;
+            padding: 2rem 5rem;
             display: flex;
-            flex-wrap: wrap;          /* перенос ссылок на мобильных */
-            justify-content: center;
-            gap: 0.8rem 2rem;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.4s ease, padding 0.4s ease;
         }
-        .nav a {
-            color: #8c6d46;
+
+        header.scrolled {
+            background: rgba(26, 22, 18, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 1rem 5rem;
+            border-bottom: 1px solid rgba(233, 196, 106, 0.2);
+        }
+
+        .logo {
+            font-family: 'Cinzel', serif;
+            font-weight: 800;
+            font-size: 1.4rem;
+            letter-spacing: 4px;
+            color: var(--parchment);
+            text-transform: uppercase;
+        }
+        .logo span { color: var(--gold); }
+
+        nav ul {
+            display: flex;
+            gap: 3rem;
+            list-style: none;
+        }
+
+        nav a {
+            color: var(--parchment);
             text-decoration: none;
-            font-weight: bold;
-            font-size: 1.1rem;
-            padding: 0.4rem 0.2rem;   /* область касания */
-            transition: color 0.2s, border-bottom 0.2s;
-            border-bottom: 1px solid transparent;
+            font-family: 'Cinzel', serif;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: color 0.3s;
+            position: relative;
         }
-        .nav a:hover {
-            color: #5c4a30;
-            border-bottom-color: #8c6d46;
+
+        nav a:hover { color: var(--gold); }
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px; left: 0;
+            width: 0; height: 1px;
+            background: var(--gold);
+            transition: width 0.3s;
         }
-        .nav a:active {
-            color: #5c4a30;
-        }
+        nav a:hover::after { width: 100%; }
+
+        /* HERO - Кинематографичный экран */
         .hero {
-            height: 80vh;
+            height: 100vh;
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            background: url('desert-palace.jpg') center/cover no-repeat;
-            position: relative;
+            overflow: hidden;
         }
-        .hero::before {
-            content: '';
+
+        .hero-bg {
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(244, 228, 188, 0.7);
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            /* Используем качественное изображение пустыни/руин */
+            background-image: url('https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?q=80&w=2400&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.4) contrast(1.2) saturate(0.8);
+            z-index: 1;
         }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, rgba(26, 22, 18, 0.8) 100%);
+            z-index: 2;
+        }
+
         .hero-content {
             position: relative;
-            z-index: 2;
-            padding: 1.5rem;
-            max-width: 800px;
+            z-index: 3;
+            max-width: 1000px;
+            padding: 0 2rem;
         }
+
         .hero h1 {
-            font-size: 4rem;
-            margin: 0;
-            color: #5c4a30;
-            text-shadow: 2px 2px 4px rgba(140, 109, 70, 0.3);
-            line-height: 1.1;
+            font-family: 'Cinzel', serif;
+            font-size: clamp(3rem, 9vw, 7rem);
+            font-weight: 800;
+            color: var(--parchment);
+            text-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            letter-spacing: 15px;
+            margin-bottom: 2rem;
+            line-height: 1;
         }
+
         .hero p {
-            font-size: 1.5rem;
-            margin: 1.5rem 0 2rem;
-            color: #6b4f37;
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            color: var(--gold);
+            font-style: italic;
+            letter-spacing: 3px;
+            margin-bottom: 3rem;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.8);
         }
-        .section {
-            padding: 4rem 2rem;
+
+        .cta-btn {
+            display: inline-block;
+            padding: 1.2rem 4rem;
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--parchment);
+            text-decoration: none;
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%); /* ААА срез */
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-btn span {
+            position: relative;
+            z-index: 2;
+            transition: color 0.4s;
+        }
+
+        .cta-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--gold);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .cta-btn:hover::before { transform: scaleX(1); }
+        .cta-btn:hover span { color: var(--void-ash); }
+        .cta-btn:hover { box-shadow: 0 0 30px var(--gold-glow); }
+
+        /* Раздел Эпох */
+        #eras {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .era-col {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: flex 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .era-col:hover { flex: 1.3; }
+
+        .era-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.8s ease;
+        }
+
+        .era-past .era-bg {
+            /* Изображение цветущего прошлого/синих оттенков */
+            background-image: url('https://images.unsplash.com/photo-1605647540924-852290f6b0d5?q=80&w=2000&auto=format&fit=crop');
+            filter: brightness(0.6) sepia(0.3) hue-rotate(180deg) saturate(0.8);
+        }
+
+        .era-present .era-bg {
+            /* Изображение руин/пустыни */
+            background-image: url('https://images.unsplash.com/photo-1473580044384-7ba9967e16a0?q=80&w=2000&auto=format&fit=crop');
+            filter: brightness(0.6) sepia(0.5) hue-rotate(-20deg) saturate(0.8);
+        }
+
+        .era-col:hover .era-bg {
+            transform: scale(1.05);
+        }
+
+        .era-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(26, 22, 18, 0.3) 0%, rgba(26, 22, 18, 0.9) 100%);
+        }
+
+        .era-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 2rem;
+            max-width: 500px;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.6s ease;
+        }
+
+        .era-col:hover .era-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .era-content h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .era-past .era-content h2 { color: var(--past-blue); text-shadow: 0 0 20px rgba(146, 176, 193, 0.5); }
+        .era-present .era-content h2 { color: var(--present-terracotta); text-shadow: 0 0 20px rgba(169, 129, 93, 0.5); }
+
+        .era-content p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #d1c5a5;
+        }
+
+        /* Золотой шов */
+        .time-seam {
+            position: absolute;
+            top: 0; left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 100%;
+            background: var(--gold);
+            box-shadow: 0 0 20px 5px var(--gold-glow);
+            z-index: 10;
+        }
+
+        /* Механики */
+        #chronometer {
+            padding: 10rem 2rem;
+            text-align: center;
+            background: var(--void-ash);
+            position: relative;
+        }
+
+        .section-header {
+            margin-bottom: 6rem;
+        }
+
+        .section-header h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 3rem;
+            color: var(--parchment);
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            color: var(--gold);
+            font-style: italic;
+            font-size: 1.2rem;
+        }
+
+        .mechanics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
             max-width: 1200px;
             margin: 0 auto;
         }
-        .era-comparison {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-top: 3rem;
+
+        .mech-card {
+            background: rgba(244, 228, 188, 0.03);
+            border: 1px solid rgba(244, 228, 188, 0.1);
+            padding: 3rem 2rem;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 90% 100%, 0% 100%); /* Срез угла ААА */
         }
-        .era {
-            padding: 2rem;
-            border: 2px solid #8c6d46;
-            border-radius: 5px;
-            text-align: center;
-            background: rgba(232, 217, 185, 0.5);
+
+        .mech-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--gold);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
         }
-        .era.past { background: rgba(146, 176, 193, 0.2); }
-        .era.present { background: rgba(169, 129, 93, 0.2); }
-        .sandglass-features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
+
+        .mech-card:hover {
+            background: rgba(244, 228, 188, 0.08);
+            border-color: var(--gold);
+            transform: translateY(-10px);
         }
-        .feature {
-            text-align: center;
-            padding: 1.5rem;
-            background: rgba(232, 217, 185, 0.5);
-            border: 1px solid #8c6d46;
-            border-radius: 4px;
+
+        .mech-card:hover::after { transform: scaleX(1); }
+
+        .mech-icon {
+            font-size: 2.5rem;
+            color: var(--gold);
+            margin-bottom: 2rem;
+            display: inline-block;
         }
-        .screenshots {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-            margin-top: 3rem;
+
+        .mech-card h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--parchment);
+            letter-spacing: 2px;
         }
-        .screenshot {
-            height: 200px;
-            border: 2px solid #8c6d46;
+
+        .mech-card p {
+            color: #a09376;
+            line-height: 1.7;
+        }
+
+        /* Система следов (Параллакс) */
+        #traces {
+            min-height: 80vh;
             display: flex;
             align-items: center;
-            justify-content: center;
-            background: #e8d9b9;
-            color: #5c4a30;
-            padding: 0.5rem;
-            text-align: center;
+            position: relative;
+            padding: 8rem 2rem;
+            background-attachment: fixed; /* Параллакс эффект */
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-image: url('https://images.unsplash.com/photo-1509316785289-025f5b846b35?q=80&w=2400&auto=format&fit=crop');
         }
-        .footer {
+
+        #traces::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to right, rgba(26, 22, 18, 0.95) 0%, rgba(26, 22, 18, 0.6) 100%);
+        }
+
+        .traces-content {
+            position: relative;
+            z-index: 2;
+            max-width: 600px;
+        }
+
+        .traces-content h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 3.5rem;
+            color: var(--gold);
+            margin-bottom: 2rem;
+            line-height: 1.2;
+        }
+
+        .traces-content p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            color: #d1c5a5;
+        }
+
+        /* Footer */
+        footer {
+            background: #0F0C0A;
             text-align: center;
-            padding: 2rem 1rem;
-            border-top: 2px solid #8c6d46;
+            padding: 4rem 2rem;
+            border-top: 1px solid rgba(233, 196, 106, 0.2);
+        }
+
+        footer p {
+            font-family: 'Spectral', serif;
             font-style: italic;
-            color: #6b4f37;
+            color: var(--umber);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.8;
         }
 
-        /* ---------- СТИЛИЗОВАННАЯ КНОПКА НАЗАД (песочная/античная тематика) ---------- */
-        .back-link {
-            display: inline-block;
-            margin-top: 0.5rem;
-            padding: 0.8rem 2.2rem;
-            background: transparent;
-            border: 2px solid #8c6d46;
-            color: #8c6d46;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 1.1rem;
-            letter-spacing: 2px;
-            border-radius: 40px;
-            transition: 0.3s;
-            box-shadow: 0 2px 8px rgba(140, 109, 70, 0.2);
-            text-shadow: 1px 1px 0 rgba(255, 255, 240, 0.5);
-        }
-        .back-link:hover {
-            background: #8c6d46;
-            color: #f4e4bc;
-            border-color: #5c4a30;
-            box-shadow: 0 4px 12px rgba(140, 109, 70, 0.4);
-            text-shadow: none;
-        }
-        .back-link:active {
-            background: #5c4a30;
-            border-color: #5c4a30;
-            color: #f4e4bc;
+        /* Анимации */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1), transform 1s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        /* ---------- АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ (≤900px) ---------- */
-        @media screen and (max-width: 900px) {
-            .hero h1 {
-                font-size: 3.2rem;
-            }
-            .hero p {
-                font-size: 1.3rem;
-            }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        /* ---------- АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ (≤768px) ---------- */
-        @media screen and (max-width: 768px) {
-            .header {
-                padding: 1.2rem 0.5rem;
-            }
-            .nav {
-                gap: 0.5rem 1.2rem;
-            }
-            .nav a {
-                font-size: 0.9rem;
-            }
-
-            .hero {
-                height: 70vh;
-            }
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            .hero p {
-                font-size: 1.1rem;
-                margin: 1rem 0 1.5rem;
-            }
-            .back-link {
-                padding: 0.6rem 1.8rem;
-                font-size: 0.95rem;
-            }
-
-            .section {
-                padding: 3rem 1.2rem;
-            }
-            .section h2 {
-                font-size: 1.8rem !important;
-            }
-
-            .era-comparison {
-                grid-template-columns: 1fr;   /* столбик на мобильных */
-                gap: 1.5rem;
-            }
-            .era {
-                padding: 1.5rem;
-            }
-
-            .sandglass-features {
-                grid-template-columns: 1fr;
-                gap: 1.2rem;
-            }
-
-            .screenshots {
-                grid-template-columns: 1fr;
-            }
-            .screenshot {
-                height: 180px;
-            }
-        }
-
-        /* ---------- МАЛЕНЬКИЕ ТЕЛЕФОНЫ (≤480px) ---------- */
-        @media screen and (max-width: 480px) {
-            .hero h1 {
-                font-size: 2rem;
-            }
-            .hero p {
-                font-size: 1rem;
-            }
-            .back-link {
-                padding: 0.5rem 1.4rem;
-                font-size: 0.85rem;
-            }
-
-            .nav a {
-                font-size: 0.8rem;
-            }
-
-            .section h2 {
-                font-size: 1.5rem !important;
-            }
-
-            .screenshot {
-                height: 160px;
-            }
-        }
-
-        /* ---------- ПЛАНШЕТЫ В ПОРТРЕТЕ (769-1024px) ---------- */
-        @media screen and (min-width: 769px) and (max-width: 1024px) {
-            .hero h1 {
-                font-size: 2.8rem;
-            }
-            .hero p {
-                font-size: 1.2rem;
-            }
-            .section {
-                padding: 3.5rem 1.5rem;
-            }
-        }
-
-        /* ---------- МИКРО-ПРАВКИ ---------- */
-        .section h2 {
-            font-size: 2rem;
-            text-align: center;
-            margin-top: 0;
-            word-break: break-word;
-        }
-        .era h3 {
-            color: #5c4a30;
-        }
-        .feature h3 {
-            color: #5c4a30;
-        }
-        .footer p {
-            margin: 0;
+        /* Адаптивность */
+        @media (max-width: 900px) {
+            header { padding: 1.5rem; }
+            nav ul { gap: 1.5rem; }
+            .mechanics-grid { grid-template-columns: 1fr; }
+            #eras { flex-direction: column; }
+            .time-seam { width: 100%; height: 2px; top: 50%; left: 0; transform: translateY(-50%); }
         }
     </style>
 </head>
 <body>
-    <header class="header">
-        <nav class="nav">
-            <a href="#legend">Легенда</a>
-            <a href="#eras">Эпохи</a>
-            <a href="#device">Хронометр</a>
-            <a href="#gallery">Хроники</a>
+
+    <header id="header">
+        <div class="logo">Sands <span>of</span> War</div>
+        <nav>
+            <ul>
+                <li><a href="#eras">Эпохи</a></li>
+                <li><a href="#chronometer">Хронометр</a></li>
+                <li><a href="#traces">Следы</a></li>
+            </ul>
         </nav>
     </header>
 
+    <!-- HERO -->
     <section class="hero">
-        <div class="hero-content">
+        <div class="hero-bg"></div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content reveal">
             <h1>SANDS OF WAR</h1>
             <p>Прошлое определяет настоящее. Вы определите будущее.</p>
-            <!-- Стилизованная кнопка вместо обычной ссылки -->
-            <a href="index.html" class="back-link">← Назад к прямоугольникам</a>
+            <a href="#eras" class="cta-btn"><span>Войти в мир Ашарата</span></a>
         </div>
     </section>
 
-    <section id="legend" class="section">
-        <h2>ЛЕГЕНДА ПЕСОЧНОГО ХРОНОМЕТРА</h2>
-        <p style="text-align: center; max-width: 800px; margin: 0 auto;">Вы — искатель приключений, нашедший древний артефакт, позволяющий путешествовать между величественным прошлым и разрушенным настоящим одной земли. Ваши действия в прошлом создают настоящее. Выберите мудро.</p>
-    </section>
-
-    <section id="eras" class="section">
-        <div class="era-comparison">
-            <div class="era past">
-                <h3>ВЕЛИКОЕ ПРОШЛОЕ</h3>
-                <p>Цветущие города, магия, древние цивилизации в зените славы. Но опасности подстерегают в тени дворцов.</p>
-                <div class="screenshot" style="margin-top: 1rem;">[ИЗОБРАЖЕНИЕ: Процветающий город с дворцами и садами]</div>
-            </div>
-            <div class="era present">
-                <h3>РАЗРУШЕННОЕ НАСТОЯЩЕЕ</h3>
-                <p>Пустыня, руины, выжившие банды. Мир, который вы создали своими действиями в прошлом.</p>
-                <div class="screenshot" style="margin-top: 1rem;">[ИЗОБРАЖЕНИЕ: Те же руины под палящим солнцем]</div>
+    <!-- ЭПОХИ (Split Screen с золотым швом) -->
+    <section id="eras">
+        <div class="era-col era-past">
+            <div class="era-bg"></div>
+            <div class="era-overlay"></div>
+            <div class="era-content">
+                <h2>Великое Прошлое</h2>
+                <p>Золотой век империи Ашарат. Цветущие сады Кемета, дворцы Ир-Саффы и магия речного песка. Но в тени колоннад зреет угроза культа Пустого Часа.</p>
             </div>
         </div>
-    </section>
-
-    <section id="device" class="section">
-        <h2>ПЕСОЧНЫЙ ХРОНОМЕТР</h2>
-        <div class="sandglass-features">
-            <div class="feature">
-                <h3>ФАЗОВЫЙ ПЕРЕХОД</h3>
-                <p>Мгновенно переключайтесь между эпохами, используя изменения ландшафта.</p>
-            </div>
-            <div class="feature">
-                <h3>ВРЕМЕННОЙ ТОЛЧОК</h3>
-                <p>Выбрасывайте врагов из их временной эпохи для тактического преимущества.</p>
-            </div>
-            <div class="feature">
-                <h3>ЗАМОРОЗКА ВРЕМЕНИ</h3>
-                <p>Заморозьте объект в его временном состоянии, пока вы перемещаетесь.</p>
+        <div class="time-seam"></div>
+        <div class="era-col era-present">
+            <div class="era-bg"></div>
+            <div class="era-overlay"></div>
+            <div class="era-content">
+                <h2>Разрушенное Настоящее</h2>
+                <p>1247 год Песчаного Исчисления. Бескрайняя пустошь, полузасыпанные руины и банды Шакалов, воюющие за каплю воды. Мир, который вы создали.</p>
             </div>
         </div>
     </section>
 
-    <footer class="footer">
-        <p>"Время подобно песку — удержишь слишком крепко, и оно утечет сквозь пальцы" — Древняя мудрость хранителей Хронометра</p>
+    <!-- МЕХАНИКИ ХРОНОМЕТРА -->
+    <section id="chronometer">
+        <div class="section-header reveal">
+            <h2>Песочный Хронометр</h2>
+            <p>Время — конечный песок. Удержишь слишком крепко, и оно утечет сквозь пальцы.</p>
+        </div>
+        
+        <div class="mechanics-grid">
+            <div class="mech-card reveal">
+                <div class="mech-icon">⌛</div>
+                <h3>Фазовый переход</h3>
+                <p>Мгновенно переключайтесь между эпохами в зонах швов. Мост прошлого становится пропастью настоящего, а сухое русло — полноводной рекой.</p>
+            </div>
+            <div class="mech-card reveal">
+                <div class="mech-icon">≋</div>
+                <h3>Временной толчок</h3>
+                <p>Выбрасывайте врагов из их временной эпохи. Обитатель прошлого рассыпается в прах за секунды, а житель настоящего застывает, выплавленный из времени.</p>
+            </div>
+            <div class="mech-card reveal">
+                <div class="mech-icon">❖</div>
+                <h3>Заморозка времени</h3>
+                <p>Фиксируйте объекты в текущем состоянии. Падающая колонна станет мостом, снаряд в воздухе — платформой, а поток воды — стеной.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- СИСТЕМА СЛЕДОВ -->
+    <section id="traces">
+        <div class="traces-content reveal">
+            <h2>Система Следов</h2>
+            <p>Ваши действия в прошлом создают настоящее. Выкопанный колодец превратит руину в оазис, но даст воду и банде Рустама.</p>
+            <p>Настоящее — это черновик, который игрок редактирует прошлым. К финалу карта игры станет портретом ваших решений.</p>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>«Время подобно песку — удержишь слишком крепко, и оно утечет сквозь пальцев.»<br>— Древняя мудрость Хранителей.</p>
     </footer>
+
+    <script>
+        // Скрытие фона при скролле
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('header');
+            if (window.scrollY > 50) header.classList.add('scrolled');
+            else header.classList.remove('scrolled');
+        });
+
+        // Анимации появления (Reveal on scroll)
+        const reveals = document.querySelectorAll('.reveal');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.15 });
+
+        reveals.forEach(rev => observer.observe(rev));
+    </script>
 </body>
 </html>

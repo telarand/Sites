@@ -2,354 +2,602 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <!-- Улучшаем viewport для мобильных, но сохраняем оригинальный -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>COLOSSEUM OVERLORD · Хозяин арены</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;900&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cinzel+Decorative:wght@700;900&family=Spectral:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Добавлен defer, чтобы скрипты грузились асинхронно и не блокировали страницу -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
     <style>
-        /* ---------- БАЗОВЫЕ СТИЛИ (с минимальными адаптивными доработками) ---------- */
+        :root {
+            --void: #0a0604;
+            --basalt: #15100a;
+            --bronze: #3d2b1b;
+            --gold-mat: #c5a059;
+            --gold-bright: #f0d28a;
+            --parchment: #e8d5a8;
+            --blood: #6e2018;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
         body {
-            margin: 0;
-            font-family: 'Roboto Condensed', sans-serif;
-            background: #6b3f2b;
-            color: #fcedc5;
-            background-image: repeating-linear-gradient(45deg, #7a4e2e 0px, #7a4e2e 2px, #865a36 2px, #865a36 8px);
+            background-color: var(--void);
+            color: var(--parchment);
+            font-family: 'Spectral', serif;
+            overflow-x: hidden;
+            cursor: none;
         }
-        .sand {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="40" r="3" fill="%23dba959" opacity="0.3"/><circle cx="70" cy="20" r="2" fill="%23e6c285" opacity="0.3"/><circle cx="45" cy="80" r="4" fill="%23c49a6c" opacity="0.3"/></svg>');
-            background-size: 120px 120px;
-            opacity: 0.3;
-            pointer-events: none;
-            z-index: 0;
+
+        /* Зерно */
+        body::after {
+            content: ""; position: fixed; top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity="0.08"/></svg>');
+            pointer-events: none; z-index: 9999;
+            animation: grain 0.5s steps(1) infinite;
         }
-        .header {
-            padding: 2rem 1rem;
-            background: #4e2f1d;
-            border-bottom: 3px solid #e3b37c;
-            display: flex;
-            justify-content: center;
-            position: relative;
-            z-index: 2;
+        @keyframes grain {
+            0%, 100% { transform: translate(0, 0); }
+            10% { transform: translate(-5%, -5%); }
+            20% { transform: translate(-10%, 5%); }
+            30% { transform: translate(5%, -10%); }
+            40% { transform: translate(-5%, 15%); }
+            50% { transform: translate(-10%, 5%); }
+            60% { transform: translate(15%, 0); }
+            70% { transform: translate(0, 10%); }
+            80% { transform: translate(-15%, 0); }
+            90% { transform: translate(10%, 5%); }
         }
-        .nav {
-            display: flex;
-            flex-wrap: wrap;          /* перенос ссылок на узких экранах */
-            justify-content: center;
-            gap: 0.8rem 1.5rem;
+
+        .cursor {
+            position: fixed; width: 10px; height: 10px;
+            background: var(--gold-bright); border-radius: 50%;
+            mix-blend-mode: difference; pointer-events: none; z-index: 9998;
+            transition: transform 0.1s ease; transform: translate(-50%, -50%);
         }
-        .nav a {
-            color: #fcedc5;
-            text-decoration: none;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-family: 'Cinzel', serif;
-            letter-spacing: 3px;
-            font-size: 0.8rem;
-            padding: 0.4rem 0.2rem;   /* увеличиваем область касания */
-            transition: color 0.2s, text-shadow 0.2s;
-            border-bottom: 1px solid transparent;
+        .cursor-outline {
+            position: fixed; width: 40px; height: 40px;
+            border: 1px solid var(--gold-mat); border-radius: 50%;
+            pointer-events: none; z-index: 9998;
+            transition: transform 0.2s ease, width 0.3s, height 0.3s, border-color 0.3s;
+            transform: translate(-50%, -50%);
         }
-        .nav a:hover {
-            color: #ffe0a5;
-            border-bottom-color: #e3b37c;
+
+        /* Прелоадер */
+        #loader {
+            position: fixed; inset: 0; background: var(--void);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 10000;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
         }
-        .nav a:active {
-            color: #ffd98c;
+        #loader.hidden { opacity: 0; visibility: hidden; }
+        .loader-text {
+            font-family: 'Cinzel Decorative', serif; font-size: 2rem;
+            color: var(--gold-mat); letter-spacing: 4px;
+            animation: pulse 1.5s infinite;
         }
+        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+        /* Резервный стиль, если GSAP не загрузится */
+        .no-gsap .hero-tag, .no-gsap .hero h1, .no-gsap .hero p, .no-gsap .cta-group, .no-gsap .reveal {
+            opacity: 1 !important; transform: none !important;
+        }
+
+        header {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 100;
+            padding: 1.5rem 4rem; display: flex;
+            justify-content: space-between; align-items: center;
+            background: linear-gradient(to bottom, rgba(10, 6, 4, 0.9), transparent);
+            transition: padding 0.3s;
+        }
+        header.scrolled {
+            padding: 1rem 4rem; background: rgba(10, 6, 4, 0.95);
+            border-bottom: 1px solid rgba(197, 160, 89, 0.2); backdrop-filter: blur(10px);
+        }
+        .logo {
+            font-family: 'Cinzel Decorative', serif; font-size: 1.4rem;
+            color: var(--gold-bright); text-transform: uppercase; letter-spacing: 3px;
+        }
+        nav ul { display: flex; gap: 3rem; list-style: none; }
+        nav a {
+            color: var(--parchment); text-decoration: none;
+            font-family: 'Cinzel', serif; font-size: 0.85rem;
+            text-transform: uppercase; letter-spacing: 2px;
+            transition: color 0.3s; position: relative;
+        }
+        nav a:hover { color: var(--gold-bright); }
+        nav a::after {
+            content: ''; position: absolute; bottom: -5px; left: 0;
+            width: 0; height: 1px; background: var(--gold-bright); transition: width 0.3s;
+        }
+        nav a:hover::after { width: 100%; }
+
         .hero {
-            height: 80vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            background: url('colosseum-bg.jpg') center/cover no-repeat;
-            position: relative;
+            height: 100vh; display: flex; align-items: center;
+            position: relative; overflow: hidden;
         }
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(79, 44, 27, 0.75);
+        .hero-bg {
+            position: absolute; inset: 0;
+            background: url('https://images.unsplash.com/photo-1554188179-a3fc2ddb6d32?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;
+            filter: brightness(0.4) contrast(1.2) sepia(0.3);
+            transform: scale(1.1);
+        }
+        .hero-overlay {
+            position: absolute; inset: 0;
+            background: radial-gradient(circle at center, transparent 0%, var(--void) 90%),
+                        linear-gradient(to top, var(--void) 10%, transparent 50%);
         }
         .hero-content {
-            position: relative;
-            z-index: 3;
-            padding: 1rem;
+            position: relative; z-index: 2; width: 100%;
+            max-width: 1400px; margin: 0 auto; padding: 0 4rem;
+        }
+        .hero-tag {
+            font-family: 'Cinzel', serif; color: var(--gold-mat);
+            letter-spacing: 6px; font-size: 0.9rem; text-transform: uppercase;
+            margin-bottom: 1rem; opacity: 0; transform: translateY(20px);
         }
         .hero h1 {
-            font-family: 'Cinzel', serif;
-            font-size: 4.5rem;
-            margin: 0;
-            color: #ffddaa;
-            text-shadow: 6px 6px 0 #4f2c1a, 0 0 30px #ffb471;
-            letter-spacing: 8px;
-            line-height: 1.1;
+            font-family: 'Cinzel Decorative', serif;
+            font-size: clamp(3rem, 9vw, 8rem); line-height: 0.9;
+            color: transparent; -webkit-text-stroke: 1px var(--gold-mat);
+            background: linear-gradient(to bottom, var(--gold-bright), var(--bronze));
+            -webkit-background-clip: text; background-clip: text;
+            margin-bottom: 2rem; opacity: 0; transform: translateY(40px);
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.8));
         }
         .hero p {
-            font-size: 1.5rem;
-            color: #ffeac1;
-            margin: 1.5rem 0 0;
+            max-width: 600px; font-size: 1.25rem; line-height: 1.8;
+            margin-bottom: 3rem; color: rgba(232, 213, 168, 0.8);
+            opacity: 0; transform: translateY(20px);
         }
-        .section {
-            padding: 5rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 2;
+        .cta-group { display: flex; gap: 2rem; opacity: 0; transform: translateY(20px); }
+        .btn {
+            padding: 1.2rem 2.5rem; font-family: 'Cinzel', serif;
+            font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+            font-size: 0.9rem; text-decoration: none; transition: all 0.3s;
+            position: relative; overflow: hidden;
         }
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.8rem;
-            margin-top: 3rem;
+        .btn-primary {
+            background: var(--gold-mat); color: var(--void);
+            clip-path: polygon(0 0, 100% 0, 95% 100%, 0 100%);
         }
-        .tactic-card {
-            background: #dbb47a;
-            border: 3px solid #e3b37c;
-            padding: 2rem;
-            border-radius: 20px 5px 20px 5px;
-            box-shadow: 8px 8px 0 #5c3a25;
-            color: #1e130f;
+        .btn-primary:hover { background: var(--gold-bright); box-shadow: 0 0 30px rgba(197, 160, 89, 0.5); }
+        .btn-ghost { color: var(--parchment); border-bottom: 1px solid var(--gold-mat); }
+        .btn-ghost:hover { color: var(--gold-bright); }
+
+        section { padding: 8rem 4rem; position: relative; }
+        .section-header { margin-bottom: 5rem; max-width: 800px; }
+        .section-tag {
+            font-family: 'Cinzel', serif; color: var(--blood);
+            text-transform: uppercase; letter-spacing: 4px;
+            font-size: 0.85rem; margin-bottom: 1rem; display: block;
         }
-        .gladiator-showcase {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1.2rem;
-            margin-top: 2rem;
+        .section-title {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: clamp(2rem, 5vw, 4rem); color: var(--parchment); line-height: 1.1;
         }
-        .gladiator {
-            background: #ad7a55;
-            border: 2px solid #ffd29b;
-            height: 150px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #1f150e;
-            font-weight: bold;
-            border-radius: 12px;
-            padding: 0.5rem;
-            text-align: center;
-            font-size: 1rem;
-        }
-        .footer {
-            text-align: center;
-            padding: 2rem 1rem;
-            border-top: 3px solid #e3b37c;
-            background: #3f2417;
-            color: #f2dba5;
-            font-size: 0.8rem;
-        }
-        .back-link {
-            display: inline-block;
-            margin-top: 2rem;
-            padding: 0.8rem 2.2rem;
-            background: #b27a4c;
-            border: 2px solid #ffddb0;
-            color: #2d1d14;
-            text-decoration: none;
-            font-weight: bold;
-            border-radius: 50px;
-            transition: 0.2s;
-        }
-        .back-link:hover {
-            background: #efc48c;
-            border-color: white;
-            color: #1a0f0a;
-        }
-        .back-link:active {
-            background: #efc48c;
-            border-color: white;
-            color: #1a0f0a;
+        .section-desc {
+            margin-top: 1.5rem; font-size: 1.1rem;
+            line-height: 1.7; color: rgba(232, 213, 168, 0.6);
         }
 
-        /* ---------- АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ (≤900px) ---------- */
-        @media screen and (max-width: 900px) {
-            .hero h1 {
-                font-size: 3.8rem;
-                letter-spacing: 6px;
-            }
-            .hero p {
-                font-size: 1.3rem;
-            }
+        .mech-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+        .mech-card {
+            background: linear-gradient(145deg, rgba(21, 16, 10, 0.9), rgba(10, 6, 4, 0.95));
+            border: 1px solid rgba(61, 43, 27, 0.5); padding: 2.5rem 2rem;
+            transition: all 0.4s; position: relative; min-height: 320px;
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .mech-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold-mat), transparent);
+            opacity: 0; transition: opacity 0.4s;
+        }
+        .mech-card:hover {
+            border-color: var(--gold-mat);
+            background: linear-gradient(145deg, rgba(61, 43, 27, 0.4), rgba(21, 16, 10, 0.9));
+            transform: translateY(-8px);
+        }
+        .mech-card:hover::before { opacity: 1; }
+        .mech-icon { font-size: 2.5rem; color: var(--blood); margin-bottom: 2rem; }
+        .mech-card h3 {
+            font-family: 'Cinzel', serif; font-size: 1.5rem;
+            color: var(--gold-bright); margin-bottom: 1rem; letter-spacing: 1px;
+        }
+        .mech-card p { font-size: 0.95rem; color: rgba(232, 213, 168, 0.6); }
+        .mech-stats {
+            margin-top: 2rem; padding-top: 1rem;
+            border-top: 1px solid rgba(61, 43, 27, 0.5);
+            display: flex; justify-content: space-between;
+            font-family: 'Cinzel', serif; font-size: 0.8rem; color: var(--gold-mat);
         }
 
-        /* ---------- АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ (≤768px) ---------- */
-        @media screen and (max-width: 768px) {
-            .header {
-                padding: 1.2rem 0.5rem;
-            }
-            .nav {
-                gap: 0.5rem 1rem;
-            }
-            .nav a {
-                font-size: 0.7rem;
-                letter-spacing: 2px;
-                padding: 0.5rem 0.2rem;
-            }
+        .glad-section {
+            background: #0e0906;
+            border-top: 1px solid rgba(61, 43, 27, 0.3);
+            border-bottom: 1px solid rgba(61, 43, 27, 0.3);
+        }
+        .glad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+        .glad-card {
+            height: 500px; position: relative; overflow: hidden;
+            border: 1px solid rgba(61, 43, 27, 0.3);
+        }
+        .glad-bg {
+            position: absolute; inset: 0; background-size: cover; background-position: center;
+            filter: grayscale(80%) brightness(0.4) contrast(1.1);
+            transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.6s;
+        }
+        .glad-card:hover .glad-bg {
+            transform: scale(1.1); filter: grayscale(0%) brightness(0.6) contrast(1.2);
+        }
+        .glad-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, var(--void) 10%, transparent 70%);
+        }
+        .glad-content {
+            position: absolute; bottom: 0; left: 0; right: 0; padding: 2rem;
+            transform: translateY(20px); transition: transform 0.4s;
+        }
+        .glad-card:hover .glad-content { transform: translateY(0); }
+        .glad-class {
+            font-family: 'Cinzel', serif; font-size: 0.8rem;
+            color: var(--gold-mat); text-transform: uppercase; letter-spacing: 2px;
+        }
+        .glad-name {
+            font-family: 'Cinzel Decorative', serif; font-size: 2rem;
+            color: var(--parchment); margin: 0.5rem 0;
+        }
+        .glad-desc {
+            font-size: 0.9rem; color: rgba(232, 213, 168, 0.5);
+            max-height: 0; overflow: hidden;
+            transition: max-height 0.4s ease, margin-top 0.4s ease;
+        }
+        .glad-card:hover .glad-desc { max-height: 100px; margin-top: 0.5rem; }
 
-            .hero {
-                height: 70vh;
-            }
-            .hero h1 {
-                font-size: 2.8rem;
-                letter-spacing: 3px;
-                text-shadow: 4px 4px 0 #4f2c1a, 0 0 20px #ffb471;
-            }
-            .hero p {
-                font-size: 1.1rem;
-                margin-top: 1rem;
-            }
-            .back-link {
-                margin-top: 1.5rem;
-                padding: 0.6rem 1.8rem;
-                font-size: 0.8rem;
-            }
+        .faction-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+        .faction-card {
+            background: linear-gradient(90deg, rgba(21, 16, 10, 0.9), rgba(10, 6, 4, 0.8));
+            border-left: 4px solid var(--blood); padding: 2rem;
+            display: flex; align-items: center; justify-content: space-between;
+            transition: all 0.3s;
+        }
+        .faction-card:hover {
+            background: linear-gradient(90deg, rgba(61, 43, 27, 0.4), rgba(10, 6, 4, 0.8));
+            transform: translateX(10px);
+        }
+        .faction-card:nth-child(1) { border-color: #b08d57; }
+        .faction-card:nth-child(2) { border-color: #8a5a44; }
+        .faction-card:nth-child(3) { border-color: #556b2f; }
+        .faction-card:nth-child(4) { border-color: var(--blood); }
+        .faction-info h3 {
+            font-family: 'Cinzel', serif; font-size: 1.8rem;
+            color: var(--gold-bright); margin-bottom: 0.5rem;
+        }
+        .faction-info p { color: rgba(232, 213, 168, 0.6); font-size: 0.95rem; }
+        .faction-icon { font-size: 3rem; color: rgba(197, 160, 89, 0.2); }
 
-            .section {
-                padding: 3rem 1.2rem;
-            }
-            .section h2 {
-                font-size: 1.8rem !important;   /* переопределяем inline-стиль */
-                border-bottom-width: 3px !important;
-            }
-
-            .card-grid {
-                grid-template-columns: 1fr;   /* карточки в столбик */
-                gap: 1.5rem;
-            }
-            .tactic-card {
-                padding: 1.6rem;
-                box-shadow: 6px 6px 0 #5c3a25;
-            }
-
-            .gladiator-showcase {
-                grid-template-columns: repeat(2, 1fr); /* два в ряд */
-                gap: 1rem;
-            }
-            .gladiator {
-                height: 130px;
-                font-size: 0.9rem;
-            }
+        footer {
+            background: var(--basalt); padding: 6rem 4rem 2rem;
+            text-align: center; border-top: 2px solid var(--bronze);
+        }
+        .footer-logo {
+            font-family: 'Cinzel Decorative', serif; font-size: 3rem;
+            color: transparent; -webkit-text-stroke: 1px var(--gold-mat); margin-bottom: 2rem;
+        }
+        .footer-desc { color: rgba(232, 213, 168, 0.4); max-width: 500px; margin: 0 auto 3rem; }
+        .footer-copy {
+            margin-top: 3rem; padding-top: 2rem;
+            border-top: 1px solid rgba(61, 43, 27, 0.5);
+            font-family: 'Cinzel', serif; font-size: 0.8rem;
+            color: rgba(232, 213, 168, 0.3); text-transform: uppercase; letter-spacing: 2px;
         }
 
-        /* ---------- МАЛЕНЬКИЕ ТЕЛЕФОНЫ (≤480px) ---------- */
-        @media screen and (max-width: 480px) {
-            .hero h1 {
-                font-size: 2rem;
-                letter-spacing: 2px;
-                text-shadow: 3px 3px 0 #4f2c1a, 0 0 15px #ffb471;
-            }
-            .hero p {
-                font-size: 1rem;
-                padding: 0 0.5rem;
-            }
-            .back-link {
-                padding: 0.5rem 1.4rem;
-                font-size: 0.7rem;
-            }
-
-            .nav a {
-                font-size: 0.65rem;
-                letter-spacing: 1.5px;
-            }
-
-            .section h2 {
-                font-size: 1.5rem !important;
-            }
-
-            .gladiator-showcase {
-                grid-template-columns: 1fr;   /* один в ряд */
-            }
-            .gladiator {
-                height: 120px;
-            }
+        @media (max-width: 1024px) {
+            .mech-grid, .glad-grid { grid-template-columns: repeat(2, 1fr); }
+            .faction-grid { grid-template-columns: 1fr; }
+            section { padding: 6rem 2rem; }
+            header { padding: 1.5rem 2rem; }
+            nav { display: none; }
+            body { cursor: auto; }
+            .cursor, .cursor-outline { display: none; }
         }
-
-        /* ---------- ПЛАНШЕТЫ В ПОРТРЕТЕ (769-1024px) ---------- */
-        @media screen and (min-width: 769px) and (max-width: 1024px) {
-            .hero h1 {
-                font-size: 3.2rem;
-            }
-            .hero p {
-                font-size: 1.2rem;
-            }
-            .section {
-                padding: 4rem 1.5rem;
-            }
-        }
-
-        /* ---------- МИКРО-ПРАВКИ ДЛЯ АККУРАТНОСТИ ---------- */
-        .section h2 {
-            font-size: 2.2rem;
-            border-bottom: 4px solid #e3b37c;
-            display: inline-block;
-            margin-top: 0;
-            word-break: break-word;
-        }
-        .tactic-card h3 {
-            margin-top: 0;
-            color: #2b1a12;
-            font-size: 1.5rem;
-        }
-        .gladiator br {
-            margin-bottom: 5px;
+        @media (max-width: 768px) {
+            .mech-grid, .glad-grid { grid-template-columns: 1fr; }
+            .hero-content { padding: 0 2rem; }
+            .cta-group { flex-direction: column; gap: 1rem; }
         }
     </style>
 </head>
 <body>
-    <div class="sand"></div>
-    <header class="header">
-        <nav class="nav">
-            <a href="#school">Школа</a>
-            <a href="#deck">Колода</a>
-            <a href="#arena">Арена</a>
-            <a href="#factions">Фракции</a>
+
+    <div class="cursor"></div>
+    <div class="cursor-outline"></div>
+
+    <div id="loader">
+        <div class="loader-text">ARENA MASTERS</div>
+    </div>
+
+    <header id="header">
+        <div class="logo">OVERLORD</div>
+        <nav>
+            <ul>
+                <li><a href="#deck">Колода</a></li>
+                <li><a href="#school">Школа</a></li>
+                <li><a href="#factions">Фракции</a></li>
+                <li><a href="#wishlist" class="btn-primary" style="padding: 0.5rem 1rem; font-size: 0.7rem;">В Wishlists</a></li>
+            </ul>
         </nav>
     </header>
 
     <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-overlay"></div>
         <div class="hero-content">
-            <h1>COLOSSEUM OVERLORD</h1>
-            <p>Собери команду. Куй легенды. Властвуй.</p>
-            <a href="index.html" class="back-link">← Назад к прямоугольникам</a>
-        </div>
-    </section>
-
-    <section id="deck" class="section">
-        <!-- inline-стиль управляется через CSS с !important в медиазапросах -->
-        <h2 style="font-size: 2.2rem; border-bottom: 4px solid #e3b37c; display: inline-block;">🃏 ТАКТИЧЕСКАЯ КОЛОДА</h2>
-        <p>В реальном времени вы тянете карты: «Рывок», «Щит», «Ловушка», «Добивание». Комбинируйте карты у разных гладиаторов для мощных комбо.</p>
-        <div class="card-grid">
-            <div class="tactic-card">
-                <h3>РЫВОК</h3>
-                <p>Боец быстро сближается и наносит двойной урон.</p>
-            </div>
-            <div class="tactic-card">
-                <h3>ФАЛАНГА</h3>
-                <p>Все союзники получают блок на 5 секунд.</p>
-            </div>
-            <div class="tactic-card">
-                <h3>КРОВАВЫЙ КРИК</h3>
-                <p>Активирует ярость — увеличение урона при низком здоровье.</p>
+            <div class="hero-tag">Тактический менеджер гладиаторов</div>
+            <h1>COLOSSEUM<br>OVERLORD</h1>
+            <p>Империя, где колизей значит больше, чем сенат. Вы — ланиста. Вы не выходите на песок, вы управляете кровью. Тяните карты приказов в реальном времени, комбинируйте классы и заставьте толпу скандировать ваше имя.</p>
+            <div class="cta-group">
+                <a href="#deck" class="btn btn-primary">Войти на песок</a>
+                <a href="#trailer" class="btn btn-ghost">Смотреть трейлер</a>
             </div>
         </div>
     </section>
 
-    <section class="section">
-        <h2>⚔️ ГЛАДИАТОРЫ ШКОЛЫ</h2>
-        <div class="gladiator-showcase">
-            <div class="gladiator">[ МИРМИЛЛОН ]<br>Меч и щит</div>
-            <div class="gladiator">[ РЕТИАРИЙ ]<br>Сеть и трезубец</div>
-            <div class="gladiator">[ СЕКУТОР ]<br>Тяжёлый шлем</div>
-            <div class="gladiator">[ ЭССЕДАРИЙ ]<br>Колесница</div>
+    <section id="deck">
+        <div class="section-header reveal">
+            <span class="section-tag">Механика боя · Реальное время</span>
+            <h2 class="section-title">Карта — это приказ</h2>
+            <p class="section-desc">Без карты гладиатор держит стойку. Инициатива принадлежит командиру. Бюджет внимания — ваш главный ресурс, а связки бойцов — ваш единственный путь к победе.</p>
+        </div>
+        
+        <div class="mech-grid">
+            <div class="mech-card reveal">
+                <div>
+                    <i class="fas fa-khanda mech-icon"></i>
+                    <h3>РЫВОК</h3>
+                    <p>Стремительное сближение с целью и удвоенный урон первого удара. Идеален для вскрытия обороны.</p>
+                </div>
+                <div class="mech-stats">
+                    <span>3 Внимания</span>
+                    <span>20 Вынос.</span>
+                </div>
+            </div>
+            <div class="mech-card reveal">
+                <div>
+                    <i class="fas fa-shield-halved mech-icon"></i>
+                    <h3>ФАЛАНГА</h3>
+                    <p>Командный блок: все союзники получают защиту на 5 секунд. Держит ответку после Рывка.</p>
+                </div>
+                <div class="mech-stats">
+                    <span>5 Внимания</span>
+                    <span>Откат 14с</span>
+                </div>
+            </div>
+            <div class="mech-card reveal">
+                <div>
+                    <i class="fas fa-skull mech-icon"></i>
+                    <h3>ДОБИВАНИЕ</h3>
+                    <p>Беспощадный критический удар по падшему или оглушённому. Завершает карьеру врага.</p>
+                </div>
+                <div class="mech-stats">
+                    <span>4 Внимания</span>
+                    <span>Игнор. блока</span>
+                </div>
+            </div>
+            <div class="mech-card reveal">
+                <div>
+                    <i class="fas fa-fire-flame-curved mech-icon"></i>
+                    <h3>КРОВАВЫЙ КРИК</h3>
+                    <p>Ярость: урон бойца растёт с потерей здоровья. Обращает слабость в силу.</p>
+                </div>
+                <div class="mech-stats">
+                    <span>2 Внимания</span>
+                    <span>Откат 25с</span>
+                </div>
+            </div>
         </div>
     </section>
 
-    <footer class="footer">
-        <p>COLOSSEUM OVERLORD · ARENA MASTERS · MMXXIV</p>
+    <section id="school" class="glad-section">
+        <div class="section-header reveal">
+            <span class="section-tag">Рост состава · Синергии</span>
+            <h2 class="section-title">Инструменты песка</h2>
+            <p class="section-desc">Шесть классов, каждый со своей ролью. Сеть открывает цель для Добивания, Фаланга держит ответку для Рывка. Побеждает не сильнейший боец, а правильная пара в правильную секунду.</p>
+        </div>
+
+        <div class="glad-grid">
+            <div class="glad-card reveal">
+                <div class="glad-bg" style="background-image: url('https://images.unsplash.com/photo-1597381673801-2b3d49c3cdd9?q=80&w=1000&auto=format&fit=crop');"></div>
+                <div class="glad-overlay"></div>
+                <div class="glad-content">
+                    <span class="glad-class">Линия фронта</span>
+                    <h3 class="glad-name">МИРМИЛЛОН</h3>
+                    <p class="glad-desc">Меч и щит. Универсальный адресат карт. Лучший баланс атаки и защиты для удержания строя.</p>
+                </div>
+            </div>
+            <div class="glad-card reveal">
+                <div class="glad-bg" style="background-image: url('https://images.unsplash.com/photo-1566041510396-99f4d7a4c4a2?q=80&w=1000&auto=format&fit=crop');"></div>
+                <div class="glad-overlay"></div>
+                <div class="glad-content">
+                    <span class="glad-class">Контроль</span>
+                    <h3 class="glad-name">РЕТИАРИЙ</h3>
+                    <p class="glad-desc">Сеть и трезубец. Обездвиживает врага и снимает стойку — идеальный разыгрывающий для Добивания.</p>
+                </div>
+            </div>
+            <div class="glad-card reveal">
+                <div class="glad-bg" style="background-image: url('https://images.unsplash.com/photo-1574722772518-5e9b6c3a3f5a?q=80&w=1000&auto=format&fit=crop');"></div>
+                <div class="glad-overlay"></div>
+                <div class="glad-content">
+                    <span class="glad-class">Стена отряда</span>
+                    <h3 class="glad-name">СЕКУТОР</h3>
+                    <p class="glad-desc">Тяжёлый шлем и меч. Принимает урон на себя, но шлем ограничивает обзор — уязвим к манёврам.</p>
+                </div>
+            </div>
+            <div class="glad-card reveal">
+                <div class="glad-bg" style="background-image: url('https://images.unsplash.com/photo-1604616792954-b23c8d1c2c0e?q=80&w=1000&auto=format&fit=crop');"></div>
+                <div class="glad-overlay"></div>
+                <div class="glad-content">
+                    <span class="glad-class">Фланги</span>
+                    <h3 class="glad-name">ЭССЕДАРИЙ</h3>
+                    <p class="glad-desc">Колесница. Разрывает строй на разгоне, но беспомощен в узких местах без пространства.</p>
+                </div>
+            </div>
+            <div class="glad-card reveal">
+                <div class="glad-bg" style="background-image: url('https://images.unsplash.com/photo-1583512603805-3cc6b274e6c0?q=80&w=1000&auto=format&fit=crop');"></div>
+                <div class="glad-overlay"></div>
+                <div class="glad-content">
+                    <span class="glad-class">Дистанция</span>
+                    <h3 class="glad-name">ВЕЛИТ</h3>
+                    <p class="glad-desc">Дротик и лёгкий щит. Снимает цели без сближения, но запас дротиков ограничен.</p>
+                </div>
+            </div>
+            <div class="glad-card reveal">
+                <div class="glad-bg" style="background-image: url('https://images.unsplash.com/photo-1516548655649-1d0e4b3d4c1f?q=80&w=1000&auto=format&fit=crop');"></div>
+                <div class="glad-overlay"></div>
+                <div class="glad-content">
+                    <span class="glad-class">Анти-наскок</span>
+                    <h3 class="glad-name">ГОПЛОМАХ</h3>
+                    <p class="glad-desc">Копьё и малый щит. Встречает Рывок и проход колесницы копьём. Медленный, но непробиваемый спереди.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="factions">
+        <div class="section-header reveal">
+            <span class="section-tag">Соперники · Рубежные бои</span>
+            <h2 class="section-title">Империя арены</h2>
+            <p class="section-desc">Соперники наказывают за привычки. Фламма давит тяжёлым фронтом, Пурпур читает колоду. Смена арены меняет правила: рельеф решает сильнее прокачки.</p>
+        </div>
+
+        <div class="faction-grid">
+            <div class="faction-card reveal">
+                <div class="faction-info">
+                    <h3>Дом Фламмы</h3>
+                    <p>Столица · Тяжёлый фронт, связка «Рывок — Фаланга». Давит затяжным боем.</p>
+                </div>
+                <i class="fas fa-chess-rook faction-icon"></i>
+            </div>
+            <div class="faction-card reveal">
+                <div class="faction-info">
+                    <h3>Дом Медного Быка</h3>
+                    <p>Пески Вольных · Ярость и размен ударами. Кормится вашими ошибками.</p>
+                </div>
+                <i class="fas fa-bullseye faction-icon"></i>
+            </div>
+            <div class="faction-card reveal">
+                <div class="faction-info">
+                    <h3>Дом Аквилы</h3>
+                    <p>Горная Лига · Колесницы на склонах, разрыв строя на разгоне.</p>
+                </div>
+                <i class="fas fa-mountain faction-icon"></i>
+            </div>
+            <div class="faction-card reveal">
+                <div class="faction-info">
+                    <h3>Школа Пурпура</h3>
+                    <p>Имперский Чемпионат · Элита всех классов, легендарное оружие ложи.</p>
+                </div>
+                <i class="fas fa-crown faction-icon"></i>
+            </div>
+        </div>
+    </section>
+
+    <footer id="wishlist">
+        <div class="footer-logo">MMXXVII</div>
+        <p class="footer-desc">Ранний доступ в Steam — Декабрь 2027. Премиум-модель без покупок силы. Косметика легендарных доспехов.</p>
+        <a href="#" class="btn btn-primary">Добавить в Wishlists</a>
+        <div class="footer-copy">COLOSSEUM OVERLORD · ARENA MASTERS · ALL RIGHTS RESERVED</div>
     </footer>
+
+    <script>
+        // Надежная инициализация
+        function initSite() {
+            const loader = document.getElementById('loader');
+            if (loader) {
+                loader.classList.add('hidden');
+            }
+
+            // Если библиотека GSAP загрузилась успешно с CDN
+            if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+                gsap.registerPlugin(ScrollTrigger);
+
+                gsap.to('.hero-tag', { opacity: 1, y: 0, duration: 1, delay: 0.2 });
+                gsap.to('.hero h1', { opacity: 1, y: 0, duration: 1.2, delay: 0.4, ease: 'power3.out' });
+                gsap.to('.hero p', { opacity: 1, y: 0, duration: 1, delay: 0.8 });
+                gsap.to('.cta-group', { opacity: 1, y: 0, duration: 1, delay: 1 });
+
+                // Кастомный курсор
+                const cursor = document.querySelector('.cursor');
+                const cursorOutline = document.querySelector('.cursor-outline');
+                window.addEventListener('mousemove', (e) => {
+                    gsap.to(cursor, { duration: 0.1, x: e.clientX, y: e.clientY });
+                    gsap.to(cursorOutline, { duration: 0.3, x: e.clientX, y: e.clientY });
+                });
+                document.querySelectorAll('a, .mech-card, .glad-card, .faction-card').forEach(el => {
+                    el.addEventListener('mouseenter', () => {
+                        gsap.to(cursorOutline, { width: 60, height: 60, borderColor: '#f0d28a', duration: 0.3 });
+                    });
+                    el.addEventListener('mouseleave', () => {
+                        gsap.to(cursorOutline, { width: 40, height: 40, borderColor: '#c5a059', duration: 0.3 });
+                    });
+                });
+
+                // Анимации при скролле
+                gsap.utils.toArray('.reveal').forEach(el => {
+                    gsap.from(el, {
+                        opacity: 0,
+                        y: 50,
+                        duration: 1,
+                        ease: 'power2.out',
+                        scrollTrigger: {
+                            trigger: el,
+                            start: 'top 85%'
+                        }
+                    });
+                });
+
+                // Параллакс героя
+                gsap.to('.hero-bg', {
+                    yPercent: 30,
+                    ease: 'none',
+                    scrollTrigger: {
+                        trigger: '.hero',
+                        start: 'top top',
+                        end: 'bottom top',
+                        scrub: true
+                    }
+                });
+            } else {
+                // Резервный вариант: если CDN заблокирован или недоступен
+                document.body.classList.add('no-gsap');
+                console.log('GSAP не загрузился, включен резервный CSS режим');
+            }
+
+            // Шапка при скролле
+            window.addEventListener('scroll', () => {
+                const header = document.getElementById('header');
+                if (window.scrollY > 50) header.classList.add('scrolled');
+                else header.classList.remove('scrolled');
+            });
+        }
+
+        // Запускаем инициализацию сразу после построения DOM
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initSite);
+        } else {
+            initSite();
+        }
+        
+        // Страховка: скрыть прелоадер через 3 секунды в любом случае
+        setTimeout(() => {
+            const loader = document.getElementById('loader');
+            if (loader && !loader.classList.contains('hidden')) {
+                initSite();
+            }
+        }, 3000);
+    </script>
 </body>
 </html>

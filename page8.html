@@ -2,309 +2,465 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <!-- Адаптивный viewport — основа мобильной вёрстки -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ABYSS VANGUARD · Зов бездны</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Source+Code+Pro:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
-        /* ---------- БАЗОВЫЕ СТИЛИ (сохранены, добавлены адаптивные правила) ---------- */
-        body {
-            margin: 0;
-            font-family: 'Montserrat', sans-serif;
-            background: #00131c;
-            color: #7fd1e0;
-            background: radial-gradient(circle at 20% 30%, #002a3a, #000a12);
+        :root {
+            --void: #000a12;
+            --water: #002a3a;
+            --panel: #03232e;
+            --sonar: #37e0ff;
+            --beacon: #1e90a0;
+            --foam: #b3f0ff;
+            --biolum: #00aacc;
+            --alarm: #ff5a4d;
         }
-        .water-ripple {
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--void);
+            color: var(--foam);
+            overflow-x: hidden;
+            cursor: none; /* Custom cursor */
+        }
+
+        /* Custom Spotlight Cursor */
+        .cursor {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: url('data:image/svg+xml;utf8,<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle cx="30" cy="30" r="10" fill="none" stroke="%2300aacc" opacity="0.1" stroke-width="1"/><circle cx="150" cy="80" r="20" fill="none" stroke="%2300aacc" opacity="0.08" stroke-width="1"/><circle cx="70" cy="170" r="15" fill="none" stroke="%2300aacc" opacity="0.12" stroke-width="1"/></svg>');
-            background-size: 180px 180px;
-            opacity: 0.3;
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(55, 224, 255, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: screen;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s;
+        }
+
+        /* Canvas Background */
+        #marine-snow {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
             pointer-events: none;
         }
-        .header {
-            padding: 1.8rem 1rem;
-            background: #021016;
-            border-bottom: 2px solid #1e90a0;
-            display: flex;
-            justify-content: center;
-            position: relative;
+
+        /* Vignette & CRT overlay */
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle, transparent 50%, var(--void) 100%);
+            pointer-events: none;
             z-index: 2;
+            box-shadow: inset 0 0 200px var(--void);
         }
-        .nav {
+        .scanlines {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(transparent 50%, rgba(0, 0, 0, 0.1) 50%);
+            background-size: 100% 4px;
+            z-index: 3;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        /* Diegetic HUD - Depth Gauge */
+        .hud {
+            position: fixed;
+            top: 0; right: 0;
+            height: 100vh;
+            width: 80px;
+            border-left: 1px solid var(--water);
+            background: rgba(0, 10, 18, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 10;
             display: flex;
-            flex-wrap: wrap;          /* перенос ссылок на мобильных */
-            justify-content: center;
-            gap: 0.8rem 1.5rem;
-        }
-        .nav a {
-            color: #9fd9e6;
-            text-decoration: none;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-            letter-spacing: 3px;
-            padding: 0.4rem 0.2rem;   /* увеличенная область касания */
-            transition: color 0.2s, border-bottom 0.2s;
-            border-bottom: 1px solid transparent;
-        }
-        .nav a:hover {
-            border-bottom-color: #1e90a0;
-            color: #caf2fe;
-        }
-        .nav a:active {
-            color: #caf2fe;
-        }
-        .hero {
-            height: 80vh;
-            display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            text-align: center;
-            background: url('abyss-trench.jpg') center/cover no-repeat;
-            position: relative;
+            justify-content: space-between;
+            padding: 2rem 0;
+            font-family: 'Share Tech Mono', monospace;
         }
-        .hero::before {
+
+        .hud-block {
+            text-align: center;
+            color: var(--beacon);
+            transition: color 0.3s;
+        }
+
+        .hud-value {
+            font-size: 1.2rem;
+            color: var(--foam);
+            display: block;
+            text-shadow: 0 0 5px var(--beacon);
+        }
+
+        .hud-label {
+            font-size: 0.6rem;
+            letter-spacing: 1px;
+            opacity: 0.7;
+        }
+
+        .hud-bar {
+            width: 4px;
+            height: 40vh;
+            background: var(--panel);
+            position: relative;
+            overflow: hidden;
+        }
+        .hud-fill {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: var(--sonar);
+            box-shadow: 0 0 10px var(--sonar);
+            height: 0%;
+            transition: height 0.1s linear, background 0.3s;
+        }
+
+        body.critical .hud-value { color: var(--alarm); text-shadow: 0 0 10px var(--alarm); }
+        body.critical .hud-fill { background: var(--alarm); box-shadow: 0 0 15px var(--alarm); }
+        body.critical .overlay { box-shadow: inset 0 0 100px var(--alarm); animation: glitch 0.2s infinite; }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        /* Navigation */
+        header {
+            position: fixed;
+            top: 0; left: 0;
+            width: calc(100% - 80px);
+            padding: 1.5rem 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+            background: linear-gradient(to bottom, rgba(0,10,18,0.9), transparent);
+        }
+
+        .logo {
+            font-family: 'Share Tech Mono', monospace;
+            color: var(--foam);
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border: 1px solid var(--beacon);
+            padding: 5px 15px;
+            background: rgba(3, 35, 46, 0.5);
+        }
+        .logo span { color: var(--sonar); }
+
+        nav { display: flex; gap: 2rem; }
+        nav a {
+            color: var(--foam);
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1.5px;
+            font-weight: 500;
+            position: relative;
+            transition: color 0.3s;
+        }
+        nav a:hover { color: var(--sonar); }
+        nav a::after {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(to bottom, rgba(0,40,60,0.7), rgba(0,10,20,0.9));
+            bottom: -5px; left: 0;
+            width: 0; height: 1px;
+            background: var(--sonar);
+            transition: width 0.3s;
         }
-        .hero-content {
+        nav a:hover::after { width: 100%; }
+
+        /* Hero */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             position: relative;
             z-index: 2;
-            padding: 1rem;
         }
+
         .hero h1 {
-            font-size: 4rem;
-            margin: 0;
-            font-weight: 900;
-            color: #b3f0ff;
-            text-shadow: 0 0 20px #0088aa, 0 0 60px #004466;
-            line-height: 1.1;
+            font-size: clamp(3.5rem, 10vw, 8rem);
+            font-weight: 700;
+            color: var(--foam);
+            text-shadow: 0 0 20px var(--beacon), 0 0 80px var(--water);
+            line-height: 0.9;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            text-align: center;
+            position: relative;
         }
+        .hero h1::before {
+            content: 'ABYSS VANGUARD';
+            position: absolute;
+            top: 0; left: 50%;
+            transform: translateX(-50%);
+            color: var(--alarm);
+            opacity: 0;
+            mix-blend-mode: screen;
+            animation: rgb-split 4s infinite;
+            clip-path: inset(0 0 90% 0);
+        }
+
+        @keyframes rgb-split {
+            0%, 100% { opacity: 0; transform: translateX(-50%); }
+            50% { opacity: 0.4; transform: translate(-52%, 0); }
+        }
+
         .hero p {
-            font-size: 1.3rem;
-            font-family: 'Source Code Pro', monospace;
-            color: #caf2fe;
-            margin: 1.5rem 0 0;
+            font-family: 'Share Tech Mono', monospace;
+            color: var(--beacon);
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            margin-top: 1.5rem;
+            opacity: 0.9;
         }
+
+        /* Interactive Sonar (Fixed) */
+        .sonar-wrap {
+            margin-top: 4rem;
+            width: 300px; height: 300px;
+            position: relative;
+            border-radius: 50%;
+            overflow: hidden; /* Ограничивает луч внутри круга */
+            border: 1px solid var(--beacon);
+            background: radial-gradient(circle, rgba(0, 42, 58, 0.6) 0%, var(--void) 90%);
+            box-shadow: 0 0 30px rgba(55, 224, 255, 0.1), inset 0 0 30px rgba(0, 0, 0, 0.9);
+        }
+
+        /* Сетка и кольца */
+        .sonar-grid {
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(circle, transparent 30%, rgba(55, 224, 255, 0.15) 31%, transparent 32%),
+                radial-gradient(circle, transparent 60%, rgba(55, 224, 255, 0.15) 61%, transparent 62%),
+                linear-gradient(rgba(55, 224, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(55, 224, 255, 0.05) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 30px 30px, 30px 30px;
+            pointer-events: none;
+        }
+
+        /* Плавный луч */
+        .sweep {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 200%; height: 200%;
+            transform-origin: center;
+            background: conic-gradient(
+                from 0deg, 
+                rgba(55, 224, 255, 0.8) 0deg, 
+                rgba(55, 224, 255, 0.2) 20deg, 
+                transparent 60deg, 
+                transparent 360deg
+            );
+            animation: sweep-anim 4s linear infinite;
+        }
+        @keyframes sweep-anim {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .ping-blip {
+            position: absolute;
+            width: 8px; height: 8px;
+            background: var(--alarm);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--alarm), 0 0 20px var(--alarm);
+            top: 35%; left: 65%;
+            opacity: 0;
+            animation: blip 4s linear infinite;
+        }
+        .ping-blip:nth-child(2) {
+            top: 60%; left: 40%;
+            background: var(--foam);
+            box-shadow: 0 0 10px var(--foam), 0 0 20px var(--foam);
+            animation-delay: 1s;
+        }
+        .ping-blip:nth-child(3) {
+            top: 70%; left: 70%;
+            background: var(--alarm);
+            box-shadow: 0 0 10px var(--alarm), 0 0 20px var(--alarm);
+            animation-delay: 2s;
+        }
+
+        @keyframes blip {
+            0% { opacity: 0; transform: scale(1); }
+            15% { opacity: 1; transform: scale(1.5); }
+            30% { opacity: 0; transform: scale(1); }
+            100% { opacity: 0; }
+        }
+
+        /* Sections */
         .section {
-            padding: 5rem 2rem;
+            padding: 8rem 4rem;
             max-width: 1200px;
             margin: 0 auto;
             position: relative;
-            z-index: 2;
+            z-index: 4;
         }
-        .pressure-card {
-            background: rgba(4, 30, 44, 0.7);
-            backdrop-filter: blur(3px);
-            border: 1px solid #2aa0b0;
-            padding: 2rem;
-            margin: 1.5rem 0;
-            border-radius: 8px;
-        }
-        .abyss-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.8rem;
-            margin-top: 3rem;
-        }
-        .threat {
-            background: #05222b;
-            border: 1px solid #3fbbc0;
-            padding: 1.5rem;
-            border-bottom: 6px solid #008f9c;
-            text-align: center;
-        }
-        .sonar-img {
-            background: #01161e;
-            border-radius: 50%;
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 1rem;
-            border: 2px solid #37e0ff;
+
+        .section-title {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 2.5rem;
+            color: var(--foam);
+            text-transform: uppercase;
+            margin-bottom: 3rem;
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            color: #9feaff;
+            gap: 1rem;
         }
-        /* класс для сетки форм жизни — вместо inline-стилей */
-        .life-grid {
+        .section-title::before {
+            content: '';
+            width: 40px; height: 2px;
+            background: var(--alarm);
+        }
+
+        /* Diegetic UI Panel */
+        .panel {
+            background: rgba(3, 35, 46, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--water);
+            padding: 2.5rem;
+            position: relative;
+        }
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: -1px; left: -1px;
+            width: 20px; height: 20px;
+            border-top: 2px solid var(--sonar);
+            border-left: 2px solid var(--sonar);
+        }
+        .panel::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; right: -1px;
+            width: 20px; height: 20px;
+            border-bottom: 2px solid var(--sonar);
+            border-right: 2px solid var(--sonar);
+        }
+
+        /* Mechanics */
+        .grid-3 {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 1.5rem;
-            margin-top: 2rem;
         }
-        .life-card {
-            background: #03232e;
-            padding: 1.5rem 0.5rem;
+        .mech-card {
+            background: rgba(0, 10, 18, 0.6);
+            border: 1px solid var(--panel);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.4s ease;
+            overflow: hidden;
+        }
+        .mech-card:hover {
+            border-color: var(--sonar);
+            background: rgba(0, 42, 58, 0.4);
+            transform: translateY(-5px);
+        }
+        .mech-card h3 {
+            font-family: 'Share Tech Mono', monospace;
+            color: var(--sonar);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+        .mech-card.danger:hover { border-color: var(--alarm); box-shadow: 0 0 20px rgba(255, 90, 77, 0.1); }
+        .mech-card.danger h3 { color: var(--alarm); }
+
+        /* Bestiary */
+        .grid-3-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+        .creature {
+            border: 1px solid var(--water);
+            background: rgba(0,0,0,0.3);
+            padding: 2rem;
+            position: relative;
+            transition: transform 0.3s;
+        }
+        .creature:hover { transform: scale(1.02); }
+        .creature::before {
+            content: 'UNKNOWN_ENTITY';
+            position: absolute;
+            top: 10px; right: 10px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.6rem;
+            color: var(--alarm);
+            opacity: 0.5;
+        }
+        .creature h4 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+        .creature p { color: #8ca9b2; font-size: 0.95rem; line-height: 1.5; }
+        .creature span { font-family: 'Share Tech Mono', monospace; color: var(--biolum); font-size: 0.8rem; }
+
+        footer {
+            padding: 4rem;
             text-align: center;
-            border: 1px solid #3fbbc0;
-            border-radius: 8px;
-            color: #caf2fe;
+            border-top: 1px solid var(--water);
+            background: var(--void);
+            margin-right: 80px;
         }
-        .footer {
-            text-align: center;
-            padding: 2rem 1rem;
-            border-top: 1px solid #1e90a0;
-            background: #010f15;
-            color: #6ba5b0;
-            font-size: 0.8rem;
-        }
-        a {
-            color: #aaf0ff;
-        }
-        .abyss-link {
-            background: #003f4f;
-            padding: 0.8rem 2rem;
-            border: 1px solid #4fd0e0;
-            display: inline-block;
-            margin-top: 2rem;
-            text-decoration: none;
-            border-radius: 40px;
-            transition: 0.3s;
-        }
-        .abyss-link:hover {
-            background: #1e90a0;
-            color: black;
-            box-shadow: 0 0 30px #00bcd4;
-        }
-        .abyss-link:active {
-            background: #1e90a0;
-            color: black;
-            box-shadow: 0 0 30px #00bcd4;
+        footer p {
+            font-family: 'Share Tech Mono', monospace;
+            color: var(--beacon);
+            opacity: 0.7;
         }
 
-        /* ---------- АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ (≤900px) ---------- */
-        @media screen and (max-width: 900px) {
-            .hero h1 {
-                font-size: 3.2rem;
-            }
-            .hero p {
-                font-size: 1.1rem;
-            }
-        }
-
-        /* ---------- АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ (≤768px) ---------- */
-        @media screen and (max-width: 768px) {
-            .header {
-                padding: 1.2rem 0.5rem;
-            }
-            .nav {
-                gap: 0.5rem 1rem;
-            }
-            .nav a {
-                font-size: 0.7rem;
-                letter-spacing: 2px;
-                padding: 0.5rem 0.2rem;
-            }
-
-            .hero {
-                height: 70vh;
-            }
-            .hero h1 {
-                font-size: 2.6rem;
-                text-shadow: 0 0 15px #0088aa, 0 0 40px #004466;
-            }
-            .hero p {
-                font-size: 1rem;
-                margin-top: 1rem;
-            }
-            .abyss-link {
-                margin-top: 1.5rem;
-                padding: 0.6rem 1.8rem;
-                font-size: 0.8rem;
-            }
-
-            .section {
-                padding: 3rem 1.2rem;
-            }
-            .section h2 {
-                font-size: 1.8rem !important;   /* переопределяем inline-стиль */
-            }
-
-            .abyss-grid {
-                grid-template-columns: 1fr;   /* карточки в столбик */
-                gap: 1.5rem;
-            }
-            .sonar-img {
-                width: 80px;
-                height: 80px;
-                font-size: 0.7rem;
-            }
-
-            .life-grid {
-                grid-template-columns: 1fr;   /* на мобильных — один в ряд */
-                gap: 1rem;
-            }
-        }
-
-        /* ---------- МАЛЕНЬКИЕ ТЕЛЕФОНЫ (≤480px) ---------- */
-        @media screen and (max-width: 480px) {
-            .hero h1 {
-                font-size: 2rem;
-                text-shadow: 0 0 10px #0088aa, 0 0 30px #004466;
-            }
-            .hero p {
-                font-size: 0.9rem;
-                padding: 0 0.5rem;
-            }
-            .abyss-link {
-                padding: 0.5rem 1.4rem;
-                font-size: 0.7rem;
-            }
-
-            .nav a {
-                font-size: 0.65rem;
-                letter-spacing: 1.5px;
-            }
-
-            .section h2 {
-                font-size: 1.5rem !important;
-            }
-
-            .threat {
-                padding: 1.2rem;
-            }
-        }
-
-        /* ---------- ПЛАНШЕТЫ В ПОРТРЕТЕ (769-1024px) ---------- */
-        @media screen and (min-width: 769px) and (max-width: 1024px) {
-            .hero h1 {
-                font-size: 3rem;
-            }
-            .section {
-                padding: 4rem 1.5rem;
-            }
-            .life-grid {
-                grid-template-columns: repeat(2, 1fr); /* 2 колонки на средних экранах */
-            }
-        }
-
-        /* ---------- МИКРО-ПРАВКИ ---------- */
-        .section h2 {
-            font-size: 2rem;
-            margin-top: 0;
-            word-break: break-word;
-        }
-        .threat h3 {
-            margin-top: 0;
-            color: #b3f0ff;
-            font-size: 1.3rem;
-        }
-        .life-card {
-            background: #03232e;
-            padding: 1.2rem 0.5rem;
+        /* Responsive */
+        @media (max-width: 900px) {
+            header { padding: 1rem; width: 100%; }
+            .hud { display: none; }
+            .section { padding: 4rem 1.5rem; }
+            .grid-3, .grid-3-cards { grid-template-columns: 1fr; }
+            body { cursor: auto; }
+            .cursor { display: none; }
         }
     </style>
 </head>
 <body>
-    <div class="water-ripple"></div>
-    <header class="header">
-        <nav class="nav">
+    <div class="cursor"></div>
+    <canvas id="marine-snow"></canvas>
+    <div class="overlay"></div>
+    <div class="scanlines"></div>
+
+    <!-- Right Diegetic HUD -->
+    <div class="hud">
+        <div class="hud-block">
+            <span class="hud-label">DEPTH</span>
+            <span class="hud-value" id="depth-val">0000 M</span>
+        </div>
+        <div class="hud-bar">
+            <div class="hud-fill" id="depth-fill"></div>
+        </div>
+        <div class="hud-block">
+            <span class="hud-label">PRESSURE</span>
+            <span class="hud-value" id="press-val">001 BAR</span>
+        </div>
+    </div>
+
+    <header>
+        <div class="logo">VANGUARD <span>// SYS_OK</span></div>
+        <nav>
             <a href="#expedition">Экспедиция</a>
             <a href="#pressure">Давление</a>
             <a href="#life">Аборигены</a>
@@ -313,54 +469,169 @@
     </header>
 
     <section class="hero">
-        <div class="hero-content">
-            <h1>ABYSS VANGUARD</h1>
-            <p>14 километров тишины. Ты не один.</p>
-            <a href="index.html" class="abyss-link">← Назад к прямоугольникам</a>
+        <h1>ABYSS<br>VANGUARD</h1>
+        <p>14 КИЛОМЕТРОВ ТИШИНЫ. ТЫ НЕ ОДИН.</p>
+        
+        <div class="sonar-wrap">
+            <div class="sonar-grid"></div>
+            <div class="sweep"></div>
+            <div class="ping-blip"></div>
+            <div class="ping-blip"></div>
+            <div class="ping-blip"></div>
         </div>
     </section>
 
     <section id="expedition" class="section">
-        <!-- inline-стиль управляется медиазапросами через !important -->
-        <h2 style="font-size: 2rem;">🌊 СТАНЦИЯ «КРОЛАР-1» 🌊</h2>
-        <div class="pressure-card">
-            <p style="font-size: 1.2rem;">Глубоководный батискаф «Вэнгард» — последняя связь с поверхностью. Ваша задача: картографировать руины, отбирать пробы, выживать. Каждый метр вниз умножает тонны давления на корпус и рассудок.</p>
+        <h2 class="section-title">Станция «Кролар-1»</h2>
+        <div class="panel">
+            <p style="font-size: 1.3rem; line-height: 1.6; color: var(--foam);">
+                Глубоководный батискаф «Вэнгард» — последняя связь с поверхностью. Ваша задача: картографировать руины, отбирать пробы, выживать. Каждый метр вниз умножает тонны давления на корпус и рассудок.
+            </p>
         </div>
     </section>
 
     <section id="pressure" class="section">
-        <h2>🌀 СИСТЕМА ДАВЛЕНИЯ И ГИДРОАКУСТИКИ 🌀</h2>
-        <div class="abyss-grid">
-            <div class="threat">
-                <div class="sonar-img">[СОНАР]</div>
-                <h3>АКТИВНЫЙ ПИНГ</h3>
-                <p>Показывает врагов сквозь тьму, но привлекает стаи. Шёпот в эфире усиливается.</p>
+        <h2 class="section-title">Механики выживания</h2>
+        <div class="grid-3">
+            <div class="mech-card">
+                <h3>Активный пинг</h3>
+                <p>Единственный способ видеть сквозь тьму. Показывает врагов и рельеф, но привлекает стаи. Шёпот в эфире усиливается.</p>
             </div>
-            <div class="threat">
-                <div class="sonar-img">[МАНОМЕТР]</div>
-                <h3>КРИТИЧЕСКОЕ ДАВЛЕНИЕ</h3>
-                <p>Ниже 800 бар — трещины в иллюминаторе. Снижается скорость, появляются галлюцинации.</p>
+            <div class="mech-card danger">
+                <h3>Давление 800 Бар</h3>
+                <p>Ниже 800 бар — трещины в иллюминаторе. Снижается скорость, появляются галлюцинации. Механика доверия приборам.</p>
             </div>
-            <div class="threat">
-                <div class="sonar-img">[БИОЛЮМ]</div>
-                <h3>ФОТОФОРЫ</h3>
-                <p>Некоторые существа реагируют только на движение. Другие — на свет. Выбирайте тактику.</p>
+            <div class="mech-card">
+                <h3>Фотофоры</h3>
+                <p>Скрытность света и движения. Одни существа реагируют только на вибрацию, другие — на свет. Выбирайте тактику.</p>
             </div>
         </div>
     </section>
 
     <section id="life" class="section">
-        <h2>🧬 ФОРМЫ ЖИЗНИ ( НЕ ОПИСАННЫЕ В ПРОТОКОЛАХ ) 🧬</h2>
-        <!-- заменяем inline-стили на класс .life-grid и .life-card для полной адаптивности -->
-        <div class="life-grid">
-            <div class="life-card">«ЛЕВИАФАН»<br>Биолюм. хищник</div>
-            <div class="life-card">«НЕМО»<br>Рой мелких существ</div>
-            <div class="life-card">«СТРАЖ РУИН»<br>Древний механизм</div>
+        <h2 class="section-title">Не описанные в протоколах</h2>
+        <div class="grid-3-cards">
+            <div class="creature" style="border-top: 2px solid var(--biolum);">
+                <h4>«ЛЕВИАФАН»</h4>
+                <span>Биолюм. хищник</span>
+                <p style="margin-top: 1rem;">Гигант. Реагирует на движение и свет. Одиночные сигналы игнорирует. Увод через потолок его глубин.</p>
+            </div>
+            <div class="creature" style="border-top: 2px solid var(--sonar);">
+                <h4>«НЕМО»</h4>
+                <span>Рой мелких существ</span>
+                <p style="margin-top: 1rem;">Собирается на звук пинга и удары корпуса. Превращает эфир в завесу, сквозь которую не видно приборов.</p>
+            </div>
+            <div class="creature" style="border-top: 2px solid var(--alarm);">
+                <h4>«СТРАЖ РУИН»</h4>
+                <span>Древний механизм</span>
+                <p style="margin-top: 1rem;">Не живое и не машина. Реагирует на пинг и свет. Разбуженный, остается активен часами.</p>
+            </div>
         </div>
     </section>
 
-    <footer class="footer">
-        <p>ABYSS VANGUARD · DEEP OCEAN STUDIOS · «Тьма помнит»</p>
+    <section id="logs" class="section">
+        <h2 class="section-title">Архив первой смены</h2>
+        <div class="panel" style="border-color: var(--biolum); max-width: 800px;">
+            <p style="font-family: 'Share Tech Mono', monospace; font-size: 0.9rem; color: var(--biolum); margin-bottom: 1rem;">> PLAYBACK_RECORDING_07.mp3</p>
+            <p style="font-family: 'Share Tech Mono', monospace; color: #8ca9b2; line-height: 1.6;">
+                "Эфир ведёт себя так, будто нас слушают... Я отправил пинг, и эхо вернулось слишком поздно. Отключите гидроакустику. Не отвечайте на пинг."
+            </p>
+        </div>
+    </section>
+
+    <footer>
+        <p>ABYSS VANGUARD · DEEP OCEAN STUDIOS</p>
+        <p style="margin-top: 10px; font-size: 0.8rem; opacity: 0.4;">«ТЬМА ПОМНИТ»</p>
     </footer>
+
+    <script>
+        // 1. Marine Snow Canvas (Particles)
+        const canvas = document.getElementById('marine-snow');
+        const ctx = canvas.getContext('2d');
+        let w, h, particles;
+
+        function resize() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * w;
+                this.y = Math.random() * h;
+                this.size = Math.random() * 2;
+                this.speedY = Math.random() * 0.5 + 0.1;
+                this.opacity = Math.random() * 0.5 + 0.1;
+            }
+            update() {
+                this.y += this.speedY;
+                if (this.y > h) {
+                    this.y = 0 - this.size;
+                    this.x = Math.random() * w;
+                }
+            }
+            draw() {
+                ctx.fillStyle = `rgba(179, 240, 255, ${this.opacity})`;
+                ctx.fillRect(this.x, this.y, this.size, this.size);
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < 100; i++) {
+                particles.push(new Particle());
+            }
+        }
+        initParticles();
+
+        function animate() {
+            ctx.clearRect(0, 0, w, h);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // 2. Scroll Depth Simulator
+        const depthVal = document.getElementById('depth-val');
+        const pressVal = document.getElementById('press-val');
+        const depthFill = document.getElementById('depth-fill');
+        const body = document.body;
+
+        window.addEventListener('scroll', () => {
+            const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollTop = window.scrollY;
+            const scrollPercent = scrollHeight > 0 ? scrollTop / scrollHeight : 0;
+
+            // 0 to 14000 meters
+            const depth = Math.floor(scrollPercent * 14000);
+            // 1 to 1400 bar
+            const pressure = Math.floor((depth / 10) + 1);
+
+            depthVal.innerText = `${String(depth).padStart(4, '0')} M`;
+            pressVal.innerText = `${String(pressure).padStart(3, '0')} BAR`;
+            
+            // Fill height based on depth
+            depthFill.style.height = `${scrollPercent * 100}%`;
+
+            // Critical state hallucinations (800 bar / 8000m)
+            if (pressure >= 800) {
+                body.classList.add('critical');
+            } else {
+                body.classList.remove('critical');
+            }
+        });
+
+        // 3. Custom Spotlight Cursor
+        const cursor = document.querySelector('.cursor');
+        window.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+    </script>
 </body>
 </html>

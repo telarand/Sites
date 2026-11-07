@@ -1,2 +1,146 @@
 <!DOCTYPE html>
-<html lang="ru"></html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>GALACTIC MENAGERIE · Стекляный кальмар</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Jura:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --space-deep: #050a10; --nebula: #0e1a24; --neon-turquoise: #00f0e0;
+            --mint-light: #5fd9c0; --ice-glow: #b3ffff; --sea-neon: #4bd5b3;
+            --card-bg: rgba(14, 55, 64, 0.15); --text-warm: #cee9e4;
+            --text-heading: #ffffff; --status-color: #ffae42; /* Близкий к уязвимому */
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+        body { font-family: 'Quicksand', sans-serif; background: var(--space-deep); color: var(--text-warm); overflow-x: hidden; line-height: 1.6; }
+        .cursor-dot, .cursor-ring { position: fixed; top: 0; left: 0; border-radius: 50%; pointer-events: none; z-index: 9999; mix-blend-mode: screen; transform: translate(-50%, -50%); }
+        .cursor-dot { width: 8px; height: 8px; background: var(--ice-glow); box-shadow: 0 0 15px var(--ice-glow); }
+        .cursor-ring { width: 40px; height: 40px; border: 1px solid rgba(102, 217, 208, 0.5); transition: transform 0.15s ease-out, width 0.3s, height 0.3s, border-color 0.3s; }
+        .cursor-ring.hover { width: 60px; height: 60px; border-color: var(--ice-glow); background: rgba(102, 217, 208, 0.1); }
+        #bio-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; opacity: 0.4; }
+        .cosmos-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse at center, transparent 0%, var(--space-deep) 80%); z-index: -1; pointer-events: none; }
+        .header { padding: 1.5rem 3rem; background: linear-gradient(180deg, rgba(5, 10, 16, 0.9) 0%, transparent 100%); backdrop-filter: blur(8px); display: flex; justify-content: space-between; align-items: center; position: fixed; top: 0; width: 100%; z-index: 100; }
+        .logo { font-family: 'Jura', sans-serif; font-weight: 700; font-size: 1.2rem; color: var(--text-heading); letter-spacing: 4px; text-transform: uppercase; border: 1px solid var(--mint-light); padding: 0.5rem 1rem; border-radius: 4px; text-shadow: 0 0 10px var(--mint-light); text-decoration: none; }
+        .back-btn { color: rgba(255, 255, 255, 0.7); text-decoration: none; font-family: 'Jura', sans-serif; font-weight: 500; text-transform: uppercase; letter-spacing: 3px; font-size: 0.85rem; transition: color 0.3s; }
+        .back-btn:hover { color: var(--ice-glow); }
+        .species-hero { min-height: 100vh; padding: 8rem 4rem 4rem; display: flex; align-items: center; position: relative; }
+        .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; max-width: 1600px; margin: 0 auto; width: 100%; align-items: center; }
+        .hero-info h1 { font-family: 'Jura', sans-serif; font-size: 4.5rem; font-weight: 700; color: var(--text-heading); text-transform: uppercase; line-height: 0.9; letter-spacing: 4px; margin-bottom: 1rem; text-shadow: 0 0 30px rgba(0, 240, 224, 0.4); }
+        .status-badge { display: inline-block; padding: 0.5rem 1rem; border: 1px solid var(--status-color); color: var(--status-color); font-family: 'Jura', sans-serif; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 2rem; background: rgba(255, 174, 66, 0.1); }
+        .hero-desc { font-size: 1.2rem; color: rgba(255,255,255,0.8); margin-bottom: 2rem; max-width: 500px; }
+        .holo-projection { aspect-ratio: 1; max-width: 500px; margin: 0 auto; position: relative; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(102, 217, 208, 0.2); background: rgba(14, 55, 64, 0.1); clip-path: polygon(0 20px, 20px 0, calc(100% - 20px) 0, 100% 20px, 100% calc(100% - 20px), calc(100% - 20px) 100%, 20px 100%, 0 calc(100% - 20px)); overflow: hidden; }
+        .holo-grid { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(102, 217, 208, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(102, 217, 208, 0.1) 1px, transparent 1px); background-size: 40px 40px; animation: grid-move 10s linear infinite; }
+        @keyframes grid-move { 0% { background-position: 0 0; } 100% { background-position: 40px 40px; } }
+        /* Стилизация под прозрачную сущность */
+        .holo-orb { width: 220px; height: 280px; border-radius: 50% 50% 10% 10%; background: radial-gradient(circle at 50% 30%, rgba(255,255,255,0.8), rgba(0,240,224,0.2)); box-shadow: 0 0 60px rgba(255, 255, 255, 0.5); animation: float 5s ease-in-out infinite; z-index: 2; opacity: 0.8; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        .holo-orb::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; height: 300px; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 50%; animation: spin 12s linear infinite; }
+        @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+        .section { padding: 4rem 4rem; max-width: 1600px; margin: 0 auto; }
+        .section-title { font-family: 'Jura', sans-serif; font-size: 2rem; color: var(--text-heading); text-transform: uppercase; letter-spacing: 4px; margin-bottom: 3rem; border-bottom: 1px solid rgba(102, 217, 208, 0.2); padding-bottom: 1rem; }
+        .grid-3d { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .card-3d { background: var(--card-bg); backdrop-filter: blur(15px); border: 1px solid rgba(102, 217, 208, 0.3); padding: 2rem; position: relative; transition: border-color 0.3s; overflow: hidden; }
+        .card-3d::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(0, 240, 224, 0.15), transparent 40%); opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+        .card-3d:hover::before { opacity: 1; }
+        .card-3d:hover { border-color: var(--ice-glow); }
+        .card-3d h3 { font-family: 'Jura', sans-serif; color: var(--ice-glow); font-size: 1.2rem; margin-bottom: 0.8rem; letter-spacing: 2px; }
+        .card-3d p { font-size: 0.95rem; color: rgba(255, 255, 255, 0.8); }
+        .genome-container { background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(102, 217, 208, 0.2); padding: 2rem; clip-path: polygon(0 20px, 20px 0, calc(100% - 20px) 0, 100% 20px, 100% calc(100% - 20px), calc(100% - 20px) 100%, 20px 100%, 0 calc(100% - 20px)); }
+        .genome-header { display: flex; justify-content: space-between; margin-bottom: 1.5rem; font-family: 'Jura', sans-serif; letter-spacing: 2px; color: var(--mint-light); }
+        .genome-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 8px; }
+        .allele { aspect-ratio: 1; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: rgba(255,255,255,0.3); font-family: 'Jura', sans-serif; transition: all 0.3s; }
+        .allele.active { background: rgba(0, 240, 224, 0.2); border-color: var(--neon-turquoise); color: var(--ice-glow); box-shadow: 0 0 10px rgba(0, 240, 224, 0.4); }
+        .footer { text-align: center; padding: 3rem 2rem; border-top: 1px solid rgba(102, 217, 208, 0.2); color: rgba(255, 255, 255, 0.5); font-family: 'Jura', sans-serif; letter-spacing: 4px; text-transform: uppercase; font-size: 0.8rem; margin-top: 4rem; }
+        @media screen and (max-width: 1024px) { .hero-grid { grid-template-columns: 1fr; } .species-hero { padding: 6rem 2rem 2rem; } .hero-info h1 { font-size: 3rem; } .holo-projection { max-width: 300px; margin-top: 2rem; } * { cursor: auto; } .cursor-dot, .cursor-ring { display: none; } }
+        @media screen and (max-width: 768px) { .genome-grid { grid-template-columns: repeat(5, 1fr); } }
+    </style>
+</head>
+<body>
+    <canvas id="bio-canvas"></canvas>
+    <div class="cosmos-overlay"></div>
+    <div class="cursor-dot"></div>
+    <div class="cursor-ring"></div>
+    <header class="header">
+        <a href="../page15.html" class="logo">ARK // 2050</a>
+        <a href="../page15.html" class="back-btn" data-hover>← Назад в Ковчег</a>
+    </header>
+    <section class="species-hero">
+        <div class="hero-grid">
+            <div class="hero-info">
+                <span class="status-badge">Статус: Близкий к уязвимому</span>
+                <h1>Стекляный<br>кальмар</h1>
+                <p class="hero-desc">
+                    Прозрачный сигнальщик. Переносит световые сообщения между лагуной и глубиной, ускоряя «ответы» Коралла-Разума. Пачки чернил-тумана — мягкая защита от хищников.
+                </p>
+            </div>
+            <div class="holo-projection">
+                <div class="holo-grid"></div>
+                <div class="holo-orb"></div>
+            </div>
+        </div>
+    </section>
+    <section class="section">
+        <h2 class="section-title">Паспорт вида</h2>
+        <div class="grid-3d">
+            <div class="card-3d" data-hover>
+                <h3>СЕКТОР И СРЕДА</h3>
+                <p><strong>Сектор:</strong> Гидро<br><strong>Среда:</strong> Толща воды между лагуной и глубоководьем. Прозрачность зависит от чистоты воды.</p>
+            </div>
+            <div class="card-3d" data-hover>
+                <h3>ДИЕТА</h3>
+                <p>Мелкая взвесь, планктон. Фильтруют воду на пути вниз.</p>
+            </div>
+            <div class="card-3d" data-hover>
+                <h3>РОЛЬ В КОВЧЕГЕ</h3>
+                <p>Связующее звено. Индикатор мутности воды. Если вода грязная, кальмар теряет прозрачность.</p>
+            </div>
+        </div>
+    </section>
+    <section class="section">
+        <h2 class="section-title">Генная архитектура // Вектор генома</h2>
+        <div class="genome-container">
+            <div class="genome-header"><span>Всего слотов: 50</span><span>Активных: 2 // Редких: 0</span></div>
+            <div class="genome-grid" id="dna-grid"></div>
+        </div>
+        <br>
+        <div class="grid-3d">
+            <div class="card-3d" data-hover><h3>ЭХО (33)</h3><p>Поведенческий. Перенос световых импульсов. Ускоряет диалог между Кораллом и Смотрителем.</p></div>
+            <div class="card-3d" data-hover><h3>НЕКСУС (50)</h3><p>Симбиотический. Совместимость с глубоководными видами. Защита от давления.</p></div>
+        </div>
+    </section>
+    <footer class="footer">ARK INTERACTIVE // ГЕНЕТИЧЕСКИЙ АРХИВ // СМОТРИТЕЛЬ</footer>
+    <script>
+        const dot = document.querySelector('.cursor-dot'); const ring = document.querySelector('.cursor-ring');
+        let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+        document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; dot.style.left = mouseX + 'px'; dot.style.top = mouseY + 'px'; });
+        function animateRing() { ringX += (mouseX - ringX) * 0.2; ringY += (mouseY - ringY) * 0.2; ring.style.left = ringX + 'px'; ring.style.top = ringY + 'px'; requestAnimationFrame(animateRing); }
+        animateRing();
+        document.querySelectorAll('[data-hover]').forEach(el => { el.addEventListener('mouseenter', () => ring.classList.add('hover')); el.addEventListener('mouseleave', () => ring.classList.remove('hover')); });
+        const canvas = document.getElementById('bio-canvas'); const ctx = canvas.getContext('2d');
+        let width, height, particles;
+        function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize); resize();
+        class Particle { constructor() { this.x = Math.random() * width; this.y = Math.random() * height; this.vx = (Math.random() - 0.5) * 0.3; this.vy = (Math.random() - 0.5) * 0.3; this.radius = Math.random() * 1.5 + 0.5; } update() { this.x += this.vx; this.y += this.vy; if (this.x < 0 || this.x > width) this.vx *= -1; if (this.y < 0 || this.y > height) this.vy *= -1; } draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = 'rgba(102, 217, 208, 0.8)'; ctx.shadowColor = 'rgba(102, 217, 208, 1)'; ctx.shadowBlur = 10; ctx.fill(); } }
+        function initParticles() { particles = []; let count = Math.floor((width * height) / 15000); for (let i = 0; i < count; i++) particles.push(new Particle()); }
+        initParticles(); window.addEventListener('resize', initParticles);
+        function connectParticles() { for (let a = 0; a < particles.length; a++) { for (let b = a + 1; b < particles.length; b++) { let dx = particles[a].x - particles[b].x; let dy = particles[a].y - particles[b].y; let dist = Math.sqrt(dx * dx + dy * dy); if (dist < 120) { ctx.beginPath(); ctx.strokeStyle = `rgba(102, 217, 208, ${0.15 - (dist / 120) * 0.15})`; ctx.lineWidth = 1; ctx.moveTo(particles[a].x, particles[a].y); ctx.lineTo(particles[b].x, particles[b].y); ctx.stroke(); } } } }
+        function animateParticles() { ctx.clearRect(0, 0, width, height); particles.forEach(p => { p.update(); p.draw(); }); connectParticles(); requestAnimationFrame(animateParticles); }
+        animateParticles();
+        const grid = document.getElementById('dna-grid');
+        const activeAlleles = [32, 49]; 
+        for (let i = 0; i < 50; i++) { const div = document.createElement('div'); div.classList.add('allele'); div.innerText = (i + 1).toString().padStart(2, '0'); if (activeAlleles.includes(i)) div.classList.add('active'); grid.appendChild(div); }
+        document.querySelectorAll('.card-3d').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                let rect = card.getBoundingClientRect();
+                let x = e.clientX - rect.left; let y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`); card.style.setProperty('--mouse-y', `${y}px`);
+                let centerX = rect.width / 2; let centerY = rect.height / 2;
+                let rotateX = (y - centerY) / 15; let rotateY = (centerX - x) / 15;
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
+            });
+            card.addEventListener('mouseleave', () => { card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)'; });
+        });
+    </script>
+</body>
+</html>

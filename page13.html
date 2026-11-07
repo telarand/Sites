@@ -2,345 +2,793 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <!-- Адаптивный viewport — основа мобильной вёрстки -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>NEUROSCAPE · Созидатель сновидений</title>
-    <!-- Soft, dreamy, surreal -->
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEUROSCAPE · Dream Lab 2049</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,900;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* ---------- БАЗОВЫЕ СТИЛИ (сохранены, добавлены адаптивные правила) ---------- */
-        body {
-            margin: 0;
-            font-family: 'Quicksand', sans-serif;
-            background: #e2d9f2;
-            color: #3f2e4e;
-            background: radial-gradient(circle at 10% 30%, #f1ebfa, #d6cae8);
+        :root {
+            --bg-dark: #110d18;
+            --plum-ink: #2a1b3c;
+            --lavender: #b299d6;
+            --fog-lilac: #e2d9f2;
+            --morning-fog: #f1ebfa;
+            --accent-glow: rgba(178, 153, 214, 0.4);
         }
-        .cloud-soft {
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--fog-lilac);
+            overflow-x: hidden;
+            line-height: 1.6;
+            cursor: none; /* Включаем кастомный курсор */
+        }
+
+        a, button, input { cursor: none; }
+
+        /* === КУРСОР === */
+        .cursor-dot {
+            position: fixed;
+            top: 0; left: 0;
+            width: 8px; height: 8px;
+            background: var(--morning-fog);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s;
+        }
+
+        .cursor-outline {
+            position: fixed;
+            top: 0; left: 0;
+            width: 40px; height: 40px;
+            border: 1px solid var(--lavender);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s linear, width 0.3s, height 0.3s, border-color 0.3s;
+        }
+
+        /* Зернистость */
+        .grain {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: url('data:image/svg+xml;utf8,<svg width="300" height="200" xmlns="http://www.w3.org/2000/svg"><ellipse cx="60" cy="40" rx="40" ry="20" fill="white" opacity="0.3"/><ellipse cx="150" cy="80" rx="70" ry="30" fill="white" opacity="0.25"/><ellipse cx="240" cy="30" rx="50" ry="25" fill="white" opacity="0.3"/></svg>');
-            background-size: 400px 200px;
-            opacity: 0.35;
             pointer-events: none;
-            z-index: 0;
+            z-index: 9998;
+            opacity: 0.05;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
-        .header {
-            padding: 2rem;
-            background: rgba(255, 242, 254, 0.7);
-            backdrop-filter: blur(8px);
-            border-bottom: 2px solid #b299d6;
+
+        /* === НАВИГАЦИЯ === */
+        header {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            padding: 1.5rem 4rem;
             display: flex;
-            justify-content: center;
-            position: relative;
-            z-index: 2;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(17, 13, 24, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(178, 153, 214, 0.1);
+            transition: padding 0.3s ease;
         }
-        .nav {
-            display: flex;
-            flex-wrap: wrap;          /* позволит ссылкам переноситься */
-            justify-content: center;
-            gap: 0.8rem 1.5rem;      /* отступы между пунктами */
-        }
-        .nav a {
-            color: #4a3a5c;
+
+        header.scrolled { padding: 1rem 4rem; }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #fff;
+            letter-spacing: 2px;
             text-decoration: none;
-            font-weight: 600;
+        }
+
+        .logo span {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            opacity: 0.6;
+            margin-left: 10px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 3rem;
+        }
+
+        nav a {
+            font-family: 'JetBrains Mono', monospace;
+            text-decoration: none;
+            color: var(--fog-lilac);
+            font-size: 0.75rem;
             text-transform: uppercase;
-            letter-spacing: 4px;
-            font-size: 0.8rem;
-            border-bottom: 1px solid transparent;
-            padding: 0.4rem 0.2rem;   /* увеличенная область касания */
-            transition: border-color 0.2s, color 0.2s;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+            position: relative;
         }
-        .nav a:hover {
-            border-bottom-color: #9b7ebb;
-            color: #2a1b3c;
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px; left: 0;
+            width: 0; height: 1px;
+            background: var(--lavender);
+            transition: width 0.3s ease;
         }
-        .nav a:active {
-            color: #2a1b3c;
-            border-bottom-color: #7a61a2;
-        }
+
+        nav a:hover { color: var(--lavender); }
+        nav a:hover::after { width: 100%; }
+
+        /* === HERO === */
         .hero {
-            height: 80vh;
+            height: 100vh;
+            min-height: 600px;
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
+            background: radial-gradient(circle at 50% 50%, var(--plum-ink), var(--bg-dark));
+            overflow: hidden;
             text-align: center;
-            background: linear-gradient(145deg, #f1e6ff, #e2d2ff);
-            position: relative;
         }
-        .hero h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 4.8rem;
-            margin: 0;
-            color: #564074;
-            text-shadow: 2px 2px 0 #fcf7ff, 6px 6px 20px rgba(90, 60, 130, 0.3);
-            letter-spacing: 2px;
-            line-height: 1.1;
+
+        #fog-canvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+            opacity: 0.6;
         }
-        .hero p {
-            font-size: 1.4rem;
-            color: #5a4b72;
-            background: rgba(255,255,240,0.5);
-            padding: 0.5rem 2rem;
-            border-radius: 60px;
-            backdrop-filter: blur(2px);
-            margin: 1.5rem 0 0;
-        }
-        .section {
-            padding: 5rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
+
+        .hero-content {
             position: relative;
             z-index: 2;
+            padding: 0 2rem;
+            animation: fadeUp 1.5s ease-out;
         }
-        .dream-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .dream-card {
-            background: rgba(255, 245, 250, 0.8);
-            backdrop-filter: blur(6px);
-            border-radius: 40px 10px 40px 10px;
-            padding: 2rem;
-            border: 2px solid #b6a2d6;
-            box-shadow: 10px 10px 20px rgba(0,0,0,0.05);
+
+        .hero-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            letter-spacing: 4px;
+            color: var(--lavender);
+            margin-bottom: 2rem;
+            display: block;
         }
-        .symbol-showcase {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1.2rem;
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 10vw, 10rem);
+            line-height: 0.85;
+            font-weight: 900;
+            color: var(--morning-fog);
+            text-shadow: 0 0 60px rgba(178, 153, 214, 0.3);
+        }
+
+        .hero-sub {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1.5rem;
             margin-top: 2rem;
-        }
-        .symbol {
-            background: #f2edff;
-            border-radius: 50% 20% / 40% 60%;
-            padding: 1.8rem 0.5rem;
-            text-align: center;
-            border: 2px dashed #9a82b5;
-            font-weight: 600;
-            color: #423557;
-            font-size: 1rem;
-        }
-        .footer {
-            text-align: center;
-            padding: 2.5rem;
-            border-top: 2px solid #b299d6;
-            background: #ede6fc;
-            color: #5f4c73;
-            font-size: 0.8rem;
-        }
-        .back-link {
-            display: inline-block;
-            margin-top: 2rem;
-            padding: 0.8rem 2.5rem;
-            background: #dacef0;
-            border: 2px solid #7f699d;
-            color: #352c42;
-            text-decoration: none;
-            border-radius: 100px;
-            font-weight: 600;
-            transition: 0.2s;
-        }
-        .back-link:hover {
-            background: #b7a2d4;
-            border-color: #4e3c63;
-            color: white;
-        }
-        .back-link:active {
-            background: #b7a2d4;
-            border-color: #4e3c63;
-            color: white;
+            color: var(--fog-lilac);
+            opacity: 0.8;
         }
 
-        /* ---------- АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ (ширина ≤900px) ---------- */
-        @media screen and (max-width: 900px) {
-            .hero h1 {
-                font-size: 3.8rem;
-            }
-            .hero p {
-                font-size: 1.2rem;
-                padding: 0.5rem 1.5rem;
-            }
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px; left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            font-family: 'JetBrains Mono';
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            color: var(--fog-lilac);
+            opacity: 0.5;
         }
 
-        /* ---------- АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ (ширина ≤768px) ---------- */
-        @media screen and (max-width: 768px) {
-            .header {
-                padding: 1.2rem 0.5rem;
-            }
-            .nav {
-                gap: 0.6rem 1rem;
-            }
-            .nav a {
-                font-size: 0.7rem;
-                letter-spacing: 2px;
-                padding: 0.5rem 0.2rem;
-            }
-
-            .hero {
-                height: 70vh;
-            }
-            .hero h1 {
-                font-size: 2.8rem;
-                letter-spacing: 1px;
-                text-shadow: 2px 2px 0 #fcf7ff, 4px 4px 15px rgba(90,60,130,0.3);
-            }
-            .hero p {
-                font-size: 1rem;
-                padding: 0.4rem 1.2rem;
-                margin-top: 1rem;
-            }
-            .back-link {
-                margin-top: 1.5rem;
-                padding: 0.6rem 2rem;
-                font-size: 0.8rem;
-            }
-
-            .section {
-                padding: 3rem 1.2rem;
-            }
-            .section h2 {
-                font-size: 1.6rem !important;   /* переопределяем inline-стиль */
-                border-left-width: 6px !important;
-                padding-left: 0.8rem !important;
-            }
-
-            .dream-grid {
-                grid-template-columns: 1fr;   /* карточки друг под другом */
-                gap: 1.5rem;
-            }
-            .dream-card {
-                padding: 1.6rem;
-            }
-
-            .symbol-showcase {
-                grid-template-columns: repeat(2, 1fr); /* два в ряд */
-                gap: 1rem;
-            }
-            .symbol {
-                padding: 1.4rem 0.3rem;
-                font-size: 0.9rem;
-            }
+        .scroll-indicator::after {
+            content: '';
+            display: block;
+            width: 1px; height: 40px;
+            background: var(--fog-lilac);
+            margin: 10px auto 0;
+            animation: scrollLine 2s infinite;
         }
 
-        /* ---------- МАЛЕНЬКИЕ ТЕЛЕФОНЫ (ширина ≤480px) ---------- */
-        @media screen and (max-width: 480px) {
-            .hero {
-                height: 65vh;
-            }
-            .hero h1 {
-                font-size: 2.2rem;
-                text-shadow: 1px 1px 0 #fcf7ff, 3px 3px 10px rgba(90,60,130,0.3);
-            }
-            .hero p {
-                font-size: 0.95rem;
-                padding: 0.4rem 1rem;
-            }
-            .back-link {
-                padding: 0.5rem 1.5rem;
-                font-size: 0.75rem;
-            }
-
-            .nav a {
-                font-size: 0.65rem;
-                letter-spacing: 1.5px;
-            }
-
-            .section h2 {
-                font-size: 1.4rem !important;
-            }
-
-            .symbol-showcase {
-                grid-template-columns: 1fr;   /* окончательно в один столбец */
-            }
-
-            .dream-card h3 {
-                margin-top: 0;
-                font-size: 1.2rem;
-            }
+        @keyframes scrollLine {
+            0% { transform: scaleY(0); transform-origin: top; }
+            50% { transform: scaleY(1); transform-origin: top; }
+            51% { transform-origin: bottom; }
+            100% { transform: scaleY(0); transform-origin: bottom; }
         }
 
-        /* ---------- ДОПОЛНИТЕЛЬНЫЕ МИКРО-ПРАВКИ ---------- */
-        .section h2 {
+        /* === СЕКЦИИ === */
+        .section {
+            position: relative;
+            padding: 8rem 4rem;
+            z-index: 10;
+            background: var(--bg-dark);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 5rem;
+            border-bottom: 1px solid rgba(178, 153, 214, 0.2);
+            padding-bottom: 2rem;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 4.5rem);
+            color: var(--morning-fog);
+            line-height: 1;
+        }
+
+        .section-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--lavender);
+            text-align: right;
+        }
+
+        /* === АНИМАЦИИ СКРОЛЛА === */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* === МЕХАНИКА (DreamCore) === */
+        .dream-core-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .dream-desc h3 {
+            font-family: 'Playfair Display', serif;
             font-size: 2rem;
-            border-left: 10px solid #b299d6;
-            padding-left: 1.2rem;
-            margin-top: 0;
-            word-break: break-word;
+            margin-bottom: 2rem;
+            color: var(--lavender);
         }
-        .dream-card h3 {
-            margin-top: 0;
-            color: #3d2d4a;
+
+        .dream-desc p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            color: rgba(226, 217, 242, 0.8);
         }
-        /* Планшеты в портретной ориентации */
-        @media screen and (min-width: 769px) and (max-width: 1024px) {
-            .hero h1 {
-                font-size: 3.5rem;
-            }
-            .section {
-                padding: 4rem 1.5rem;
-            }
+
+        .mono-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--lavender);
+            margin-bottom: 2rem;
+        }
+
+        .interaction-hint {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--lavender);
+            border: 1px solid var(--lavender);
+            padding: 0.8rem 1.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+
+        .interaction-hint::before {
+            content: '';
+            width: 8px; height: 8px;
+            background: var(--lavender);
+            border-radius: 50%;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        .canvas-block {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(178, 153, 214, 0.3);
+            overflow: hidden;
+            transition: border-color 0.4s;
+        }
+
+        .canvas-block:hover { border-color: var(--lavender); }
+
+        #graph-canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .canvas-overlay {
+            position: absolute;
+            top: 15px; left: 15px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--lavender);
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        /* === ПАЦИЕНТЫ === */
+        .patients-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem;
+        }
+
+        /* Жесткая сетка без наложений */
+        .patient-card {
+            position: relative;
+            background: var(--plum-ink);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+            min-height: 350px;
+        }
+
+        .pc-1 { grid-column: span 7; min-height: 450px; }
+        .pc-2 { grid-column: span 5; }
+        .pc-3 { grid-column: span 5; }
+        .pc-4 { grid-column: span 7; background: #0a0810; }
+
+        .patient-card:hover { transform: translateY(-10px); }
+
+        .pc-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0;
+            transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .patient-card:hover .pc-bg { transform: scale(1.1); }
+
+        .pc-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.8));
+            z-index: 1;
+        }
+
+        .pc-content {
+            position: relative;
+            z-index: 2;
+            transform: translateY(20px);
+            transition: transform 0.5s ease;
+        }
+
+        .patient-card:hover .pc-content { transform: translateY(0); }
+
+        .pc-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--lavender);
+            margin-bottom: 1rem;
+        }
+
+        .pc-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            color: #fff;
+            margin-bottom: 0.5rem;
+            line-height: 1.1;
+        }
+
+        .pc-rule {
+            font-style: italic;
+            font-size: 0.85rem;
+            color: var(--fog-lilac);
+            opacity: 0;
+            max-height: 0;
+            transition: opacity 0.4s ease, max-height 0.4s ease;
+        }
+
+        .patient-card:hover .pc-rule {
+            opacity: 0.8;
+            max-height: 30px;
+        }
+
+        /* === FOOTER === */
+        footer {
+            padding: 5rem 4rem;
+            background: #05030a;
+            border-top: 1px solid var(--plum-ink);
+            position: relative;
+            z-index: 10;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 4rem;
+        }
+
+        .footer-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--morning-fog);
+            margin-bottom: 1rem;
+        }
+
+        .footer-text {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.4);
+            max-width: 400px;
+        }
+
+        .footer-col h4 {
+            color: var(--lavender);
+            margin-bottom: 1rem;
+            font-family: 'JetBrains Mono';
+            font-size: 0.85rem;
+        }
+
+        .footer-col p {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .disclaimer {
+            grid-column: 1 / -1;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.3);
+        }
+
+        /* === АДАПТИВНОСТЬ === */
+        @media (max-width: 1024px) {
+            .dream-core-wrapper { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+            .pc-1, .pc-2, .pc-3, .pc-4 { grid-column: span 6; }
+        }
+
+        @media (max-width: 768px) {
+            body { cursor: auto; }
+            a, button { cursor: pointer; }
+            .cursor-dot, .cursor-outline { display: none; }
+            header { padding: 1rem 1.5rem; }
+            nav ul { gap: 1.5rem; }
+            .section { padding: 5rem 1.5rem; }
+            .section-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+            .pc-1, .pc-2, .pc-3, .pc-4 { grid-column: span 12; }
+            .footer-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <div class="cloud-soft"></div>
-    <header class="header">
-        <nav class="nav">
-            <a href="#clinic">Клиника</a>
-            <a href="#construct">Конструктор</a>
-            <a href="#patients">Пациенты</a>
-            <a href="#dreamlog">Дневник</a>
+
+    <!-- Кастомный курсор -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+    <div class="grain"></div>
+
+    <header id="header">
+        <a href="#" class="logo">NEUROSCAPE <span>v0.1</span></a>
+        <nav>
+            <ul>
+                <li><a href="#concept">CONCEPT</a></li>
+                <li><a href="#mechanics">MECHANICS</a></li>
+                <li><a href="#patients">CASES</a></li>
+            </ul>
         </nav>
     </header>
 
     <section class="hero">
-        <div>
-            <h1>NEUROSCAPE</h1>
-            <p>Терапия через созидание грёз</p>
-            <a href="index.html" class="back-link">← Назад к прямоугольникам</a>
+        <canvas id="fog-canvas"></canvas>
+        <div class="hero-content">
+            <span class="hero-tag">DREAM LAB · CLINIC · 2049</span>
+            <h1 class="hero-title">NEURO<br>SCAPE</h1>
+            <p class="hero-sub">Терапия через созидание грёз</p>
+        </div>
+        <div class="scroll-indicator">SCROLL</div>
+    </section>
+
+    <section id="concept" class="section">
+        <div class="section-header reveal">
+            <h2 class="section-title">Симулятор<br>терапии</h2>
+            <span class="section-num">01 / РЕЗЮМЕ ПРОЕКТА</span>
+        </div>
+        <div class="reveal" style="max-width: 800px; margin: 0 auto; text-align: center;">
+            <p style="font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 3vw, 2rem); line-height: 1.5; color: var(--fog-lilac); font-style: italic;">
+                «Каждый символ — это диалог. Ваша задача — сделать его исцеляющим».
+            </p>
+            <p style="margin-top: 2rem; font-size: 1.1rem; color: rgba(226, 217, 242, 0.6);">
+                В игре нет врагов, здоровья или счётчика урона. Вы — ведущий терапевт клиники «Дрим Лаб». Перед каждым сеансом вы получаете пустой холст подсознания и размещаете архетипы. Сон не спорит, но отвечает.
+            </p>
         </div>
     </section>
 
-    <section id="construct" class="section">
-        <!-- inline-стиль остаётся, но мы управляем размерами через медиазапросы с !important -->
-        <h2 style="font-size: 2rem; border-left: 10px solid #b299d6; padding-left: 1.2rem;">🛏️ КОНСТРУКТОР СНОВИДЕНИЙ</h2>
-        <p style="font-size: 1.1rem;">Перед сеансом вы получаете пустой холст подсознания. Размещайте объекты-архетипы: двери (выход), зеркала (саморефлексия), источники света (безопасность), тени (страх). Каждый выбор меняет поведение фобии и путь к исцелению.</p>
-        
-        <div class="dream-grid">
-            <div class="dream-card">
-                <h3>ЗЕРКАЛЬНЫЙ ЛАБИРИНТ</h3>
-                <p>Фобия расщепляется, пациент учится встречать свои отражения.</p>
+    <section id="mechanics" class="section">
+        <div class="section-header reveal">
+            <h2 class="section-title">Холст<br>подсознания</h2>
+            <span class="section-num">02 / DREAMCORE</span>
+        </div>
+
+        <div class="dream-core-wrapper">
+            <div class="dream-desc reveal">
+                <h3>Конструктор символов</h3>
+                <p>
+                    Архетип — не декор, а функция. Дверь прокладывает маршрут, Зеркало удваивает смысл, Тень несёт страх. Связи рисуются рукой.
+                </p>
+                <div class="mono-text">
+                    > 6 базовых архетипов<br>
+                    > 18 вариаций<br>
+                    > Матрица синергий
+                </div>
+                <div class="interaction-hint">КЛИКАЙТЕ ПО ХОЛСТУ</div>
             </div>
-            <div class="dream-card">
-                <h3>БЕСКОНЕЧНАЯ ЛЕСТНИЦА</h3>
-                <p>Символ карьерного давления. Добавьте проломы в ступенях.</p>
-            </div>
-            <div class="dream-card">
-                <h3>ЗАТОПЛЕННАЯ КОМНАТА</h3>
-                <p>Вода — эмоции. Регулируйте уровень, чтобы пациент не захлебнулся в прошлом.</p>
+            <div class="canvas-block reveal">
+                <div class="canvas-overlay">DREAM_CORE.exe // SIMULATION_ACTIVE</div>
+                <canvas id="graph-canvas"></canvas>
             </div>
         </div>
     </section>
 
-    <section class="section">
-        <h2>🔮 СИМВОЛЫ ПОДСОЗНАНИЯ</h2>
-        <div class="symbol-showcase">
-            <div class="symbol">🚪 ДВЕРЬ</div>
-            <div class="symbol">🪞 ЗЕРКАЛО</div>
-            <div class="symbol">💡 СВЕТ</div>
-            <div class="symbol">🌑 ТЕНЬ</div>
-            <div class="symbol">⏳ ЧАСЫ</div>
-            <div class="symbol">🌊 ВОДА</div>
+    <section id="patients" class="section">
+        <div class="section-header reveal">
+            <h2 class="section-title">Случаи<br>пациентов</h2>
+            <span class="section-num">03 / ПЯТЬ МИРОВ ГРЁЗ</span>
         </div>
-        <p style="margin-top: 2rem;"><i>«Каждый символ — это диалог. Ваша задача — сделать его исцеляющим».</i></p>
+
+        <div class="patients-grid">
+            <div class="patient-card pc-1 reveal">
+                <div class="pc-bg" style="background: linear-gradient(45deg, #3f2e4e, #110d18);"></div>
+                <div class="pc-overlay"></div>
+                <div class="pc-content">
+                    <div class="pc-num">CASE 01</div>
+                    <div class="pc-title">Бессонница</div>
+                    <div class="pc-rule">Уникальное правило: Учебный холст</div>
+                </div>
+            </div>
+            <div class="patient-card pc-2 reveal">
+                <div class="pc-bg" style="background: linear-gradient(135deg, #4a3a5c, #1a1523);"></div>
+                <div class="pc-overlay"></div>
+                <div class="pc-content">
+                    <div class="pc-num">CASE 02</div>
+                    <div class="pc-title">Тревога</div>
+                    <div class="pc-rule">Правило: Часы идут быстрее</div>
+                </div>
+            </div>
+            <div class="patient-card pc-3 reveal">
+                <div class="pc-bg" style="background: radial-gradient(circle, #b6a2d6, #110d18);"></div>
+                <div class="pc-overlay"></div>
+                <div class="pc-content">
+                    <div class="pc-num">CASE 03</div>
+                    <div class="pc-title">Горевание</div>
+                    <div class="pc-rule">Управляемый уровень воды</div>
+                </div>
+            </div>
+            <div class="patient-card pc-4 reveal">
+                <div class="pc-bg" style="background: repeating-linear-gradient(45deg, #0a0810 0px, #0a0810 10px, #1a1523 10px, #1a1523 20px);"></div>
+                <div class="pc-overlay"></div>
+                <div class="pc-content">
+                    <div class="pc-num">CASE 04–05</div>
+                    <div class="pc-title">Расщепление</div>
+                    <div class="pc-rule">Правило: Зеркала расщепляют фобию</div>
+                </div>
+            </div>
+        </div>
     </section>
 
-    <footer class="footer">
-        <p>NEUROSCAPE · DREAM LAB · 2049</p>
+    <footer>
+        <div class="footer-grid">
+            <div>
+                <div class="footer-logo">NEUROSCAPE</div>
+                <p class="footer-text">Симулятор терапии через конструирование грёз. Unity 6 LTS · Single Player · 2026.</p>
+            </div>
+            <div class="footer-col">
+                <h4>PLATFORM</h4>
+                <p>PC / Steam</p>
+                <p>Early Access Dec 2027</p>
+            </div>
+            <div class="footer-col">
+                <h4>RATING</h4>
+                <p>Content Warnings:</p>
+                <p>Insomnia, Anxiety, Loss</p>
+            </div>
+            <div class="disclaimer">
+                Disclaimer: «Дрим Лаб» — фантастика. Игра не моделирует реальную клиническую терапию и не заменяет медицинскую практику. Исцеление здесь — метафора и знак уважения к теме психического здоровья.
+            </div>
+        </div>
     </footer>
+
+    <script>
+        // === 1. ПЛАВНЫЙ КУРСОР ===
+        const dot = document.querySelector('.cursor-dot');
+        const outline = document.querySelector('.cursor-outline');
+        let mouseX = 0, mouseY = 0, outlineX = 0, outlineY = 0;
+
+        document.addEventListener('mousemove', e => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            dot.style.left = mouseX + 'px';
+            dot.style.top = mouseY + 'px';
+        });
+
+        function animateCursor() {
+            // Плавное запаздывание для внешнего круга
+            outlineX += (mouseX - outlineX) * 0.15;
+            outlineY += (mouseY - outlineY) * 0.15;
+            outline.style.left = outlineX + 'px';
+            outline.style.top = outlineY + 'px';
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // Эффект увеличения курсора на интерактивных элементах
+        document.querySelectorAll('a, .patient-card, .canvas-block, .interaction-hint').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                outline.style.width = '60px';
+                outline.style.height = '60px';
+                outline.style.borderColor = 'rgba(255, 255, 255, 0.8)';
+            });
+            el.addEventListener('mouseleave', () => {
+                outline.style.width = '40px';
+                outline.style.height = '40px';
+                outline.style.borderColor = 'var(--lavender)';
+            });
+        });
+
+        // === 2. АНИМАЦИИ СКРОЛЛА ===
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('.reveal').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Эффект сжатия шапки
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) header.classList.add('scrolled');
+            else header.classList.remove('scrolled');
+        });
+
+        // === 3. ТУМАН В HERO ===
+        const fogCanvas = document.getElementById('fog-canvas');
+        const fogCtx = fogCanvas.getContext('2d');
+        let w, h, particles;
+
+        function resizeFog() {
+            w = fogCanvas.width = fogCanvas.offsetWidth;
+            h = fogCanvas.height = fogCanvas.offsetHeight;
+            particles = [];
+            for(let i=0; i<30; i++) {
+                particles.push({
+                    x: Math.random()*w, y: Math.random()*h,
+                    r: Math.random()*150 + 50,
+                    vx: Math.random()*0.4 - 0.2, vy: Math.random()*0.4 - 0.2
+                });
+            }
+        }
+        window.addEventListener('resize', resizeFog);
+        resizeFog();
+
+        function drawFog() {
+            fogCtx.clearRect(0, 0, w, h);
+            particles.forEach(p => {
+                const grd = fogCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+                grd.addColorStop(0, 'rgba(178, 153, 214, 0.15)');
+                grd.addColorStop(1, 'rgba(178, 153, 214, 0)');
+                fogCtx.fillStyle = grd;
+                fogCtx.beginPath();
+                fogCtx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+                fogCtx.fill();
+
+                p.x += p.vx; p.y += p.vy;
+                if(p.x < -p.r) p.x = w + p.r;
+                if(p.x > w + p.r) p.x = -p.r;
+                if(p.y < -p.r) p.y = h + p.r;
+                if(p.y > h + p.r) p.y = -p.r;
+            });
+            requestAnimationFrame(drawFog);
+        }
+        drawFog();
+
+        // === 4. ИНТЕРАКТИВНЫЙ ХОЛСТ ===
+        const graphCanvas = document.getElementById('graph-canvas');
+        const graphCtx = graphCanvas.getContext('2d');
+        const symbols = ['🚪', '🪞', '💡', '🌑', '⏳', '🌊'];
+        let nodes = [];
+
+        function resizeGraph() {
+            graphCanvas.width = graphCanvas.offsetWidth;
+            graphCanvas.height = graphCanvas.offsetHeight;
+            drawGraph();
+        }
+        window.addEventListener('resize', resizeGraph);
+        setTimeout(resizeGraph, 100);
+
+        graphCanvas.addEventListener('click', (e) => {
+            const rect = graphCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const sym = symbols[Math.floor(Math.random() * symbols.length)];
+            nodes.push({x, y, sym, r: 25});
+            if(nodes.length > 8) nodes.shift(); // Лимит слотов
+            drawGraph();
+        });
+
+        function drawGraph() {
+            graphCtx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
+            graphCtx.strokeStyle = 'rgba(178, 153, 214, 0.4)';
+            graphCtx.lineWidth = 1;
+            for(let i=0; i<nodes.length; i++) {
+                for(let j=i+1; j<nodes.length; j++) {
+                    let dx = nodes[i].x - nodes[j].x;
+                    let dy = nodes[i].y - nodes[j].y;
+                    let dist = Math.sqrt(dx*dx + dy*dy);
+                    if(dist < 350) {
+                        graphCtx.globalAlpha = 1 - dist/350;
+                        graphCtx.beginPath();
+                        graphCtx.moveTo(nodes[i].x, nodes[i].y);
+                        graphCtx.lineTo(nodes[j].x, nodes[j].y);
+                        graphCtx.stroke();
+                    }
+                }
+            }
+            graphCtx.globalAlpha = 1;
+            nodes.forEach(node => {
+                graphCtx.fillStyle = 'rgba(17, 13, 24, 0.9)';
+                graphCtx.beginPath();
+                graphCtx.arc(node.x, node.y, node.r, 0, Math.PI*2);
+                graphCtx.fill();
+                graphCtx.strokeStyle = '#b299d6';
+                graphCtx.lineWidth = 2;
+                graphCtx.stroke();
+                graphCtx.font = '20px sans-serif';
+                graphCtx.textAlign = 'center';
+                graphCtx.textBaseline = 'middle';
+                graphCtx.fillText(node.sym, node.x, node.y);
+            });
+        }
+    </script>
 </body>
 </html>

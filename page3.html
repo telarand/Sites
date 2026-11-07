@@ -2,319 +2,692 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <!-- Адаптивный viewport для мобильных устройств -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>PARADOX LEGACY | Расследуйте свои преступления</title>
-    <!-- Подключаем Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
-        /* ---------- БАЗОВЫЕ СТИЛИ (оригинал с адаптивными улучшениями) ---------- */
+        :root {
+            --color-graphite: #0a0a0c;
+            --color-steel: #8fa3ad;
+            --color-red: #ff2a2a;
+            --color-film: #d8cfc0;
+            --color-amber: #e0a32e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            margin: 0;
-            font-family: 'Share Tech Mono', monospace;
-            background: #1a1a1a;
-            color: #ff4444;
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--color-graphite);
+            color: #ffffff;
+            overflow-x: hidden;
             line-height: 1.6;
+            cursor: none; /* Прячем стандартный курсор */
         }
-        .glitch-bg {
+
+        /* === КИНЕМАТОГРАФИЧНЫЙ КУРСОР И ОСВЕЩЕНИЕ === */
+        .cursor-dot {
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: url('static-noise.gif');  /* сохраняем оригинал */
-            opacity: 0.1;
-            z-index: -1;
+            top: 0; left: 0;
+            width: 6px; height: 6px;
+            background: var(--color-red);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, background 0.2s;
         }
-        .header {
-            padding: 2rem 1rem;
-            text-align: center;
-            border-bottom: 1px solid #ff4444;
-            position: relative;
+
+        .cursor-ring {
+            position: fixed;
+            top: 0; left: 0;
+            width: 30px; height: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s ease-out, width 0.3s, height 0.3s, border-color 0.3s;
         }
-        .nav {
-            display: flex;
-            flex-wrap: wrap;          /* перенос ссылок на мобильных */
-            justify-content: center;
-            gap: 0.8rem 1.8rem;
+
+        .mouse-light {
+            position: fixed;
+            top: 0; left: 0;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(255,42,42,0.05) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 1;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s;
         }
-        .nav a {
-            color: #ff4444;
-            text-decoration: none;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-            padding: 0.4rem 0.2rem;   /* увеличенная область касания */
-            transition: color 0.2s, text-shadow 0.2s, border-bottom 0.2s;
-            border-bottom: 1px solid transparent;
+
+        /* === ЭФФЕКТЫ БИТОЙ ПЛЕНКИ И ПОМЕХ === */
+        .film-grain {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 1000; opacity: 0.08;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAA5OTkAAABERERmZmYzMzNmZmYzMzM6OjpFRUUAAACZB1LXAAAACHRSTlMAMwA3MzMzMzNzCZ0AAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAVdEVYdENvbnRlbnRUT1BPIGNsaXBpbmdFbnQAoAAACwAAAAAYLR0zAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAOElEQVQ4jWNgGAWjYBSMglEwCkbBSAcCBgYGSQ4uBh8mJiZ6bTARMwMDgz+CN4A3KwMDgyEjIyPjzZkAAO7sDh8+XjxPAAAAAElFTkSuQmCC');
+            animation: grain 0.3s steps(1) infinite;
         }
-        .nav a:hover {
-            color: #ff8888;
-            text-shadow: 0 0 5px #ff4444;
-            border-bottom-color: #ff4444;
+        
+        @keyframes grain {
+            0% { transform: translate(0, 0); } 10% { transform: translate(-5%, -10%); }
+            30% { transform: translate(3%, -15%); } 50% { transform: translate(-3%, 10%); }
+            70% { transform: translate(5%, -5%); } 90% { transform: translate(-1%, 5%); }
+            100% { transform: translate(0, 0); }
         }
-        .nav a:active {
-            color: #ff8888;
+
+        .scanlines {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 999;
+            background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.02), rgba(255,255,255,0.02) 1px, transparent 1px, transparent 3px);
         }
-        .hero {
-            height: 70vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            position: relative;
+
+        /* === ГЛОБАЛЬНЫЙ ГЛЮЧ (Активируется на низкой когерентности) === */
+        body.glitch-active .scanlines {
+            animation: shake 0.2s infinite;
+            background: repeating-linear-gradient(to bottom, rgba(255,42,42,0.1), rgba(255,42,42,0.1) 1px, transparent 1px, transparent 2px);
         }
-        .hero h1 {
-            font-size: 5rem;
-            margin: 0;
-            text-shadow: 3px 3px 0 #000;
-            animation: glitch 2s infinite;
-            line-height: 1.1;
-            word-break: break-word;
-        }
-        @keyframes glitch {
-            0% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(-2px, -2px); }
-            60% { transform: translate(2px, 2px); }
-            80% { transform: translate(2px, -2px); }
+        
+        @keyframes shake {
+            0% { transform: translate(0); } 25% { transform: translate(-2px, 1px); }
+            50% { transform: translate(2px, -1px); } 75% { transform: translate(-1px, 2px); }
             100% { transform: translate(0); }
         }
-        .section {
-            padding: 4rem 2rem;
-            max-width: 1000px;
-            margin: 0 auto;
+
+        /* === HUD ИНТЕРФЕЙС === */
+        .hud-top {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 998;
+            background: linear-gradient(to bottom, rgba(10,10,12,0.9), transparent);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            pointer-events: none;
         }
-        .device-features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-top: 3rem;
-        }
-        .feature {
-            background: #2a2a2a;
-            padding: 1.5rem;
-            border-left: 3px solid #ff4444;
-            transition: 0.2s;
-        }
-        .feature:hover {
-            background: #3a3a3a;
-            border-left-color: #ff8888;
-        }
-        .evidence-files {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-        .evidence {
-            background: #333;
-            height: 150px;
+
+        .hud-stat {
             display: flex;
             align-items: center;
-            justify-content: center;
-            border: 1px solid #ff4444;
-            font-size: 0.8rem;
-            text-align: center;
-            padding: 0.5rem;
-            transition: 0.2s;
-        }
-        .evidence:hover {
-            background: #444;
-            border-color: #ff8888;
-        }
-        .footer {
-            text-align: center;
-            padding: 2rem 1rem;
-            border-top: 1px solid #ff4444;
-            font-size: 0.8rem;
+            gap: 10px;
+            color: var(--color-steel);
         }
 
-        /* ---------- КНОПКА НАЗАД — СТИЛИЗОВАННАЯ ПОД ХРОНО-ТЕМАТИКУ ---------- */
-        .back-link {
-            display: inline-block;
-            margin: 1rem 0 2rem;
-            padding: 0.8rem 2.2rem;
-            background: transparent;
-            border: 2px solid #ff4444;
-            color: #ff4444;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 1rem;
-            letter-spacing: 2px;
-            transition: 0.3s;
-            box-shadow: 0 0 10px rgba(255, 68, 68, 0.3);
-            text-shadow: 0 0 5px #ff4444;
+        .stat-bar {
+            width: 100px;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
             position: relative;
-            z-index: 1;
-        }
-        .back-link:hover {
-            background: #ff4444;
-            color: #1a1a1a;
-            border-color: #ffffff;
-            box-shadow: 0 0 30px #ff4444;
-            text-shadow: none;
-        }
-        .back-link:active {
-            background: #ff4444;
-            color: #1a1a1a;
-            border-color: #ffffff;
-            box-shadow: 0 0 30px #ff4444;
         }
 
-        /* ---------- АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ (≤900px) ---------- */
+        .stat-fill {
+            height: 100%;
+            background: var(--color-red);
+            width: 100%;
+            transition: width 0.3s ease;
+        }
+
+        /* Голос Кассандры */
+        .cassandra-box {
+            position: fixed;
+            bottom: 30px; right: 30px;
+            max-width: 300px;
+            background: rgba(10,10,12,0.85);
+            border-left: 2px solid var(--color-red);
+            padding: 15px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--color-film);
+            z-index: 998;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s, transform 0.5s;
+            pointer-events: none;
+            backdrop-filter: blur(4px);
+        }
+
+        .cassandra-box.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .cassandra-label {
+            color: var(--color-red);
+            font-size: 0.7rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* === НАВИГАЦИЯ === */
+        header {
+            position: fixed;
+            top: 0; width: 100%;
+            padding: 2.5rem 3rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .logo {
+            font-weight: 700; font-size: 1.2rem; letter-spacing: 4px;
+            color: #fff; text-transform: uppercase; text-decoration: none;
+            border-left: 3px solid var(--color-red); padding-left: 10px;
+        }
+        .logo span { color: var(--color-red); }
+
+        nav ul { list-style: none; display: flex; gap: 2.5rem; }
+        nav a {
+            color: var(--color-steel); text-decoration: none;
+            font-family: 'Share Tech Mono', monospace; font-size: 0.9rem;
+            text-transform: uppercase; transition: color 0.2s;
+        }
+        nav a:hover { color: #fff; }
+
+        /* === HERO СЕКЦИЯ === */
+        .hero {
+            height: 100vh;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            text-align: center; position: relative;
+            background: radial-gradient(circle at center, #1a1a1d 0%, var(--color-graphite) 70%);
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            width: 150vw; height: 2px; background: var(--color-red);
+            box-shadow: 0 0 15px var(--color-red);
+            transform: translate(-50%, -50%) rotate(-5deg) scaleX(0);
+            animation: tear 4s ease-out forwards;
+        }
+
+        @keyframes tear {
+            0% { transform: translate(-50%, -50%) rotate(-5deg) scaleX(0); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translate(-50%, -50%) rotate(-5deg) scaleX(1); opacity: 0.5; }
+        }
+
+        .hero h1 {
+            font-size: 8rem; font-weight: 700; line-height: 0.9;
+            text-transform: uppercase; letter-spacing: -2px;
+            position: relative; z-index: 2;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+
+        .hero h1 .accent {
+            display: block; font-size: 3.5rem; font-weight: 300;
+            letter-spacing: 15px; color: var(--color-red);
+            margin-top: 10px; text-shadow: 0 0 20px rgba(255, 42, 42, 0.5);
+        }
+
+        .glitch-text { position: relative; }
+        .glitch-text::before, .glitch-text::after {
+            content: attr(data-text); position: absolute; top: 0; left: 0;
+            width: 100%; background: var(--color-graphite); overflow: hidden;
+        }
+        .glitch-text::before {
+            left: 2px; text-shadow: -1px 0 var(--color-red);
+            clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+            animation: glitch-anim 3s infinite linear alternate-reverse;
+        }
+        .glitch-text::after {
+            left: -2px; text-shadow: -1px 0 var(--color-steel);
+            clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
+            animation: glitch-anim2 2.5s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim {
+            0% { clip-path: inset(10% 0 85% 0); } 20% { clip-path: inset(40% 0 40% 0); }
+            40% { clip-path: inset(80% 0 5% 0); } 60% { clip-path: inset(20% 0 60% 0); }
+            80% { clip-path: inset(60% 0 20% 0); } 100% { clip-path: inset(30% 0 50% 0); }
+        }
+        @keyframes glitch-anim2 {
+            0% { clip-path: inset(70% 0 20% 0); } 20% { clip-path: inset(10% 0 80% 0); }
+            40% { clip-path: inset(50% 0 30% 0); } 60% { clip-path: inset(80% 0 5% 0); }
+            80% { clip-path: inset(20% 0 70% 0); } 100% { clip-path: inset(40% 0 40% 0); }
+        }
+
+        .tagline {
+            font-family: 'Share Tech Mono', monospace; margin-top: 2rem;
+            font-size: 1.2rem; color: var(--color-film); letter-spacing: 2px;
+            border-top: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 10px 20px; background: rgba(255,255,255,0.02); backdrop-filter: blur(2px);
+        }
+
+        /* === ОБЩИЕ СЕКЦИИ И АНИМАЦИЯ ПОЯВЛЕНИЯ === */
+        .section {
+            padding: 8rem 3rem; max-width: 1400px;
+            margin: 0 auto; position: relative; z-index: 2;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-header {
+            margin-bottom: 4rem; display: flex; align-items: center; gap: 20px;
+        }
+        .section-number {
+            font-family: 'Share Tech Mono', monospace; color: var(--color-red);
+            font-size: 1rem; border: 1px solid var(--color-red); padding: 5px 10px;
+        }
+        .section-title {
+            font-size: 3rem; text-transform: uppercase;
+            font-weight: 500; letter-spacing: 2px; line-height: 1;
+        }
+        .section-subtitle {
+            color: var(--color-steel); font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem; margin-top: 10px;
+        }
+
+        /* === СТОЛПЫ ДИЗАЙНА === */
+        .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+        .pillar-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.05); padding: 2rem;
+            position: relative; transition: all 0.3s ease; overflow: hidden;
+        }
+        .pillar-card:hover {
+            border-color: var(--color-red); transform: translateY(-5px);
+        }
+        .pillar-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+            background: var(--color-red); transform: scaleX(0); transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+        .pillar-card:hover::before { transform: scaleX(1); }
+        .pillar-icon {
+            font-size: 2rem; color: var(--color-red); margin-bottom: 1rem;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        .pillar-title {
+            font-size: 1.5rem; text-transform: uppercase; margin-bottom: 1rem; font-weight: 700;
+        }
+        .pillar-text {
+            color: var(--color-steel); font-family: 'Share Tech Mono', monospace; font-size: 0.9rem;
+        }
+
+        /* === ПАРАДОКС-МОДУЛЬ === */
+        .module-section { background: #050507; }
+        .module-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+        }
+        .device-render {
+            position: relative; height: 400px;
+            background: radial-gradient(circle, rgba(255,42,42,0.1), transparent 70%);
+            display: flex; justify-content: center; align-items: center;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .device-core {
+            width: 150px; height: 150px; border: 2px solid var(--color-red);
+            transform: rotate(45deg); animation: pulse-core 3s infinite; position: relative;
+        }
+        .device-core::after {
+            content: 'PM-9'; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-family: 'Share Tech Mono', monospace; color: var(--color-red); font-size: 1.5rem;
+        }
+        @keyframes pulse-core {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 42, 42, 0.4); }
+            50% { box-shadow: 0 0 0 20px rgba(255, 42, 42, 0); }
+        }
+        .mechanic-list { list-style: none; }
+        .mechanic-item {
+            margin-bottom: 2rem; padding-left: 20px;
+            border-left: 2px solid rgba(255,255,255,0.1); transition: border-color 0.3s;
+        }
+        .mechanic-item:hover { border-left-color: var(--color-red); }
+        .mechanic-name {
+            font-size: 1.3rem; text-transform: uppercase; color: var(--color-film);
+            margin-bottom: 0.5rem; display: flex; justify-content: space-between;
+        }
+        .mechanic-key {
+            font-family: 'Share Tech Mono', monospace; font-size: 0.8rem;
+            color: var(--color-red); border: 1px solid var(--color-red); padding: 0 8px;
+        }
+        .mechanic-desc { color: var(--color-steel); font-size: 1rem; }
+
+        /* === ДОСКА ДЕЛА === */
+        .board { background: #1a1a1a; padding: 3rem; border: 1px dashed rgba(255,255,255,0.1);
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem; position: relative;
+        }
+        .board::before {
+            content: ''; position: absolute; top: 20%; left: 10%;
+            width: 80%; height: 60%; border: 1px solid rgba(255, 42, 42, 0.2);
+            transform: rotate(-2deg); pointer-events: none;
+        }
+        .evidence-card {
+            background: #0f0f0f; border: 1px solid #333; padding: 1rem;
+            font-family: 'Share Tech Mono', monospace; font-size: 0.85rem;
+            color: #aaa; transition: all 0.2s; cursor: none;
+        }
+        .evidence-card:hover {
+            background: #000; border-color: var(--color-red); transform: scale(1.02);
+        }
+        .evidence-label {
+            color: var(--color-red); font-weight: bold; display: block;
+            margin-bottom: 5px; font-size: 0.75rem; text-transform: uppercase;
+        }
+
+        /* === ПОДВАЛ === */
+        footer {
+            background: #000; padding: 4rem 3rem; text-align: center;
+            border-top: 1px solid #1a1a1a; position: relative; z-index: 2;
+        }
+        .warning {
+            color: var(--color-red); font-family: 'Share Tech Mono', monospace;
+            text-transform: uppercase; letter-spacing: 3px; margin-bottom: 2rem;
+            font-size: 1.2rem; animation: flicker 4s infinite;
+        }
+        @keyframes flicker {
+            0%, 100% { opacity: 1; } 50% { opacity: 0.6; } 52% { opacity: 1; }
+        }
+        .footer-text { color: #555; font-size: 0.8rem; }
+
+        /* === АДАПТИВНОСТЬ === */
         @media screen and (max-width: 900px) {
-            .hero h1 {
-                font-size: 4rem;
-            }
-        }
-
-        /* ---------- АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ (≤768px) ---------- */
-        @media screen and (max-width: 768px) {
-            .header {
-                padding: 1.2rem 0.5rem;
-            }
-            .nav {
-                gap: 0.5rem 1.2rem;
-            }
-            .nav a {
-                font-size: 0.8rem;
-                padding: 0.5rem 0.2rem;
-            }
-
-            .hero {
-                height: 70vh;
-            }
-            .hero h1 {
-                font-size: 3rem;
-            }
-
-            .section {
-                padding: 3rem 1.2rem;
-            }
-            .section h2 {
-                font-size: 1.8rem !important;
-                word-break: break-word;
-            }
-
-            .device-features {
-                grid-template-columns: 1fr;   /* карточки в столбик */
-                gap: 1.2rem;
-            }
-            .feature {
-                padding: 1.2rem;
-            }
-
-            .evidence-files {
-                grid-template-columns: repeat(2, 1fr); /* два в ряд */
-                gap: 0.8rem;
-            }
-            .evidence {
-                height: 130px;
-                font-size: 0.75rem;
-            }
-        }
-
-        /* ---------- МАЛЕНЬКИЕ ТЕЛЕФОНЫ (≤480px) ---------- */
-        @media screen and (max-width: 480px) {
-            .hero h1 {
-                font-size: 2.2rem;
-            }
-
-            .nav a {
-                font-size: 0.7rem;
-            }
-
-            .section h2 {
-                font-size: 1.5rem !important;
-            }
-
-            .evidence-files {
-                grid-template-columns: 1fr;   /* один в ряд */
-            }
-            .evidence {
-                height: 120px;
-            }
-        }
-
-        /* ---------- ПЛАНШЕТЫ В ПОРТРЕТЕ (769-1024px) ---------- */
-        @media screen and (min-width: 769px) and (max-width: 1024px) {
-            .hero h1 {
-                font-size: 3.5rem;
-            }
-            .section {
-                padding: 3.5rem 1.5rem;
-            }
-            .evidence-files {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        /* ---------- МИКРО-ПРАВКИ ---------- */
-        .section h2 {
-            font-size: 2rem;
-            margin-top: 0;
-        }
-        .feature h3 {
-            margin-top: 0;
-            color: #ff8888;
-        }
-        .evidence {
-            color: #ffaaaa;
+            body { cursor: auto; }
+            .cursor-dot, .cursor-ring, .mouse-light { display: none; }
+            .hero h1 { font-size: 4rem; }
+            .hero h1 .accent { font-size: 1.5rem; letter-spacing: 5px; }
+            .pillars, .module-grid { grid-template-columns: 1fr; }
+            .section { padding: 4rem 1.5rem; }
+            header { padding: 1rem; }
+            nav { display: none; }
+            .cassandra-box { bottom: 10px; right: 10px; max-width: 200px; font-size: 0.75rem; }
         }
     </style>
 </head>
 <body>
-    <div class="glitch-bg"></div>
-    
-    <header class="header">
-        <nav class="nav">
-            <a href="#investigation">Расследование</a>
-            <a href="#device">Устройство</a>
-            <a href="#evidence">Доказательства</a>
-            <a href="#truth">Истина</a>
+    <!-- Курсор и свет -->
+    <div class="mouse-light"></div>
+    <div class="cursor-ring"></div>
+    <div class="cursor-dot"></div>
+
+    <!-- Эффекты -->
+    <div class="scanlines"></div>
+    <div class="film-grain"></div>
+
+    <!-- HUD -->
+    <div class="hud-top">
+        <div class="hud-stat">
+            <span>СТАТУС:</span>
+            <span style="color: var(--color-red);">СКРЫТ</span>
+        </div>
+        <div class="hud-stat">
+            <span>КОГЕРЕНТНОСТЬ:</span>
+            <div class="stat-bar"><div class="stat-fill" id="coherence-bar"></div></div>
+            <span id="coherence-val">100%</span>
+        </div>
+    </div>
+
+    <!-- Голос ИИ -->
+    <div class="cassandra-box" id="cassandra-box">
+        <span class="cassandra-label">// КАССАНДРА :: СЛОЙ 6</span>
+        <span id="cassandra-text"></span>
+    </div>
+
+    <header>
+        <a href="#" class="logo">PARADOX<span>::</span>LEGACY</a>
+        <nav>
+            <ul>
+                <li><a href="#story">Расследование</a></li>
+                <li><a href="#module">ПМ-9 "Тезей"</a></li>
+                <li><a href="#board">Доска дела</a></li>
+            </ul>
         </nav>
     </header>
 
     <section class="hero">
-        <h1>PARADOX<br>LEGACY</h1>
+        <h1 class="glitch-text" data-text="PARADOX">PARADOX<span class="accent">LEGACY</span></h1>
+        <p class="tagline">// РАССЛЕДУЙТЕ СВОИ ПРЕСТУПЛЕНИЯ</p>
     </section>
 
-    <section id="investigation" class="section">
-        <!-- Стилизованная кнопка вместо обычной ссылки -->
-        <a href="index.html" class="back-link">← Назад к прямоугольникам</a>
-        <h2>ВАШЕ ДЕЛО ПРОТИВ ВАС САМОГО</h2>
-        <p>Вы — агент Корпуса Временной Стабильности. Ваша работа — останавливать хроно-преступников. Но когда главным террористом времени оказывается ваша собственная будущая версия, реальность начинает рушиться. Расследуйте собственные преступления, пока КВС охотится на вас.</p>
-    </section>
-
-    <section id="device" class="section">
-        <h2>ПАРАДОКС-МОДУЛЬ</h2>
-        <p>Экспериментальное устройство, дающее контроль над временем — и над вашим рассудком.</p>
+    <section id="story" class="section">
+        <div class="section-header reveal">
+            <div class="section-number">01</div>
+            <div>
+                <h2 class="section-title">Агент против себя</h2>
+                <p class="section-subtitle">// КВС · ОПЕРАТИВНАЯ ДИРЕКЦИЯ · ФАЙЛ #0</p>
+            </div>
+        </div>
         
-        <div class="device-features">
-            <div class="feature">
-                <h3>МГНОВЕННАЯ ПЕРЕМОТКА</h3>
-                <p>Отматывайте время на 15 секунд назад, чтобы исправить роковые ошибки.</p>
+        <div class="pillars">
+            <div class="pillar-card reveal">
+                <div class="pillar-icon">[ СЛЕДОВАТЕЛЬ ]</div>
+                <h3 class="pillar-title">Вы — виновный</h3>
+                <p class="pillar-text">Ронан Вейл, агент Корпуса Временной Стабильности. Ваша работа — ловить хроно-террористов. Но главный преступник, за которым вы охотитесь — это вы сами из будущего.</p>
             </div>
-            <div class="feature">
-                <h3>ВРЕМЕННЫЕ ЭХА</h3>
-                <p>Создавайте копии себя для тактических маневров и отвлечения внимания.</p>
+            <div class="pillar-card reveal">
+                <div class="pillar-icon">[ ПАМЯТЬ ]</div>
+                <h3 class="pillar-title">15 секунд назад</h3>
+                <p class="pillar-text">Перемотка стирает мир, но не вашу память. Отматывайте время, чтобы перепланировать штурм, избежать смерти и исправить роковые ошибки. Память врагов стирается. Ваша — остается.</p>
             </div>
-            <div class="feature">
-                <h3>КОЛЛАПС РЕАЛЬНОСТИ</h3>
-                <p>Ускоряйте время в локальной зоне, превращая врагов в пыль.</p>
+            <div class="pillar-card reveal">
+                <div class="pillar-icon">[ РАССУДОК ]</div>
+                <h3 class="pillar-title">Цена силы</h3>
+                <p class="pillar-text">Каждое использование Парадокс-модуля сжирает вашу когерентность. Чем больше вы манипулируете временем, тем сильнее глюки. Паранойя становится не просто чувством — она становится игровой системой.</p>
             </div>
         </div>
     </section>
 
-    <section id="evidence" class="section">
-        <h2>ДОКАЗАТЕЛЬСТВА ПРЕСТУПЛЕНИЙ</h2>
-        <div class="evidence-files">
-            <div class="evidence">[ФОТО: Место преступления с временными аномалиями]</div>
-            <div class="evidence">[ЗАПИСЬ: Перехваченная коммуникация вашего голоса]</div>
-            <div class="evidence">[ДОКУМЕНТ: Файл КВС с вашим фото в графе "РАЗЫСКИВАЕТСЯ"]</div>
-            <div class="evidence">[ГЛЮК: Искаженное сообщение от вас самого]</div>
+    <section id="module" class="section module-section">
+        <div class="section-header reveal">
+            <div class="section-number">02</div>
+            <div>
+                <h2 class="section-title">Парадокс-Модуль ПМ-9</h2>
+                <p class="section-subtitle">// КВС · НЕЙРОИНТЕРФЕЙС "ТЕЗЕЙ" · СОЗДАТЕЛЬ: Д-Р СЕВЕР ЛАНГ</p>
+            </div>
+        </div>
+
+        <div class="module-grid">
+            <div class="device-render reveal">
+                <div class="device-core"></div>
+            </div>
+
+            <ul class="mechanic-list reveal">
+                <li class="mechanic-item">
+                    <div class="mechanic-name">Мгновенная перемотка <span class="mechanic-key">[R]</span></div>
+                    <div class="mechanic-desc">Откатывает мир на 15 секунд назад. Возвращает врагов, разрушения и снаряды в исходное состояние. 15 секунд после отката враги видят "призраков" стертой линии.</div>
+                </li>
+                <li class="mechanic-item">
+                    <div class="mechanic-name">Временные эха <span class="mechanic-key">[E]</span></div>
+                    <div class="mechanic-desc">Создает копию носителя. Эхо не наносит урона — оно отвлекает, нажимает панели и умирает вместо вас. На низкой когерентности эха начинают смотреть на вас.</div>
+                </li>
+                <li class="mechanic-item">
+                    <div class="mechanic-name">Коллапс реальности <span class="mechanic-key">[Q]</span></div>
+                    <div class="mechanic-desc">Создает сферу ускоренного времени. Враги обращаются в пыль, мосты стареют и рушатся, замки рассыпаются. Оставляет шрам времени, видимый со спутников КВС.</div>
+                </li>
+            </ul>
         </div>
     </section>
 
-    <footer class="footer">
-        <p>PARADOX LEGACY — КОРПУС ВРЕМЕННОЙ СТАБИЛЬНОСТИ ПРЕДУПРЕЖДАЕТ: НЕ ДОВЕРЯЙТЕ НИКОМУ. ДАЖЕ СЕБЕ.</p>
+    <section id="board" class="section board-section">
+        <div class="section-header reveal">
+            <div class="section-number">03</div>
+            <div>
+                <h2 class="section-title">Доска дела</h2>
+                <p class="section-subtitle">// ХАБ "КЕССОН" · ПОДПОЛЬНЫЙ АРХИВ МИЛЫ ТЭН</p>
+            </div>
+        </div>
+
+        <div class="board reveal">
+            <div class="evidence-card">
+                <span class="evidence-label">Фото-улика</span>
+                Место преступления с призрачными контейнерами из стертой линии.
+            </div>
+            <div class="evidence-card">
+                <span class="evidence-label">Запись</span>
+                Перехваченная коммуникация. Голос на записи — ваш собственный.
+            </div>
+            <div class="evidence-card">
+                <span class="evidence-label">Документ</span>
+                Файл КВС. В графе "РАЗЫСКИВАЕТСЯ" — ваше фото. Заведено задним числом.
+            </div>
+            <div class="evidence-card">
+                <span class="evidence-label">Глюк</span>
+                Искаженное сообщение от вас самого. Могло быть подделкой Корпуса.
+            </div>
+            <div class="evidence-card">
+                <span class="evidence-label">Предмет</span>
+                Вещественная улика со шрамом времени. Невозможно отмотать.
+            </div>
+            <div class="evidence-card">
+                <span class="evidence-label">Протокол Стекло</span>
+                Расчет события 2051 года. Схлопывание линии с вероятностью 87%.
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="warning">! НЕ ДОВЕРЯЙТЕ НИКОМУ. ДАЖЕ СЕБЕ !</div>
+        <p class="footer-text">PARADOX LEGACY · КОРПУС ВРЕМЕННОЙ СТАБИЛЬНОСТИ · 2026/2046</p>
     </footer>
+
+    <script>
+        // === ЛОГИКА КУРСОРА И СВЕТА ===
+        const dot = document.querySelector('.cursor-dot');
+        const ring = document.querySelector('.cursor-ring');
+        const light = document.querySelector('.mouse-light');
+        
+        let mouseX = 0, mouseY = 0;
+        let ringX = 0, ringY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            dot.style.left = mouseX + 'px';
+            dot.style.top = mouseY + 'px';
+            light.style.left = mouseX + 'px';
+            light.style.top = mouseY + 'px';
+        });
+
+        // Плавное следование кольца (эффект инерции)
+        function animateRing() {
+            let distX = mouseX - ringX;
+            let distY = mouseY - ringY;
+            
+            ringX += distX * 0.15;
+            ringY += distY * 0.15;
+            
+            ring.style.left = ringX + 'px';
+            ring.style.top = ringY + 'px';
+            
+            requestAnimationFrame(animateRing);
+        }
+        animateRing();
+
+        // Рост кольца при наведении на кликабельные элементы
+        document.querySelectorAll('a, .pillar-card, .mechanic-item, .evidence-card').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                ring.style.width = '50px';
+                ring.style.height = '50px';
+                ring.style.borderColor = 'var(--color-red)';
+                dot.style.background = '#fff';
+            });
+            el.addEventListener('mouseleave', () => {
+                ring.style.width = '30px';
+                ring.style.height = '30px';
+                ring.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                dot.style.background = 'var(--color-red)';
+            });
+        });
+
+        // === ИНТЕРФЕЙС КОГЕРЕНТНОСТИ (Падает при скролле) ===
+        const coherenceBar = document.getElementById('coherence-bar');
+        const coherenceVal = document.getElementById('coherence-val');
+        const body = document.body;
+
+        window.addEventListener('scroll', () => {
+            const scrollDepth = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+            // Падаем до 15%, чтобы не ломать читаемость полностью
+            const currentCoh = Math.max(15, 100 - Math.floor(scrollDepth * 85));
+            
+            coherenceBar.style.width = currentCoh + '%';
+            coherenceVal.innerText = currentCoh + '%';
+
+            // Включаем глитчи на низкой когерентности
+            if (currentCoh < 50) {
+                body.classList.add('glitch-active');
+            } else {
+                body.classList.remove('glitch-active');
+            }
+        });
+
+        // === ПЛАВНОЕ ПОЯВЛЕНИЕ ЭЛЕМЕНТОВ ПРИ ПРОКРУТКЕ ===
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => {
+            observer.observe(el);
+        });
+
+        // === ГОЛОС КАССАНДРЫ ===
+        const cassandraBox = document.getElementById('cassandra-box');
+        const cassandraText = document.getElementById('cassandra-text');
+        const phrases = [
+            "Ты не помнишь, но это сделал ты.",
+            "Шрам остается. Я вижу его.",
+            "Отматывай. Мир забудет. Ты — нет.",
+            "Корпус лжет. Но я тоже не говорю все.",
+            "Не доверяйте никому. Даже мне.",
+            "Они стирают людей, а не время.",
+            "Твоя будущая версия уже здесь."
+        ];
+
+        function typeText(text, callback) {
+            let i = 0;
+            cassandraText.innerHTML = '';
+            const interval = setInterval(() => {
+                if (i < text.length) {
+                    cassandraText.innerHTML += text.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(interval);
+                    callback();
+                }
+            }, 40);
+        }
+
+        function showCassandra() {
+            const phrase = phrases[Math.floor(Math.random() * phrases.length)];
+            cassandraBox.classList.add('active');
+            typeText(phrase, () => {
+                setTimeout(() => {
+                    cassandraBox.classList.remove('active');
+                }, 4000);
+            });
+        }
+
+        // Запускаем Кассандру каждые 15-25 секунд
+        setInterval(() => {
+            // Не показываем, если вкладка неактивна
+            if (!document.hidden) {
+                showCassandra();
+            }
+        }, 18000); 
+    </script>
 </body>
 </html>

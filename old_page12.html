@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <!-- Улучшаем viewport для мобильных, но сохраняем оригинальный -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>COLOSSEUM OVERLORD · Хозяин арены</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;900&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* ---------- БАЗОВЫЕ СТИЛИ (с минимальными адаптивными доработками) ---------- */
+        body {
+            margin: 0;
+            font-family: 'Roboto Condensed', sans-serif;
+            background: #6b3f2b;
+            color: #fcedc5;
+            background-image: repeating-linear-gradient(45deg, #7a4e2e 0px, #7a4e2e 2px, #865a36 2px, #865a36 8px);
+        }
+        .sand {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="40" r="3" fill="%23dba959" opacity="0.3"/><circle cx="70" cy="20" r="2" fill="%23e6c285" opacity="0.3"/><circle cx="45" cy="80" r="4" fill="%23c49a6c" opacity="0.3"/></svg>');
+            background-size: 120px 120px;
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .header {
+            padding: 2rem 1rem;
+            background: #4e2f1d;
+            border-bottom: 3px solid #e3b37c;
+            display: flex;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+        }
+        .nav {
+            display: flex;
+            flex-wrap: wrap;          /* перенос ссылок на узких экранах */
+            justify-content: center;
+            gap: 0.8rem 1.5rem;
+        }
+        .nav a {
+            color: #fcedc5;
+            text-decoration: none;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-family: 'Cinzel', serif;
+            letter-spacing: 3px;
+            font-size: 0.8rem;
+            padding: 0.4rem 0.2rem;   /* увеличиваем область касания */
+            transition: color 0.2s, text-shadow 0.2s;
+            border-bottom: 1px solid transparent;
+        }
+        .nav a:hover {
+            color: #ffe0a5;
+            border-bottom-color: #e3b37c;
+        }
+        .nav a:active {
+            color: #ffd98c;
+        }
+        .hero {
+            height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: url('colosseum-bg.jpg') center/cover no-repeat;
+            position: relative;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(79, 44, 27, 0.75);
+        }
+        .hero-content {
+            position: relative;
+            z-index: 3;
+            padding: 1rem;
+        }
+        .hero h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 4.5rem;
+            margin: 0;
+            color: #ffddaa;
+            text-shadow: 6px 6px 0 #4f2c1a, 0 0 30px #ffb471;
+            letter-spacing: 8px;
+            line-height: 1.1;
+        }
+        .hero p {
+            font-size: 1.5rem;
+            color: #ffeac1;
+            margin: 1.5rem 0 0;
+        }
+        .section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.8rem;
+            margin-top: 3rem;
+        }
+        .tactic-card {
+            background: #dbb47a;
+            border: 3px solid #e3b37c;
+            padding: 2rem;
+            border-radius: 20px 5px 20px 5px;
+            box-shadow: 8px 8px 0 #5c3a25;
+            color: #1e130f;
+        }
+        .gladiator-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.2rem;
+            margin-top: 2rem;
+        }
+        .gladiator {
+            background: #ad7a55;
+            border: 2px solid #ffd29b;
+            height: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #1f150e;
+            font-weight: bold;
+            border-radius: 12px;
+            padding: 0.5rem;
+            text-align: center;
+            font-size: 1rem;
+        }
+        .footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            border-top: 3px solid #e3b37c;
+            background: #3f2417;
+            color: #f2dba5;
+            font-size: 0.8rem;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.8rem 2.2rem;
+            background: #b27a4c;
+            border: 2px solid #ffddb0;
+            color: #2d1d14;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 50px;
+            transition: 0.2s;
+        }
+        .back-link:hover {
+            background: #efc48c;
+            border-color: white;
+            color: #1a0f0a;
+        }
+        .back-link:active {
+            background: #efc48c;
+            border-color: white;
+            color: #1a0f0a;
+        }
+
+        /* ---------- АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ (≤900px) ---------- */
+        @media screen and (max-width: 900px) {
+            .hero h1 {
+                font-size: 3.8rem;
+                letter-spacing: 6px;
+            }
+            .hero p {
+                font-size: 1.3rem;
+            }
+        }
+
+        /* ---------- АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ (≤768px) ---------- */
+        @media screen and (max-width: 768px) {
+            .header {
+                padding: 1.2rem 0.5rem;
+            }
+            .nav {
+                gap: 0.5rem 1rem;
+            }
+            .nav a {
+                font-size: 0.7rem;
+                letter-spacing: 2px;
+                padding: 0.5rem 0.2rem;
+            }
+
+            .hero {
+                height: 70vh;
+            }
+            .hero h1 {
+                font-size: 2.8rem;
+                letter-spacing: 3px;
+                text-shadow: 4px 4px 0 #4f2c1a, 0 0 20px #ffb471;
+            }
+            .hero p {
+                font-size: 1.1rem;
+                margin-top: 1rem;
+            }
+            .back-link {
+                margin-top: 1.5rem;
+                padding: 0.6rem 1.8rem;
+                font-size: 0.8rem;
+            }
+
+            .section {
+                padding: 3rem 1.2rem;
+            }
+            .section h2 {
+                font-size: 1.8rem !important;   /* переопределяем inline-стиль */
+                border-bottom-width: 3px !important;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;   /* карточки в столбик */
+                gap: 1.5rem;
+            }
+            .tactic-card {
+                padding: 1.6rem;
+                box-shadow: 6px 6px 0 #5c3a25;
+            }
+
+            .gladiator-showcase {
+                grid-template-columns: repeat(2, 1fr); /* два в ряд */
+                gap: 1rem;
+            }
+            .gladiator {
+                height: 130px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* ---------- МАЛЕНЬКИЕ ТЕЛЕФОНЫ (≤480px) ---------- */
+        @media screen and (max-width: 480px) {
+            .hero h1 {
+                font-size: 2rem;
+                letter-spacing: 2px;
+                text-shadow: 3px 3px 0 #4f2c1a, 0 0 15px #ffb471;
+            }
+            .hero p {
+                font-size: 1rem;
+                padding: 0 0.5rem;
+            }
+            .back-link {
+                padding: 0.5rem 1.4rem;
+                font-size: 0.7rem;
+            }
+
+            .nav a {
+                font-size: 0.65rem;
+                letter-spacing: 1.5px;
+            }
+
+            .section h2 {
+                font-size: 1.5rem !important;
+            }
+
+            .gladiator-showcase {
+                grid-template-columns: 1fr;   /* один в ряд */
+            }
+            .gladiator {
+                height: 120px;
+            }
+        }
+
+        /* ---------- ПЛАНШЕТЫ В ПОРТРЕТЕ (769-1024px) ---------- */
+        @media screen and (min-width: 769px) and (max-width: 1024px) {
+            .hero h1 {
+                font-size: 3.2rem;
+            }
+            .hero p {
+                font-size: 1.2rem;
+            }
+            .section {
+                padding: 4rem 1.5rem;
+            }
+        }
+
+        /* ---------- МИКРО-ПРАВКИ ДЛЯ АККУРАТНОСТИ ---------- */
+        .section h2 {
+            font-size: 2.2rem;
+            border-bottom: 4px solid #e3b37c;
+            display: inline-block;
+            margin-top: 0;
+            word-break: break-word;
+        }
+        .tactic-card h3 {
+            margin-top: 0;
+            color: #2b1a12;
+            font-size: 1.5rem;
+        }
+        .gladiator br {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sand"></div>
+    <header class="header">
+        <nav class="nav">
+            <a href="#school">Школа</a>
+            <a href="#deck">Колода</a>
+            <a href="#arena">Арена</a>
+            <a href="#factions">Фракции</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>COLOSSEUM OVERLORD</h1>
+            <p>Собери команду. Куй легенды. Властвуй.</p>
+            <a href="index.html" class="back-link">← Назад к прямоугольникам</a>
+        </div>
+    </section>
+
+    <section id="deck" class="section">
+        <!-- inline-стиль управляется через CSS с !important в медиазапросах -->
+        <h2 style="font-size: 2.2rem; border-bottom: 4px solid #e3b37c; display: inline-block;">🃏 ТАКТИЧЕСКАЯ КОЛОДА</h2>
+        <p>В реальном времени вы тянете карты: «Рывок», «Щит», «Ловушка», «Добивание». Комбинируйте карты у разных гладиаторов для мощных комбо.</p>
+        <div class="card-grid">
+            <div class="tactic-card">
+                <h3>РЫВОК</h3>
+                <p>Боец быстро сближается и наносит двойной урон.</p>
+            </div>
+            <div class="tactic-card">
+                <h3>ФАЛАНГА</h3>
+                <p>Все союзники получают блок на 5 секунд.</p>
+            </div>
+            <div class="tactic-card">
+                <h3>КРОВАВЫЙ КРИК</h3>
+                <p>Активирует ярость — увеличение урона при низком здоровье.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>⚔️ ГЛАДИАТОРЫ ШКОЛЫ</h2>
+        <div class="gladiator-showcase">
+            <div class="gladiator">[ МИРМИЛЛОН ]<br>Меч и щит</div>
+            <div class="gladiator">[ РЕТИАРИЙ ]<br>Сеть и трезубец</div>
+            <div class="gladiator">[ СЕКУТОР ]<br>Тяжёлый шлем</div>
+            <div class="gladiator">[ ЭССЕДАРИЙ ]<br>Колесница</div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>COLOSSEUM OVERLORD · ARENA MASTERS · MMXXIV</p>
+    </footer>
+</body>
+</html>

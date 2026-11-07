@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <!-- Адаптивный viewport — критически важно для мобильных устройств -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>AETHER COMMAND · Властелин неба</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Raleway:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* ---------- БАЗОВЫЕ СТИЛИ (оригинал с точечными адаптивными дополнениями) ---------- */
+        body {
+            margin: 0;
+            font-family: 'Raleway', sans-serif;
+            background: #0b1c2c;
+            color: #e6e3d3;
+            background-image: radial-gradient(circle at 10% 20%, #1f4e5f 0%, #0a1a2a 80%);
+        }
+        .clouds {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg width="400" height="200" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="30" r="20" fill="white" opacity="0.1"/><circle cx="120" cy="60" r="35" fill="white" opacity="0.1"/><circle cx="250" cy="20" r="30" fill="white" opacity="0.1"/><circle cx="320" cy="80" r="25" fill="white" opacity="0.1"/></svg>');
+            background-size: 400px 200px;
+            opacity: 0.25;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .header {
+            padding: 2rem 1rem;
+            text-align: center;
+            border-bottom: 2px solid #c0a86a;
+            background: rgba(11, 28, 44, 0.7);
+            backdrop-filter: blur(3px);
+            position: relative;
+            z-index: 2;
+        }
+        .nav {
+            display: flex;
+            flex-wrap: wrap;          /* перенос ссылок на мобильных */
+            justify-content: center;
+            gap: 0.8rem 1.8rem;
+        }
+        .nav a {
+            color: #e6e3d3;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 4px;
+            font-size: 0.85rem;
+            border-bottom: 1px solid transparent;
+            transition: 0.2s;
+            padding: 0.4rem 0.2rem;   /* увеличенная область касания */
+        }
+        .nav a:hover {
+            border-bottom-color: #c0a86a;
+            color: #f0e6c5;
+        }
+        .nav a:active {
+            border-bottom-color: #c0a86a;
+            color: #f0e6c5;
+        }
+        .hero {
+            height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            position: relative;
+            background: url('airship-battle.jpg') center/cover no-repeat;
+            background-blend-mode: overlay;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(6, 21, 31, 0.7);
+        }
+        .hero-content {
+            position: relative;
+            z-index: 3;
+            padding: 1rem;
+        }
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4.8rem;
+            margin: 0;
+            color: #f2e6c9;
+            text-shadow: 4px 4px 0 #4a6c7a, 0 0 40px #a1b9c2;
+            letter-spacing: 6px;
+            line-height: 1.1;
+        }
+        .hero p {
+            font-size: 1.4rem;
+            font-weight: 400;
+            color: #d8d0b5;
+            max-width: 700px;
+            margin: 1.5rem 0 0;
+        }
+        .section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        .wind-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        .tactic-card {
+            background: rgba(28, 52, 67, 0.7);
+            backdrop-filter: blur(4px);
+            padding: 2rem;
+            border-left: 8px solid #b89b5b;
+            border-radius: 0 12px 12px 0;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        .airship-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .ship {
+            background: #17313b;
+            border: 1px solid #b89b5b;
+            height: 160px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #ebdfc2;
+            padding: 0.5rem;
+            text-align: center;
+        }
+        .footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            border-top: 1px solid #c0a86a;
+            background: #05131c;
+            color: #aaa38b;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.9rem 2.4rem;
+            background: rgba(184, 155, 91, 0.2);
+            border: 2px solid #c0a86a;
+            color: #f0e6c5;
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 40px;
+            transition: 0.2s;
+        }
+        .back-link:hover {
+            background: #b89b5b;
+            color: #0b1c2c;
+        }
+        .back-link:active {
+            background: #b89b5b;
+            color: #0b1c2c;
+        }
+        a {
+            color: inherit;
+        }
+
+        /* ---------- АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ (≤900px) ---------- */
+        @media screen and (max-width: 900px) {
+            .hero h1 {
+                font-size: 3.8rem;
+                letter-spacing: 4px;
+            }
+            .hero p {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* ---------- АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ (≤768px) ---------- */
+        @media screen and (max-width: 768px) {
+            .header {
+                padding: 1.2rem 0.5rem;
+            }
+            .nav {
+                gap: 0.5rem 1.2rem;
+            }
+            .nav a {
+                font-size: 0.7rem;
+                letter-spacing: 2px;
+                padding: 0.5rem 0.2rem;
+            }
+
+            .hero {
+                height: 70vh;
+            }
+            .hero h1 {
+                font-size: 2.8rem;
+                letter-spacing: 3px;
+                text-shadow: 3px 3px 0 #4a6c7a, 0 0 30px #a1b9c2;
+            }
+            .hero p {
+                font-size: 1rem;
+                margin-top: 1rem;
+            }
+            .back-link {
+                margin-top: 1.5rem;
+                padding: 0.6rem 1.8rem;
+                font-size: 0.8rem;
+            }
+
+            .section {
+                padding: 3rem 1.2rem;
+            }
+            .section h2 {
+                font-size: 1.8rem !important;   /* переопределяем inline-стиль */
+                border-bottom-width: 1px !important;
+            }
+
+            .wind-grid {
+                grid-template-columns: 1fr;   /* карточки в столбик */
+                gap: 1.5rem;
+            }
+            .tactic-card {
+                padding: 1.6rem;
+            }
+
+            .airship-showcase {
+                grid-template-columns: repeat(2, 1fr); /* два в ряд */
+                gap: 1rem;
+            }
+            .ship {
+                height: 140px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* ---------- МАЛЕНЬКИЕ ТЕЛЕФОНЫ (≤480px) ---------- */
+        @media screen and (max-width: 480px) {
+            .hero h1 {
+                font-size: 2rem;
+                letter-spacing: 2px;
+                text-shadow: 2px 2px 0 #4a6c7a, 0 0 20px #a1b9c2;
+            }
+            .hero p {
+                font-size: 0.9rem;
+                padding: 0 0.5rem;
+            }
+            .back-link {
+                padding: 0.5rem 1.4rem;
+                font-size: 0.7rem;
+            }
+
+            .nav a {
+                font-size: 0.65rem;
+                letter-spacing: 1.5px;
+            }
+
+            .section h2 {
+                font-size: 1.5rem !important;
+            }
+
+            .airship-showcase {
+                grid-template-columns: 1fr;   /* окончательно в один столбец */
+            }
+            .ship {
+                height: 130px;
+            }
+        }
+
+        /* ---------- ПЛАНШЕТЫ В ПОРТРЕТЕ (769-1024px) ---------- */
+        @media screen and (min-width: 769px) and (max-width: 1024px) {
+            .hero h1 {
+                font-size: 3.2rem;
+            }
+            .hero p {
+                font-size: 1.1rem;
+            }
+            .section {
+                padding: 4rem 1.5rem;
+            }
+        }
+
+        /* ---------- МИКРО-ПРАВКИ ---------- */
+        .section h2 {
+            font-size: 2.2rem;
+            border-bottom: 2px solid #b89b5b;
+            display: inline-block;
+            margin-top: 0;
+            word-break: break-word;
+        }
+        .tactic-card h3 {
+            margin-top: 0;
+            color: #f0e2c0;
+        }
+        .ship br {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="clouds"></div>
+    <header class="header">
+        <nav class="nav">
+            <a href="#fleet">Флот</a>
+            <a href="#wind">Ветер</a>
+            <a href="#formations">Формации</a>
+            <a href="#campaign">Кампания</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>AETHER COMMAND</h1>
+            <p>Повелитель ветра. Тактик небес. Последняя надежда архипелагов.</p>
+            <a href="index.html" class="back-link">← Назад к прямоугольникам</a>
+        </div>
+    </section>
+
+    <section id="wind" class="section">
+        <!-- inline-стиль управляется медиазапросами через !important -->
+        <h2 style="font-size: 2.2rem; border-bottom: 2px solid #b89b5b; display: inline-block;">🌪️ ФИЗИКА ВЕТРА</h2>
+        <p style="font-size: 1.2rem; margin-top: 1.5rem;">Каждое судно реагирует на воздушные потоки. Фланговый ветер ускоряет, встречный — снижает манёвренность. Используйте восходящие потоки для внезапных атак и облачные фронты для укрытия.</p>
+    </section>
+
+    <section id="formations" class="section">
+        <h2>⚔️ ТАКТИЧЕСКИЕ ФОРМАЦИИ</h2>
+        <div class="wind-grid">
+            <div class="tactic-card">
+                <h3>КЛИН</h3>
+                <p>Пробивает вражеский строй. +30% к урону в лоб, но ослаблен фланг.</p>
+            </div>
+            <div class="tactic-card">
+                <h3>КАРЕ</h3>
+                <p>Круговая оборона. Повышенное сопротивление залпам, снижена скорость.</p>
+            </div>
+            <div class="tactic-card">
+                <h3>РОССЫПЬ</h3>
+                <p>Минимизирует урон от взрывов, позволяет окружать крупные цели.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="fleet" class="section">
+        <h2>✈️ ФЛАГМАНЫ НЕБА</h2>
+        <div class="airship-showcase">
+            <div class="ship">[ ГРОЗОВОЙ ОРЁЛ ]<br>Лёгкий перехватчик</div>
+            <div class="ship">[ ЖЕЛЕЗНЫЙ ДИРИЖАБЛЬ ]<br>Тяжёлый крейсер</div>
+            <div class="ship">[ АЭРО-НОСИТЕЛЬ ]<br>Поддержка дронов</div>
+            <div class="ship">[ БОМБАРДИРОВЩИК ]<br>Разрушитель башен</div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>AETHER COMMAND © 2048 · SKYFALL STUDIOS · «Небо — последнее поле чести»</p>
+    </footer>
+</body>
+</html>

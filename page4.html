@@ -2,374 +2,504 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <!-- Оптимизированный viewport для мобильных устройств -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>THE CHRONO-FIXER | Исправьте время. Измените всё.</title>
-    <!-- Подключаем Google Fonts (как в исходном коде, но добавим корректный preconnect) -->
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE CHRONO-FIXER | System Recovery Protocol</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;600;700&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* ---------- БАЗОВЫЕ СТИЛИ (оригинал с доработками) ---------- */
+        :root {
+            --indigo: #05070a;
+            --blue-rift: #0a1128;
+            --cyan: #00f0ff;
+            --virus-red: #ff003c;
+            --ivory: #f0f4f8;
+            --marble: #D9D2C5;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            margin: 0;
             font-family: 'Rajdhani', sans-serif;
-            background: #1a1a2e;
-            color: #00ffcc;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            background-color: var(--indigo);
+            color: var(--ivory);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
-        .header {
-            padding: 1.5rem 1rem;
-            text-align: center;
-            border-bottom: 1px solid #00ffcc;
+
+        #virus-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -2; opacity: 0.4;
         }
-        .nav {
-            display: flex;
-            flex-wrap: wrap;          /* перенос ссылок на мобильных */
-            justify-content: center;
-            gap: 0.8rem 1.8rem;
+
+        .overlay-noise {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 999;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            mix-blend-mode: overlay;
         }
-        .nav a {
-            color: #00ffcc;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1rem;
-            letter-spacing: 1px;
-            padding: 0.4rem 0.2rem;   /* увеличенная область касания */
-            transition: color 0.2s, text-shadow 0.2s, border-bottom 0.2s;
-            border-bottom: 1px solid transparent;
+
+        .overlay-scanlines {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 998;
+            background: repeating-linear-gradient(to bottom, transparent 0%, transparent 50%, rgba(0, 240, 255, 0.03) 50%, rgba(0, 240, 255, 0.03) 51%);
         }
-        .nav a:hover {
-            color: #ffffff;
-            text-shadow: 0 0 8px #00ffcc;
-            border-bottom-color: #00ffcc;
+
+        header {
+            position: fixed; top: 0; left: 0; width: 100%; padding: 20px 40px;
+            display: flex; justify-content: space-between; align-items: center; z-index: 1000;
+            background: linear-gradient(to bottom, rgba(5, 7, 10, 0.9), transparent);
+            backdrop-filter: blur(5px);
         }
-        .nav a:active {
-            color: #ffffff;
+
+        .logo {
+            font-family: 'Syncopate', sans-serif; font-weight: 700; font-size: 14px;
+            letter-spacing: 4px; color: var(--cyan); text-shadow: 0 0 10px var(--cyan);
+            display: flex; align-items: center; gap: 10px;
         }
+
+        .logo::before {
+            content: ''; width: 8px; height: 8px; background: var(--virus-red);
+            border-radius: 50%; box-shadow: 0 0 10px var(--virus-red); animation: pulse 1.5s infinite;
+        }
+
+        nav { display: flex; gap: 30px; }
+        nav a {
+            color: var(--ivory); text-decoration: none; font-size: 14px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 2px; transition: color 0.3s;
+            position: relative; padding-bottom: 5px;
+        }
+        nav a:hover { color: var(--cyan); }
+        nav a::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1px;
+            background: var(--cyan); transition: width 0.3s;
+        }
+        nav a:hover::after { width: 100%; }
+
+        .hud-corner {
+            position: fixed; width: 40px; height: 40px; border: 2px solid var(--cyan);
+            z-index: 999; opacity: 0.5;
+        }
+        .hud-tl { top: 15px; left: 15px; border-right: none; border-bottom: none; }
+        .hud-tr { top: 15px; right: 15px; border-left: none; border-bottom: none; }
+        .hud-bl { bottom: 15px; left: 15px; border-right: none; border-top: none; }
+        .hud-br { bottom: 15px; right: 15px; border-left: none; border-top: none; }
+
         .hero {
-            height: 70vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            position: relative;
+            height: 100vh; display: flex; flex-direction: column; justify-content: center;
+            padding-left: 5%; position: relative;
         }
+
+        /* CSS-ART Hero Background (Синий разлом + Вирус) */
+        .hero-bg-art {
+            position: absolute; top: 0; right: 0; width: 60%; height: 100%; z-index: -1;
+            mask-image: linear-gradient(to left, black 20%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to left, black 20%, transparent 100%);
+            background: 
+                radial-gradient(circle at 70% 30%, rgba(0, 240, 255, 0.15), transparent 60%),
+                radial-gradient(circle at 30% 80%, rgba(255, 0, 60, 0.1), transparent 50%),
+                linear-gradient(135deg, var(--blue-rift), var(--indigo));
+        }
+        
+        .hero-bg-art::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(0, 240, 255, 0.05) 80px, rgba(0, 240, 255, 0.05) 81px);
+            mix-blend-mode: screen;
+        }
+
+        .hero-tag {
+            font-family: 'Syncopate', sans-serif; color: var(--virus-red);
+            font-size: 12px; letter-spacing: 6px; margin-bottom: 20px; opacity: 0.8;
+        }
+
         .hero h1 {
-            font-size: 4rem;
-            margin: 0;
-            background: linear-gradient(45deg, #00ffcc, #0088ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(0, 255, 204, 0.5);
-            line-height: 1.1;
+            font-family: 'Syncopate', sans-serif; font-size: clamp(3rem, 8vw, 7rem);
+            font-weight: 700; line-height: 0.9; text-transform: uppercase; color: var(--ivory);
+            text-shadow: 0 0 30px rgba(0, 240, 255, 0.3); max-width: 900px;
         }
-        .hero p {
-            font-size: 1.2rem;
-            margin: 1.5rem 0 0;
-        }
-        .section {
-            padding: 4rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .core-features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-        .core-card {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 2rem;
-            border-radius: 10px;
-            border: 1px solid #00ffcc;
-            text-align: center;
-            transition: 0.2s;
-        }
-        .core-card:hover {
-            background: rgba(0, 255, 204, 0.1);
-            box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
-        }
-        .anomaly-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
-        .anomaly {
-            background: rgba(0, 255, 204, 0.1);
-            padding: 1.5rem;
-            border-radius: 8px;
-            text-align: center;
-            border: 1px solid #00ffcc;
-        }
-        .era-showcase {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-            margin-top: 3rem;
-        }
-        .era-card {
-            height: 150px;
-            border: 1px solid #00ffcc;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0, 0, 0, 0.3);
-            font-weight: bold;
-            color: #aaffee;
-            padding: 0.5rem;
-            text-align: center;
-        }
-        .footer {
-            text-align: center;
-            padding: 2rem 1rem;
-            border-top: 1px solid #00ffcc;
-            font-size: 0.8rem;
-            color: #88ddff;
+        .hero h1 span { color: var(--cyan); display: block; font-size: 0.9em; }
+
+        .hero-desc {
+            font-size: 1.2rem; max-width: 500px; margin-top: 30px; color: #a0aab5;
+            line-height: 1.5; border-left: 2px solid var(--virus-red); padding-left: 20px;
         }
 
-        /* ---------- КНОПКА НАЗАД — СТИЛИЗОВАННАЯ ХРОНО-КНОПКА ---------- */
-        .back-link {
-            display: inline-block;
-            margin-top: 2rem;
-            padding: 0.8rem 2.2rem;
-            background: transparent;
-            border: 2px solid #00ffcc;
-            color: #00ffcc;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 1rem;
-            letter-spacing: 2px;
-            border-radius: 40px;
-            transition: 0.3s;
-            box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
-            text-shadow: 0 0 5px #00ffcc;
+        .cta-group { margin-top: 40px; display: flex; gap: 20px; align-items: center; }
+
+        .btn {
+            padding: 15px 30px; background: var(--cyan); color: var(--indigo);
+            font-family: 'Syncopate', sans-serif; font-weight: 700; font-size: 12px;
+            text-transform: uppercase; letter-spacing: 2px; border: none; cursor: pointer;
+            transition: all 0.3s; text-decoration: none; position: relative; overflow: hidden;
         }
-        .back-link:hover {
-            background: #00ffcc;
-            color: #0f3460;
-            border-color: #ffffff;
-            box-shadow: 0 0 30px #00ffcc;
-            text-shadow: none;
+        .btn::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.3); transition: left 0.4s;
         }
-        .back-link:active {
-            background: #00ffcc;
-            color: #0f3460;
-            border-color: #ffffff;
-            box-shadow: 0 0 30px #00ffcc;
+        .btn:hover::before { left: 100%; }
+        .btn:hover { box-shadow: 0 0 30px var(--cyan); }
+        .btn-ghost {
+            background: transparent; border: 1px solid var(--ivory); color: var(--ivory);
         }
+        .btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 15px rgba(0,240,255,0.2); }
 
-        /* ---------- АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ (≤900px) ---------- */
-        @media screen and (max-width: 900px) {
-            .hero h1 {
-                font-size: 3.2rem;
-            }
-            .hero p {
-                font-size: 1.1rem;
-            }
+        .section { padding: 120px 5%; position: relative; display: flex; flex-direction: column; gap: 60px; }
+
+        .section-header { display: flex; align-items: baseline; gap: 20px; }
+        .section-num { font-family: 'Syncopate', sans-serif; color: var(--virus-red); font-size: 14px; letter-spacing: 2px; }
+        .section-title {
+            font-family: 'Syncopate', sans-serif; font-size: clamp(1.5rem, 3vw, 2.5rem);
+            text-transform: uppercase; color: var(--ivory); letter-spacing: -1px;
         }
+        .section-line { flex-grow: 1; height: 1px; background: linear-gradient(90deg, var(--ivory), transparent); opacity: 0.3; }
 
-        /* ---------- АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ (≤768px) ---------- */
-        @media screen and (max-width: 768px) {
-            .header {
-                padding: 1.2rem 0.5rem;
-            }
-            .nav {
-                gap: 0.5rem 1.2rem;
-            }
-            .nav a {
-                font-size: 0.85rem;
-                letter-spacing: 0.5px;
-                padding: 0.5rem 0.2rem;
-            }
-
-            .hero {
-                height: 70vh;
-            }
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            .hero p {
-                font-size: 1rem;
-                margin-top: 1rem;
-            }
-            .back-link {
-                margin-top: 1.5rem;
-                padding: 0.6rem 1.8rem;
-                font-size: 0.9rem;
-            }
-
-            .section {
-                padding: 3rem 1.2rem;
-            }
-            .section h2 {
-                font-size: 1.8rem !important;
-            }
-
-            .core-features {
-                grid-template-columns: 1fr;   /* карточки в столбик */
-                gap: 1.5rem;
-            }
-            .core-card {
-                padding: 1.6rem;
-            }
-
-            .anomaly-grid {
-                grid-template-columns: repeat(2, 1fr); /* два в ряд */
-                gap: 1rem;
-            }
-            .anomaly {
-                padding: 1.2rem;
-            }
-
-            .era-showcase {
-                grid-template-columns: 1fr;   /* один в ряд */
-                gap: 1rem;
-            }
-            .era-card {
-                height: 130px;
-            }
+        .pillars-container {
+            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2px; background: rgba(0, 240, 255, 0.1);
+        }
+        .pillar { background: var(--indigo); padding: 40px; position: relative; transition: background 0.3s; }
+        .pillar:hover { background: var(--blue-rift); }
+        .pillar h3 { font-family: 'Syncopate', sans-serif; font-size: 1.2rem; margin-bottom: 15px; color: var(--cyan); }
+        .pillar p { color: #a0aab5; font-size: 1.1rem; line-height: 1.4; }
+        .pillar::before {
+            content: attr(data-num); position: absolute; top: 10px; right: 10px;
+            font-size: 4rem; color: rgba(255,255,255,0.03); font-weight: 700;
         }
 
-        /* ---------- МАЛЕНЬКИЕ ТЕЛЕФОНЫ (≤480px) ---------- */
-        @media screen and (max-width: 480px) {
-            .hero h1 {
-                font-size: 2rem;
-            }
-            .hero p {
-                font-size: 0.9rem;
-            }
-            .back-link {
-                padding: 0.5rem 1.4rem;
-                font-size: 0.8rem;
-            }
-
-            .nav a {
-                font-size: 0.75rem;
-            }
-
-            .section h2 {
-                font-size: 1.5rem !important;
-            }
-
-            .anomaly-grid {
-                grid-template-columns: 1fr;   /* окончательно в один столбец */
-            }
-            .era-card {
-                height: 120px;
-            }
+        .zones-grid {
+            display: grid; grid-template-columns: 2fr 1fr 1fr;
+            grid-template-rows: 300px 300px; gap: 10px;
         }
 
-        /* ---------- ПЛАНШЕТЫ В ПОРТРЕТЕ (769-1024px) ---------- */
-        @media screen and (min-width: 769px) and (max-width: 1024px) {
-            .hero h1 {
-                font-size: 2.8rem;
-            }
-            .section {
-                padding: 3.5rem 1.5rem;
-            }
-            .era-showcase {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        .zone-card {
+            position: relative; overflow: hidden; cursor: pointer;
+            border: 1px solid rgba(0, 240, 255, 0.1); transition: all 0.3s;
+        }
+        .zone-card:hover { border-color: var(--cyan); }
+
+        /* CSS-ART Зон (Слои эпохи и заражения) */
+        .zone-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+            transition: transform 0.5s;
+        }
+        .zone-card:hover .zone-bg { transform: scale(1.05); }
+
+        /* Zone 1: Rome (Мрамор + синева + двоящиеся колонны) */
+        .zone-1 .zone-bg {
+            background: 
+                repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(15, 52, 96, 0.8) 40px, rgba(15, 52, 96, 0.8) 42px),
+                linear-gradient(135deg, var(--marble), var(--blue-rift));
+        }
+        /* Zone 2: London (Сепия/Туман + Биг-Бен волны) */
+        .zone-2 .zone-bg {
+            background: 
+                radial-gradient(circle at 50% 100%, rgba(255, 255, 255, 0.1), transparent 60%),
+                linear-gradient(180deg, #1a1a2e, #4a3b2a);
+        }
+        /* Zone 3: Metropolis (Ржавчина/Красный вирус + Глитч) */
+        .zone-3 .zone-bg {
+            background: 
+                repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255, 0, 60, 0.1) 20px, rgba(255, 0, 60, 0.1) 21px),
+                linear-gradient(135deg, var(--virus-red), #2a0a0a);
+        }
+        /* Zone 4: Omega-9 (Стерильный белый + Нулевая тяжесть) */
+        .zone-4 .zone-bg {
+            background: 
+                linear-gradient(135deg, rgba(255,255,255,0.8), var(--blue-rift));
         }
 
-        /* ---------- МИКРО-ПРАВКИ ---------- */
-        .section h2 {
-            font-size: 2rem;
-            text-align: center;
-            margin-top: 0;
-            word-break: break-word;
+        /* Глитч-наросты (Циановые развертки) */
+        .zone-bg::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                linear-gradient(to bottom, transparent 90%, rgba(0, 240, 255, 0.2) 90%, rgba(0, 240, 255, 0.2) 91%),
+                linear-gradient(to top, transparent 85%, rgba(255, 0, 60, 0.2) 85%, rgba(255, 0, 60, 0.2) 86%);
+            mix-blend-mode: screen;
+            opacity: 0.7;
         }
-        .core-card h3 {
-            margin-top: 0;
-            color: #bbffff;
+
+        .zone-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
+            background: linear-gradient(to top, var(--indigo), transparent 70%);
         }
-        .anomaly h4 {
-            margin-top: 0;
-            color: #ccffff;
+
+        .zone-content { position: absolute; bottom: 20px; left: 20px; z-index: 2; }
+        .zone-content h3 { font-family: 'Syncopate', sans-serif; font-size: 1.5rem; color: var(--ivory); text-transform: uppercase; }
+        .zone-content span { color: var(--virus-red); font-size: 0.9rem; letter-spacing: 2px; text-transform: uppercase; }
+        .zone-content p {
+            margin-top: 10px; color: var(--cyan); font-size: 0.9rem; opacity: 0;
+            transform: translateY(20px); transition: all 0.3s;
         }
-        .era-card {
-            color: #ccffff;
+        .zone-card:hover .zone-content p { opacity: 1; transform: translateY(0); }
+        .zone-1 { grid-column: 1 / 2; grid-row: 1 / 3; }
+
+        .hud-panel {
+            display: flex; gap: 40px; align-items: center; background: rgba(10, 17, 40, 0.5);
+            border: 1px solid rgba(0, 240, 255, 0.2); padding: 40px; position: relative;
+        }
+        .hud-panel::after {
+            content: 'SYSTEM DIAGNOSTIC'; position: absolute; top: -10px; left: 20px;
+            background: var(--indigo); color: var(--cyan); font-size: 12px; padding: 0 10px; letter-spacing: 2px;
+        }
+
+        .charge-display {
+            width: 150px; height: 150px; border-radius: 50%; border: 2px solid rgba(0, 240, 255, 0.2);
+            position: relative; display: flex; align-items: center; justify-content: center;
+        }
+        .charge-circle {
+            position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 2px solid transparent;
+            border-top-color: var(--cyan); border-right-color: var(--cyan); animation: spin 2s linear infinite;
+        }
+        .charge-text { text-align: center; }
+        .charge-text strong { display: block; font-family: 'Syncopate', sans-serif; font-size: 2.5rem; color: var(--cyan); }
+        .charge-text span { font-size: 0.8rem; letter-spacing: 1px; color: #a0aab5; }
+
+        .anomaly-list { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .anomaly-item { border-left: 2px solid var(--virus-red); padding-left: 15px; }
+        .anomaly-item h4 { font-family: 'Syncopate', sans-serif; font-size: 0.9rem; color: var(--ivory); margin-bottom: 5px; }
+        .anomaly-item p { font-size: 0.9rem; color: #a0aab5; }
+
+        footer {
+            margin-top: 100px; padding: 40px 5%; background: rgba(0,0,0,0.8);
+            border-top: 1px solid var(--virus-red); display: flex; justify-content: space-between; align-items: center;
+        }
+        .footer-text { font-family: 'Syncopate', sans-serif; font-size: 12px; color: var(--cyan); letter-spacing: 2px; }
+
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        @media (max-width: 1024px) {
+            .zones-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+            .zone-1 { grid-column: 1 / 3; grid-row: auto; height: 400px; }
+            .pillars-container { grid-template-columns: 1fr; }
+            .hud-panel { flex-direction: column; }
+            .hero-bg-art { width: 100%; opacity: 0.3; mask-image: linear-gradient(to bottom, transparent 0%, black 50%, transparent 100%); }
+        }
+        @media (max-width: 768px) {
+            header { padding: 15px; } nav { display: none; }
+            .anomaly-list { grid-template-columns: 1fr; }
+            .zones-grid { grid-template-columns: 1fr; } .zone-1 { grid-column: auto; height: 250px; }
         }
     </style>
 </head>
 <body>
-    <header class="header">
-        <nav class="nav">
-            <a href="#core">Ядро</a>
-            <a href="#anomalies">Аномалии</a>
-            <a href="#eras">Эры</a>
-            <a href="#fix">Исправить</a>
+    <canvas id="virus-canvas"></canvas>
+    <div class="overlay-noise"></div>
+    <div class="overlay-scanlines"></div>
+    
+    <div class="hud-corner hud-tl"></div>
+    <div class="hud-corner hud-tr"></div>
+    <div class="hud-corner hud-bl"></div>
+    <div class="hud-corner hud-br"></div>
+
+    <header>
+        <div class="logo">СВВ // U-7 ACTIVE</div>
+        <nav>
+            <a href="#core">Core</a>
+            <a href="#anomalies">Anomalies</a>
+            <a href="#eras">Eras</a>
+            <a href="#system">System</a>
         </nav>
     </header>
 
     <section class="hero">
-        <div>
-            <h1>THE CHRONO-FIXER</h1>
-            <p style="font-size: 1.2rem;">Время сломано. Ваша работа — его починить.</p>
-            <!-- Стилизованная кнопка вместо простой ссылки -->
-            <a href="index.html" class="back-link">← Назад к прямоугольникам</a>
+        <div class="hero-bg-art"></div>
+        <div class="hero-tag">// PROTOCOL: LAST ATTEMPT //</div>
+        <h1>The Chrono<span>Fixer</span></h1>
+        <p class="hero-desc">Время сломано. Ваша работа — его починить. Смерть — не поражение, а передача данных. Возвращайтесь сильнее.</p>
+        <div class="cta-group">
+            <a href="#" class="btn">Инициировать погружение</a>
+            <a href="#eras" class="btn btn-ghost">Оценить угрозу</a>
         </div>
     </section>
 
-    <section id="core" class="section">
-        <h2>ЯДРО РЕАЛЬНОСТИ</h2>
-        <p style="text-align: center; max-width: 800px; margin: 0 auto;">Вы — андроид-Исправитель, активированный для ликвидации Временного Вируса. Каждая миссия уникальна. Каждая смерть — урок. Возвращайтесь сильнее.</p>
+    <section class="section" id="core">
+        <div class="section-header">
+            <div class="section-num">01 // MECHANICS</div>
+            <h2 class="section-title">System Pillars</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="pillars-container">
+            <div class="pillar" data-num="01">
+                <h3>Death Is Data</h3>
+                <p>Каждая гибель загружает память в Резервуар. Вирус учится, но и Исправитель возвращается с новыми данными. Поражение — способ прогресса.</p>
+            </div>
+            <div class="pillar" data-num="02">
+                <h3>Adapt Or Die</h3>
+                <p>Аномалии выдаются случайно. Мутируйте билд на ходу. Мастерство — собрать силу из того, что дало жребие, и перестроиться при смене правил зоны.</p>
+            </div>
+            <div class="pillar" data-num="03">
+                <h3>Time Is Fuel</h3>
+                <p>Агрессия наполняет резерв заряда. Ульты его тратят. Стоячей игры не существует: темп боя буквально управляет музыкой и временем.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="anomalies">
+        <div class="section-header">
+            <div class="section-num">02 // ARSENAL</div>
+            <h2 class="section-title">Virus Integration</h2>
+            <div class="section-line"></div>
+        </div>
         
-        <div class="core-features">
-            <div class="core-card">
-                <h3>РОГАЛИК-ПРОГРЕСС</h3>
-                <p>Умирайте и возвращайтесь снова. Открывайте новые способности и комбинации аномалий.</p>
+        <div class="hud-panel">
+            <div class="charge-display">
+                <div class="charge-circle"></div>
+                <div class="charge-text">
+                    <strong>100%</strong>
+                    <span>CHARGE</span>
+                </div>
             </div>
-            <div class="core-card">
-                <h3>СЛУЧАЙНЫЕ АНОМАЛИИ</h3>
-                <p>Каждая миссия предлагает новые временные силы. Адаптируйтесь или умрите.</p>
-            </div>
-            <div class="core-card">
-                <h3>НАКОПЛЕНИЕ ЗАРЯДА</h3>
-                <p>Уничтожайте врагов, чтобы активировать ультимативные хроно-способности.</p>
+            <div class="anomaly-list">
+                <div class="anomaly-item">
+                    <h4>Замедляющая пуля</h4>
+                    <p>Создает пузыри времени (×0,3 на 2с). Контроль поля.</p>
+                </div>
+                <div class="anomaly-item">
+                    <h4>Щит из будущего</h4>
+                    <p>Возврат 40% урона врагам. Откат 8с.</p>
+                </div>
+                <div class="anomaly-item">
+                    <h4>Теморальный клон</h4>
+                    <p>Статичная копия на 12с. Агро-магнит.</p>
+                </div>
+                <div class="anomaly-item">
+                    <h4>Хроно-ловушка</h4>
+                    <p>Заморозка лучом на 3с. Позиционная игра.</p>
+                </div>
             </div>
         </div>
     </section>
 
-    <section id="anomalies" class="section">
-        <h2>ВРЕМЕННЫЕ АНОМАЛИИ</h2>
-        <p style="text-align: center;">Случайные силы, которые вы получаете перед каждой миссией:</p>
+    <section class="section" id="eras">
+        <div class="section-header">
+            <div class="section-num">03 // CONTAINMENT</div>
+            <h2 class="section-title">Infection Zones</h2>
+            <div class="section-line"></div>
+        </div>
         
-        <div class="anomaly-grid">
-            <div class="anomaly">
-                <h4>ЗАМЕДЛЯЮЩАЯ ПУЛЯ</h4>
-                <p>Попадания создают пузыри замедленного времени.</p>
+        <div class="zones-grid">
+            <div class="zone-card zone-1">
+                <div class="zone-bg"></div>
+                <div class="zone-overlay"></div>
+                <div class="zone-content">
+                    <span>73 BC // Priority: Critical</span>
+                    <h3>Rome-Glitch</h3>
+                    <p>Двоящиеся колонны, легионеры с часовыми механизмами. Ложная геометрия стен.</p>
+                </div>
             </div>
-            <div class="anomaly">
-                <h4>ЩИТ ИЗ БУДУЩЕГО</h4>
-                <p>Возвращает полученный урон обратно врагам.</p>
+            <div class="zone-card zone-2">
+                <div class="zone-bg"></div>
+                <div class="zone-overlay"></div>
+                <div class="zone-content">
+                    <span>1889 AD</span>
+                    <h3>London-Par</h3>
+                    <p>Туман замедляет время. Бой часов Биг-Бена.</p>
+                </div>
             </div>
-            <div class="anomaly">
-                <h4>ТЕМПОРАЛЬНЫЙ КЛОН</h4>
-                <p>Создает статичную копию, которая отвлекает врагов.</p>
+            <div class="zone-card zone-3">
+                <div class="zone-bg"></div>
+                <div class="zone-overlay"></div>
+                <div class="zone-content">
+                    <span>2247 AD // Ground Zero</span>
+                    <h3>Metropolis</h3>
+                    <p>Источник вируса. Красные наросты, адаптивные мутации.</p>
+                </div>
             </div>
-            <div class="anomaly">
-                <h4>ХРОНО-ЛОВУШКА</h4>
-                <p>Замораживает любого, кто пересечет ее луч.</p>
+            <div class="zone-card zone-4">
+                <div class="zone-bg"></div>
+                <div class="zone-overlay"></div>
+                <div class="zone-content">
+                    <span>Orbit // The Core</span>
+                    <h3>Omega-9</h3>
+                    <p>Нулевая тяжесть. Стерильные коридоры и финальный выбор.</p>
+                </div>
             </div>
         </div>
     </section>
 
-    <section id="eras" class="section">
-        <h2>ЗОНЫ ЗАРАЖЕНИЯ</h2>
-        <div class="era-showcase">
-            <div class="era-card">[ИКОНКА: Древний Рим с глитчами]</div>
-            <div class="era-card">[ИКОНКА: Викторианский Лондон с аномалиями]</div>
-            <div class="era-card">[ИКОНКА: Постапокалиптическое будущее]</div>
-            <div class="era-card">[ИКОНКА: Космическая станция с вирусами]</div>
-        </div>
-    </section>
-
-    <footer class="footer">
-        <p>THE CHRONO-FIXER — СИСТЕМА ВОССТАНОВЛЕНИЯ ВРЕМЕНИ АКТИВИРОВАНА</p>
-        <p>ПОДКЛЮЧАЙТЕСЬ. ИСПРАВЛЯЙТЕ. ВОЗВРАЩАЙТЕСЬ.</p>
+    <footer>
+        <div class="footer-text">> SYSTEM RECOVERY INITIATED</div>
+        <div class="footer-text" style="color: #a0aab5;">Connect. Fix. Return.</div>
     </footer>
+
+    <script>
+        // Canvas Animation: Временной вирус / Глитч-сеть
+        const canvas = document.getElementById('virus-canvas');
+        const ctx = canvas.getContext('2d');
+        let W, H;
+        
+        function resize() {
+            W = canvas.width = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        let particles = [];
+        const particleCount = 80;
+        const maxDistance = 150;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * W;
+                this.y = Math.random() * H;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > W) this.vx *= -1;
+                if (this.y < 0 || this.y > H) this.vy *= -1;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0, 240, 255, 0.5)';
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for(let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+        initParticles();
+
+        function connect() {
+            for(let i = 0; i < particles.length; i++) {
+                for(let j = i; j < particles.length; j++) {
+                    let dx = particles[i].x - particles[j].x;
+                    let dy = particles[i].y - particles[j].y;
+                    let dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < maxDistance) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(0, 240, 255, ${0.2 - dist/maxDistance * 0.2})`;
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                        
+                        if (Math.random() > 0.995) {
+                            ctx.strokeStyle = 'rgba(255, 0, 60, 0.5)';
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, W, H);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            connect();
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
 </body>
 </html>

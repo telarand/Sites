@@ -2,360 +2,732 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <!-- Адаптивный viewport — критически важно для мобильных устройств -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AETHER COMMAND · Властелин неба</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Raleway:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,900;1,700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
-        /* ---------- БАЗОВЫЕ СТИЛИ (оригинал с точечными адаптивными дополнениями) ---------- */
-        body {
-            margin: 0;
-            font-family: 'Raleway', sans-serif;
-            background: #0b1c2c;
-            color: #e6e3d3;
-            background-image: radial-gradient(circle at 10% 20%, #1f4e5f 0%, #0a1a2a 80%);
+        :root {
+            --deep-sky: #070d12;
+            --brass: #b89b5b;
+            --old-brass: #c0a86a;
+            --parchment: #f0e2c0;
+            --light-bronze: #f2e6c9;
+            --dark-hull: #111c23;
+            --misty-height: #1f4e5f;
+            --crimson-overheat: #8c3b2e;
+            --blood: #5e1b14;
         }
-        .clouds {
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--deep-sky);
+            color: var(--light-bronze);
+            overflow-x: hidden;
+            line-height: 1.4;
+        }
+
+        body::after {
+            content: "";
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: url('data:image/svg+xml;utf8,<svg width="400" height="200" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="30" r="20" fill="white" opacity="0.1"/><circle cx="120" cy="60" r="35" fill="white" opacity="0.1"/><circle cx="250" cy="20" r="30" fill="white" opacity="0.1"/><circle cx="320" cy="80" r="25" fill="white" opacity="0.1"/></svg>');
-            background-size: 400px 200px;
-            opacity: 0.25;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity="0.08"/></svg>');
             pointer-events: none;
-            z-index: 0;
+            z-index: 9999;
+            mix-blend-mode: overlay;
         }
-        .header {
-            padding: 2rem 1rem;
-            text-align: center;
-            border-bottom: 2px solid #c0a86a;
-            background: rgba(11, 28, 44, 0.7);
-            backdrop-filter: blur(3px);
-            position: relative;
-            z-index: 2;
-        }
-        .nav {
+
+        a { color: inherit; text-decoration: none; }
+
+        /* НАВИГАЦИЯ */
+        .nav-bar {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            z-index: 100;
             display: flex;
-            flex-wrap: wrap;          /* перенос ссылок на мобильных */
-            justify-content: center;
-            gap: 0.8rem 1.8rem;
-        }
-        .nav a {
-            color: #e6e3d3;
-            text-decoration: none;
-            text-transform: uppercase;
-            font-weight: 600;
-            letter-spacing: 4px;
-            font-size: 0.85rem;
-            border-bottom: 1px solid transparent;
-            transition: 0.2s;
-            padding: 0.4rem 0.2rem;   /* увеличенная область касания */
-        }
-        .nav a:hover {
-            border-bottom-color: #c0a86a;
-            color: #f0e6c5;
-        }
-        .nav a:active {
-            border-bottom-color: #c0a86a;
-            color: #f0e6c5;
-        }
-        .hero {
-            height: 80vh;
-            display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            text-align: center;
-            position: relative;
-            background: url('airship-battle.jpg') center/cover no-repeat;
-            background-blend-mode: overlay;
+            padding: 1.5rem 4rem;
+            background: linear-gradient(to bottom, rgba(7, 13, 18, 0.9), transparent);
+            transition: background 0.3s ease;
         }
-        .hero::before {
+        .nav-bar.scrolled {
+            background: rgba(7, 13, 18, 0.95);
+            border-bottom: 1px solid var(--dark-hull);
+            backdrop-filter: blur(5px);
+        }
+        .logo {
+            font-family: 'Cinzel', serif;
+            font-weight: 900;
+            font-size: 1.5rem;
+            letter-spacing: 4px;
+            color: var(--parchment);
+            text-shadow: 0 2px 10px rgba(184, 155, 91, 0.3);
+        }
+        .logo span { color: var(--brass); border-bottom: 2px solid var(--brass); padding-bottom: 2px; }
+        
+        .nav-links { display: flex; gap: 3rem; }
+        .nav-links a {
+            text-transform: uppercase;
+            font-weight: 500;
+            font-size: 0.85rem;
+            letter-spacing: 3px;
+            position: relative;
+            transition: color 0.3s;
+        }
+        .nav-links a:hover { color: var(--brass); }
+        .nav-links a::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(6, 21, 31, 0.7);
+            left: -15px; top: 50%;
+            transform: translateY(-50%);
+            width: 5px; height: 5px;
+            background: var(--brass);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
-        .hero-content {
+        .nav-links a:hover::before { opacity: 1; }
+
+        /* HERO */
+        .hero {
+            height: 100vh;
+            min-height: 700px;
             position: relative;
-            z-index: 3;
-            padding: 1rem;
-        }
-        .hero h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 4.8rem;
-            margin: 0;
-            color: #f2e6c9;
-            text-shadow: 4px 4px 0 #4a6c7a, 0 0 40px #a1b9c2;
-            letter-spacing: 6px;
-            line-height: 1.1;
-        }
-        .hero p {
-            font-size: 1.4rem;
-            font-weight: 400;
-            color: #d8d0b5;
-            max-width: 700px;
-            margin: 1.5rem 0 0;
-        }
-        .section {
-            padding: 5rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 2;
-        }
-        .wind-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-        .tactic-card {
-            background: rgba(28, 52, 67, 0.7);
-            backdrop-filter: blur(4px);
-            padding: 2rem;
-            border-left: 8px solid #b89b5b;
-            border-radius: 0 12px 12px 0;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-        }
-        .airship-showcase {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
-        .ship {
-            background: #17313b;
-            border: 1px solid #b89b5b;
-            height: 160px;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-weight: 600;
-            color: #ebdfc2;
-            padding: 0.5rem;
+            background: radial-gradient(circle at 50% 30%, #1a2c3a 0%, var(--deep-sky) 70%);
+            overflow: hidden;
+        }
+        .hero-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg width="1920" height="1080" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="rgba(184,155,91,0.1)" stroke-width="1"><path d="M0 200 Q 480 100 960 200 T 1920 200" /><path d="M0 400 Q 480 300 960 400 T 1920 400" /><path d="M0 600 Q 480 500 960 600 T 1920 600" /><path d="M0 800 Q 480 700 960 800 T 1920 800" /></g></svg>');
+            background-size: cover;
+            z-index: 0;
+            animation: bgMove 20s linear infinite;
+        }
+        @keyframes bgMove { 0% { transform: translateY(0); } 100% { transform: translateY(-100px); } }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 0 2rem;
+            max-width: 1200px;
+        }
+        .hero-pre {
+            font-size: 1rem;
+            letter-spacing: 1rem;
+            text-transform: uppercase;
+            color: var(--brass);
+            margin-bottom: 2rem;
+            opacity: 0.8;
+            text-shadow: 0 0 10px var(--brass);
+        }
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 900;
+            font-size: clamp(4rem, 12vw, 10rem);
+            line-height: 0.9;
+            color: var(--parchment);
+            margin-bottom: 1rem;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            background: linear-gradient(to bottom, #fff 0%, var(--parchment) 40%, var(--old-brass) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(192, 168, 106, 0.2));
+        }
+        .hero-desc {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+            color: var(--light-bronze);
+            margin-bottom: 3rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.9);
+        }
+        .cta-group { display: flex; gap: 2rem; justify-content: center; }
+        
+        .btn {
+            padding: 1.2rem 3rem;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+            clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+        }
+        .btn-primary { background: var(--brass); color: var(--deep-sky); }
+        .btn-primary:hover {
+            background: var(--parchment);
+            box-shadow: 0 0 20px rgba(240, 226, 192, 0.4);
+        }
+        .btn-ghost {
+            background: transparent;
+            color: var(--parchment);
+            border: 1px solid var(--brass);
+            clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+        }
+        .btn-ghost:hover {
+            background: rgba(184, 155, 91, 0.1);
+            color: var(--brass);
+        }
+
+        /* СЕКЦИИ */
+        .section {
+            padding: 8rem 4rem;
+            position: relative;
+            border-top: 1px solid var(--dark-hull);
+            background: var(--deep-sky);
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 5rem;
+            border-bottom: 1px solid var(--dark-hull);
+            padding-bottom: 2rem;
+        }
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-weight: 900;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            color: var(--parchment);
+            text-transform: uppercase;
+            line-height: 1;
+        }
+        .section-title span { color: var(--brass); font-size: 0.5em; display: block; margin-bottom: 1rem; letter-spacing: 5px; }
+        .section-desc {
+            max-width: 400px;
+            font-size: 1.1rem;
+            color: rgba(242, 230, 201, 0.7);
+            text-align: right;
+        }
+
+        /* ФОРМАЦИИ */
+        .formations-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+        .formation-card {
+            background: var(--dark-hull);
+            border: 1px solid rgba(184, 155, 91, 0.1);
+            padding: 3rem 2rem;
+            position: relative;
+            transition: all 0.4s ease;
+            overflow: hidden;
+        }
+        .formation-card:hover {
+            border-color: var(--brass);
+            background: #152329;
+            transform: translateY(-10px);
+        }
+        .formation-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--brass);
+            transform: scaleY(0);
+            transform-origin: top;
+            transition: transform 0.4s ease;
+        }
+        .formation-card:hover::before { transform: scaleY(1); }
+
+        .formation-icon {
+            width: 80px; height: 80px;
+            margin-bottom: 2rem;
+            stroke: var(--brass);
+            fill: none;
+            stroke-width: 2;
+            opacity: 0.8;
+        }
+        .formation-card h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            color: var(--parchment);
+            margin-bottom: 1rem;
+            border-bottom: 1px solid rgba(184, 155, 91, 0.2);
+            padding-bottom: 1rem;
+        }
+        .formation-card p {
+            color: rgba(242, 230, 201, 0.7);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .stat-box {
+            background: rgba(7, 13, 18, 0.5);
+            padding: 1rem;
+            border: 1px solid var(--dark-hull);
             text-align: center;
         }
-        .footer {
+        .stat-val { font-size: 1.5rem; font-weight: 700; font-family: 'Cinzel', serif; }
+        .stat-pos { color: var(--brass); }
+        .stat-neg { color: var(--crimson-overheat); }
+        .stat-label { font-size: 0.8rem; text-transform: uppercase; color: rgba(242, 230, 201, 0.5); letter-spacing: 1px; margin-top: 0.5rem; }
+
+        /* ФЛОТ */
+        .fleet-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background: var(--dark-hull);
+            border: 1px solid var(--dark-hull);
+        }
+        .ship-card {
+            background: var(--deep-sky);
+            padding: 3rem 2rem;
             text-align: center;
-            padding: 2rem 1rem;
-            border-top: 1px solid #c0a86a;
-            background: #05131c;
-            color: #aaa38b;
-            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+        .ship-card:hover { background: var(--dark-hull); }
+        
+        .ship-silhouette {
+            width: 100%;
+            height: 140px;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+        .ship-card:hover .ship-silhouette {
+            transform: scale(1.05);
+        }
+
+        .ship-card h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: var(--parchment);
+            margin-bottom: 0.5rem;
             letter-spacing: 2px;
         }
-        .back-link {
-            display: inline-block;
+        .ship-class {
+            font-size: 0.9rem;
+            color: var(--brass);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 1.5rem;
+        }
+        .ship-card p {
+            font-size: 1rem;
+            color: rgba(242, 230, 201, 0.6);
+            border-top: 1px solid var(--dark-hull);
+            padding-top: 1.5rem;
+        }
+
+        /* МАНИФЕСТ */
+        .manifesto {
+            text-align: center;
+            padding: 10rem 4rem;
+            background: radial-gradient(circle at center, #152329 0%, var(--deep-sky) 80%);
+            border-top: 1px solid var(--brass);
+            border-bottom: 1px solid var(--brass);
+        }
+        .manifesto-text {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            color: var(--parchment);
+            max-width: 1000px;
+            margin: 0 auto;
+            line-height: 1.3;
+        }
+        .manifesto-author {
+            display: block;
             margin-top: 2rem;
-            padding: 0.9rem 2.4rem;
-            background: rgba(184, 155, 91, 0.2);
-            border: 2px solid #c0a86a;
-            color: #f0e6c5;
-            text-decoration: none;
-            font-weight: 600;
-            border-radius: 40px;
-            transition: 0.2s;
-        }
-        .back-link:hover {
-            background: #b89b5b;
-            color: #0b1c2c;
-        }
-        .back-link:active {
-            background: #b89b5b;
-            color: #0b1c2c;
-        }
-        a {
-            color: inherit;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            font-style: normal;
+            letter-spacing: 4px;
+            color: var(--brass);
+            text-transform: uppercase;
         }
 
-        /* ---------- АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ (≤900px) ---------- */
-        @media screen and (max-width: 900px) {
-            .hero h1 {
-                font-size: 3.8rem;
-                letter-spacing: 4px;
-            }
-            .hero p {
-                font-size: 1.2rem;
-            }
+        /* ФУТЕР */
+        footer {
+            padding: 4rem;
+            text-align: center;
+            background: #050a0e;
+            color: rgba(242, 230, 201, 0.4);
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
         }
 
-        /* ---------- АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ (≤768px) ---------- */
-        @media screen and (max-width: 768px) {
-            .header {
-                padding: 1.2rem 0.5rem;
-            }
-            .nav {
-                gap: 0.5rem 1.2rem;
-            }
-            .nav a {
-                font-size: 0.7rem;
-                letter-spacing: 2px;
-                padding: 0.5rem 0.2rem;
-            }
-
-            .hero {
-                height: 70vh;
-            }
-            .hero h1 {
-                font-size: 2.8rem;
-                letter-spacing: 3px;
-                text-shadow: 3px 3px 0 #4a6c7a, 0 0 30px #a1b9c2;
-            }
-            .hero p {
-                font-size: 1rem;
-                margin-top: 1rem;
-            }
-            .back-link {
-                margin-top: 1.5rem;
-                padding: 0.6rem 1.8rem;
-                font-size: 0.8rem;
-            }
-
-            .section {
-                padding: 3rem 1.2rem;
-            }
-            .section h2 {
-                font-size: 1.8rem !important;   /* переопределяем inline-стиль */
-                border-bottom-width: 1px !important;
-            }
-
-            .wind-grid {
-                grid-template-columns: 1fr;   /* карточки в столбик */
-                gap: 1.5rem;
-            }
-            .tactic-card {
-                padding: 1.6rem;
-            }
-
-            .airship-showcase {
-                grid-template-columns: repeat(2, 1fr); /* два в ряд */
-                gap: 1rem;
-            }
-            .ship {
-                height: 140px;
-                font-size: 0.9rem;
-            }
+        @media (max-width: 1024px) {
+            .formations-grid { grid-template-columns: 1fr; }
+            .fleet-grid { grid-template-columns: 1fr 1fr; }
+            .nav-bar { padding: 1rem 2rem; }
+            .nav-links { display: none; }
+            .section { padding: 6rem 2rem; }
+            .section-header { flex-direction: column; align-items: flex-start; gap: 2rem; }
+            .section-desc { text-align: left; }
         }
-
-        /* ---------- МАЛЕНЬКИЕ ТЕЛЕФОНЫ (≤480px) ---------- */
-        @media screen and (max-width: 480px) {
-            .hero h1 {
-                font-size: 2rem;
-                letter-spacing: 2px;
-                text-shadow: 2px 2px 0 #4a6c7a, 0 0 20px #a1b9c2;
-            }
-            .hero p {
-                font-size: 0.9rem;
-                padding: 0 0.5rem;
-            }
-            .back-link {
-                padding: 0.5rem 1.4rem;
-                font-size: 0.7rem;
-            }
-
-            .nav a {
-                font-size: 0.65rem;
-                letter-spacing: 1.5px;
-            }
-
-            .section h2 {
-                font-size: 1.5rem !important;
-            }
-
-            .airship-showcase {
-                grid-template-columns: 1fr;   /* окончательно в один столбец */
-            }
-            .ship {
-                height: 130px;
-            }
-        }
-
-        /* ---------- ПЛАНШЕТЫ В ПОРТРЕТЕ (769-1024px) ---------- */
-        @media screen and (min-width: 769px) and (max-width: 1024px) {
-            .hero h1 {
-                font-size: 3.2rem;
-            }
-            .hero p {
-                font-size: 1.1rem;
-            }
-            .section {
-                padding: 4rem 1.5rem;
-            }
-        }
-
-        /* ---------- МИКРО-ПРАВКИ ---------- */
-        .section h2 {
-            font-size: 2.2rem;
-            border-bottom: 2px solid #b89b5b;
-            display: inline-block;
-            margin-top: 0;
-            word-break: break-word;
-        }
-        .tactic-card h3 {
-            margin-top: 0;
-            color: #f0e2c0;
-        }
-        .ship br {
-            margin-bottom: 5px;
+        @media (max-width: 600px) {
+            .fleet-grid { grid-template-columns: 1fr; }
+            .hero-title { font-size: 4rem; }
+            .hero-desc { font-size: 1.2rem; }
+            .cta-group { flex-direction: column; }
         }
     </style>
 </head>
 <body>
-    <div class="clouds"></div>
-    <header class="header">
-        <nav class="nav">
-            <a href="#fleet">Флот</a>
-            <a href="#wind">Ветер</a>
+    <nav class="nav-bar" id="nav">
+        <div class="logo">AETHER <span>COMMAND</span></div>
+        <div class="nav-links">
             <a href="#formations">Формации</a>
-            <a href="#campaign">Кампания</a>
-        </nav>
-    </header>
+            <a href="#fleet">Флот</a>
+            <a href="#manifesto">Кампания</a>
+        </div>
+    </nav>
 
+    <!-- HERO -->
     <section class="hero">
+        <div class="hero-bg"></div>
         <div class="hero-content">
-            <h1>AETHER COMMAND</h1>
-            <p>Повелитель ветра. Тактик небес. Последняя надежда архипелагов.</p>
-            <a href="index.html" class="back-link">← Назад к прямоугольникам</a>
+            <div class="hero-pre">Тактика небесных флотов</div>
+            <h1 class="hero-title">AETHER<br>COMMAND</h1>
+            <p class="hero-desc">Повелитель ветра. Тактик небес. Последняя надежда архипелагов.</p>
+            <div class="cta-group">
+                <button class="btn btn-primary">Войти в штаб</button>
+                <button class="btn btn-ghost">Смотреть трейлер</button>
+            </div>
         </div>
     </section>
 
-    <section id="wind" class="section">
-        <!-- inline-стиль управляется медиазапросами через !important -->
-        <h2 style="font-size: 2.2rem; border-bottom: 2px solid #b89b5b; display: inline-block;">🌪️ ФИЗИКА ВЕТРА</h2>
-        <p style="font-size: 1.2rem; margin-top: 1.5rem;">Каждое судно реагирует на воздушные потоки. Фланговый ветер ускоряет, встречный — снижает манёвренность. Используйте восходящие потоки для внезапных атак и облачные фронты для укрытия.</p>
-    </section>
-
+    <!-- ФОРМАЦИИ -->
     <section id="formations" class="section">
-        <h2>⚔️ ТАКТИЧЕСКИЕ ФОРМАЦИИ</h2>
-        <div class="wind-grid">
-            <div class="tactic-card">
+        <div class="section-header">
+            <h2 class="section-title"><span>Приказ эскадре</span>Формации</h2>
+            <p class="section-desc">Перестроение — это риск. Пока эскадра меняет строй, она уязвима. Выбирайте геометрию боя в зависимости от среды.</p>
+        </div>
+
+        <div class="formations-grid">
+            <article class="formation-card">
+                <svg class="formation-icon" viewBox="0 0 100 100">
+                    <path d="M 50 5 L 95 95 L 50 75 L 5 95 Z" />
+                </svg>
                 <h3>КЛИН</h3>
-                <p>Пробивает вражеский строй. +30% к урону в лоб, но ослаблен фланг.</p>
-            </div>
-            <div class="tactic-card">
+                <p>Пробивает вражеский строй, концентрируя ударную силу в центре. Оставляет фланги открытыми для охватов.</p>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-val stat-pos">+30%</div>
+                        <div class="stat-label">Лобовой урон</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val stat-neg">-25%</div>
+                        <div class="stat-label">Защита флангов</div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="formation-card">
+                <svg class="formation-icon" viewBox="0 0 100 100">
+                    <path d="M 10 10 L 90 10 L 90 90 L 10 90 Z" />
+                    <path d="M 30 30 L 70 30 L 70 70 L 30 70 Z" />
+                </svg>
                 <h3>КАРЕ</h3>
-                <p>Круговая оборона. Повышенное сопротивление залпам, снижена скорость.</p>
-            </div>
-            <div class="tactic-card">
+                <p>Круговая оборона под залповый бой. Держит перекрестный огонь, но теряет скорость и уязвима к осадным бомбам.</p>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-val stat-pos">+40%</div>
+                        <div class="stat-label">Сопротивление</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val stat-neg">-33%</div>
+                        <div class="stat-label">Скорость</div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="formation-card">
+                <svg class="formation-icon" viewBox="0 0 100 100">
+                    <circle cx="15" cy="20" r="5" />
+                    <circle cx="85" cy="25" r="5" />
+                    <circle cx="20" cy="80" r="5" />
+                    <circle cx="80" cy="75" r="5" />
+                    <circle cx="50" cy="50" r="8" />
+                    <circle cx="75" cy="60" r="4" />
+                </svg>
                 <h3>РОССЫПЬ</h3>
-                <p>Минимизирует урон от взрывов, позволяет окружать крупные цели.</p>
+                <p>Рассыпной строй против площадных атак. Позволяет окружить крупные цели, но лишен взаимного прикрытия бортов.</p>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-val stat-pos">-50%</div>
+                        <div class="stat-label">Урон от взрывов</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val stat-neg">LOW</div>
+                        <div class="stat-label">Прикрытие</div>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <!-- ФЛОТ -->
+    <section id="fleet" class="section">
+        <div class="section-header">
+            <h2 class="section-title"><span>Костяк Союза</span>Флагманы Неба</h2>
+            <p class="section-desc">Четыре столпа вашего флота. Класс решает бой, а не уровень. Апгрейды лишь оттачивают характер судна.</p>
+        </div>
+
+        <div class="fleet-grid">
+            <!-- ГРОЗОВОЙ ОРЁЛ: узкий, вытянутый корпус, острый нос, kleine гондола -->
+            <div class="ship-card">
+                <svg class="ship-silhouette" viewBox="0 0 280 140" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="eagleGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#b89b5b" stop-opacity="0.8"/>
+                            <stop offset="100%" stop-color="#8c7440" stop-opacity="0.6"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Газовый баллон: узкий, вытянутый, заострённый -->
+                    <path d="M 40 60 Q 80 35 140 30 Q 200 35 240 60 Q 200 85 140 80 Q 80 85 40 60 Z" 
+                          fill="url(#eagleGrad)" stroke="#c0a86a" stroke-width="1.5"/>
+                    <!-- Носовой конус (острый) -->
+                    <path d="M 240 60 L 265 52 L 260 60 L 265 68 Z" fill="#c0a86a"/>
+                    <!-- Хвостовые плавники (острые, откинутые назад) -->
+                    <path d="M 40 60 L 15 30 L 28 52 L 18 60 L 28 68 L 15 90 Z" 
+                          fill="url(#eagleGrad)" stroke="#c0a86a" stroke-width="1"/>
+                    <!-- Продольные линии жёсткости -->
+                    <line x1="50" y1="45" x2="235" y2="45" stroke="#c0a86a" stroke-width="0.5" opacity="0.5"/>
+                    <line x1="50" y1="75" x2="235" y2="75" stroke="#c0a86a" stroke-width="0.5" opacity="0.5"/>
+                    <!-- Гондола: маленькая, обтекаемая -->
+                    <path d="M 100 82 L 100 100 Q 105 105 135 105 Q 155 100 155 82 Z" 
+                          fill="#17313b" stroke="#c0a86a" stroke-width="1"/>
+                    <!-- Кабина (остекление) -->
+                    <ellipse cx="180" cy="58" rx="12" ry="5" fill="#070d12" stroke="#c0a86a" stroke-width="0.5"/>
+                    <!-- Винт -->
+                    <circle cx="35" cy="60" r="6" fill="none" stroke="#c0a86a" stroke-width="1.5"/>
+                    <line x1="29" y1="60" x2="41" y2="60" stroke="#c0a86a" stroke-width="1.5"/>
+                    <line x1="35" y1="54" x2="35" y2="66" stroke="#c0a86a" stroke-width="1.5"/>
+                    <!-- Орудийный порт (торпедная труба) -->
+                    <rect x="110" y="98" width="22" height="4" fill="#c0a86a"/>
+                    <circle cx="132" cy="100" r="2" fill="#8c3b2e"/>
+                </svg>
+                <h3>Грозовой Орёл</h3>
+                <div class="ship-class">Лёгкий перехватчик</div>
+                <p>Быстрейший класс неба. Разведка, клешни веера, первые удары. Гибнет под ответным залпом КАРЕ.</p>
+            </div>
+
+            <!-- ЖЕЛЕЗНЫЙ ДИРИЖАБЛЬ: массивный, широкий, броневые пластины, крупная гондола с пушками -->
+            <div class="ship-card">
+                <svg class="ship-silhouette" viewBox="0 0 280 140" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="ironGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#b89b5b" stop-opacity="0.9"/>
+                            <stop offset="50%" stop-color="#9a8048" stop-opacity="0.8"/>
+                            <stop offset="100%" stop-color="#705e34" stop-opacity="0.7"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Газовый баллон: широкий, массивный, тупой нос -->
+                    <ellipse cx="135" cy="55" rx="100" ry="35" fill="url(#ironGrad)" stroke="#c0a86a" stroke-width="2"/>
+                    <!-- Носовой утолщитель -->
+                    <ellipse cx="235" cy="55" rx="8" ry="30" fill="#8c7440" stroke="#c0a86a" stroke-width="1.5"/>
+                    <!-- Хвостовые плавники: массивные, прямоугольные -->
+                    <path d="M 35 55 L 10 20 L 28 20 L 35 45 Z" fill="url(#ironGrad)" stroke="#c0a86a" stroke-width="1.5"/>
+                    <path d="M 35 55 L 10 90 L 28 90 L 35 65 Z" fill="url(#ironGrad)" stroke="#c0a86a" stroke-width="1.5"/>
+                    <!-- Броневые пояса (горизонтальные полосы) -->
+                    <line x1="40" y1="40" x2="230" y2="40" stroke="#5e4d28" stroke-width="3"/>
+                    <line x1="40" y1="55" x2="230" y2="55" stroke="#5e4d28" stroke-width="3"/>
+                    <line x1="40" y1="70" x2="230" y2="70" stroke="#5e4d28" stroke-width="3"/>
+                    <!-- Заклёпки -->
+                    <circle cx="60" cy="40" r="1.5" fill="#c0a86a"/>
+                    <circle cx="90" cy="40" r="1.5" fill="#c0a86a"/>
+                    <circle cx="120" cy="40" r="1.5" fill="#c0a86a"/>
+                    <circle cx="150" cy="40" r="1.5" fill="#c0a86a"/>
+                    <circle cx="180" cy="40" r="1.5" fill="#c0a86a"/>
+                    <circle cx="210" cy="40" r="1.5" fill="#c0a86a"/>
+                    <circle cx="60" cy="70" r="1.5" fill="#c0a86a"/>
+                    <circle cx="90" cy="70" r="1.5" fill="#c0a86a"/>
+                    <circle cx="120" cy="70" r="1.5" fill="#c0a86a"/>
+                    <circle cx="150" cy="70" r="1.5" fill="#c0a86a"/>
+                    <circle cx="180" cy="70" r="1.5" fill="#c0a86a"/>
+                    <circle cx="210" cy="70" r="1.5" fill="#c0a86a"/>
+                    <!-- Гондола: крупная, с орудийными портами -->
+                    <rect x="70" y="88" width="130" height="30" rx="4" fill="#17313b" stroke="#c0a86a" stroke-width="1.5"/>
+                    <!-- Орудийные порты (амбразуры) -->
+                    <rect x="80" y="95" width="10" height="14" fill="#070d12" stroke="#c0a86a" stroke-width="0.5"/>
+                    <rect x="100" y="95" width="10" height="14" fill="#070d12" stroke="#c0a86a" stroke-width="0.5"/>
+                    <rect x="120" y="95" width="10" height="14" fill="#070d12" stroke="#c0a86a" stroke-width="0.5"/>
+                    <rect x="140" y="95" width="10" height="14" fill="#070d12" stroke="#c0a86a" stroke-width="0.5"/>
+                    <rect x="160" y="95" width="10" height="14" fill="#070d12" stroke="#c0a86a" stroke-width="0.5"/>
+                    <rect x="180" y="95" width="10" height="14" fill="#070d12" stroke="#c0a86a" stroke-width="0.5"/>
+                    <!-- Стволы орудий -->
+                    <rect x="82" y="108" width="3" height="14" fill="#c0a86a"/>
+                    <rect x="102" y="108" width="3" height="14" fill="#c0a86a"/>
+                    <rect x="122" y="108" width="3" height="14" fill="#c0a86a"/>
+                    <rect x="142" y="108" width="3" height="14" fill="#c0a86a"/>
+                    <rect x="162" y="108" width="3" height="14" fill="#c0a86a"/>
+                    <rect x="182" y="108" width="3" height="14" fill="#c0a86a"/>
+                    <!-- Кормовой винт -->
+                    <circle cx="35" cy="55" r="10" fill="none" stroke="#c0a86a" stroke-width="2"/>
+                    <line x1="25" y1="55" x2="45" y2="55" stroke="#c0a86a" stroke-width="2"/>
+                    <line x1="35" y1="45" x2="35" y2="65" stroke="#c0a86a" stroke-width="2"/>
+                    <!-- Антенна/мачта -->
+                    <line x1="135" y1="20" x2="135" y2="5" stroke="#c0a86a" stroke-width="1.5"/>
+                    <circle cx="135" cy="5" r="2" fill="#c0a86a"/>
+                </svg>
+                <h3>Железный Дирижабль</h3>
+                <div class="ship-class">Тяжёлый крейсер</div>
+                <p>Линейный якорь флота. Бортовые залпы, броневые слои. Почти лишён манёвра во встречном ветре.</p>
+            </div>
+
+            <!-- АЭРО-НОСИТЕЛЬ: широкий, плоский корпус с ангарами, винты снизу, дроны -->
+            <div class="ship-card">
+                <svg class="ship-silhouette" viewBox="0 0 280 140" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="carrierGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#b89b5b" stop-opacity="0.8"/>
+                            <stop offset="100%" stop-color="#7a6638" stop-opacity="0.6"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Корпус: широкий, плоский сверху (палуба) -->
+                    <path d="M 25 55 Q 50 25 140 25 Q 220 25 255 55 Q 220 85 140 85 Q 50 85 25 55 Z" 
+                          fill="url(#carrierGrad)" stroke="#c0a86a" stroke-width="1.5"/>
+                    <!-- Палуба: плоская сверху -->
+                    <line x1="50" y1="30" x2="225" y2="30" stroke="#c0a86a" stroke-width="2"/>
+                    <!-- Ангарные отсеки (большие ворота) -->
+                    <rect x="70" y="35" width="30" height="25" fill="#070d12" stroke="#c0a86a" stroke-width="1"/>
+                    <rect x="105" y="35" width="30" height="25" fill="#070d12" stroke="#c0a86a" stroke-width="1"/>
+                    <rect x="140" y="35" width="30" height="25" fill="#070d12" stroke="#c0a86a" stroke-width="1"/>
+                    <rect x="175" y="35" width="30" height="25" fill="#070d12" stroke="#c0a86a" stroke-width="1"/>
+                    <!-- Раздвижные створки ворот -->
+                    <line x1="85" y1="35" x2="85" y2="60" stroke="#c0a86a" stroke-width="0.5" opacity="0.5"/>
+                    <line x1="120" y1="35" x2="120" y2="60" stroke="#c0a86a" stroke-width="0.5" opacity="0.5"/>
+                    <line x1="155" y1="35" x2="155" y2="60" stroke="#c0a86a" stroke-width="0.5" opacity="0.5"/>
+                    <line x1="190" y1="35" x2="190" y2="60" stroke="#c0a86a" stroke-width="0.5" opacity="0.5"/>
+                    <!-- Хвостовые плавники -->
+                    <path d="M 25 55 L 5 30 L 18 30 L 18 80 L 5 80 Z" fill="url(#carrierGrad)" stroke="#c0a86a" stroke-width="1"/>
+                    <!-- Носовой конус -->
+                    <path d="M 255 55 L 270 48 L 267 55 L 270 62 Z" fill="#c0a86a"/>
+                    <!-- Гондола: широкая, подвешенная -->
+                    <rect x="80" y="88" width="110" height="22" rx="3" fill="#17313b" stroke="#c0a86a" stroke-width="1"/>
+                    <!-- Опорные балки -->
+                    <line x1="90" y1="83" x2="90" y2="88" stroke="#c0a86a" stroke-width="1.5"/>
+                    <line x1="115" y1="83" x2="115" y2="88" stroke="#c0a86a" stroke-width="1.5"/>
+                    <line x1="140" y1="83" x2="140" y2="88" stroke="#c0a86a" stroke-width="1.5"/>
+                    <line x1="165" y1="83" x2="165" y2="88" stroke="#c0a86a" stroke-width="1.5"/>
+                    <line x1="180" y1="83" x2="180" y2="88" stroke="#c0a86a" stroke-width="1.5"/>
+                    <!-- Вспомогательные винты (под корпусом) -->
+                    <circle cx="70" cy="55" r="8" fill="none" stroke="#c0a86a" stroke-width="1.5"/>
+                    <line x1="62" y1="55" x2="78" y2="55" stroke="#c0a86a" stroke-width="1.5"/>
+                    <line x1="70" y1="47" x2="70" y2="63" stroke="#c0a86a" stroke-width="1.5"/>
+                    <circle cx="210" cy="55" r="8" fill="none" stroke="#c0a86a" stroke-width="1.5"/>
+                    <line x1="202" y1="55" x2="218" y2="55" stroke="#c0a86a" stroke-width="1.5"/>
+                    <line x1="210" y1="47" x2="210" y2="63" stroke="#c0a86a" stroke-width="1.5"/>
+                    <!-- Дроны: вылетевшие из ангаров -->
+                    <circle cx="45" cy="100" r="3" fill="#c0a86a" stroke="#8c3b2e" stroke-width="0.5"/>
+                    <line x1="42" y1="100" x2="48" y2="100" stroke="#8c3b2e" stroke-width="1"/>
+                    <line x1="45" y1="97" x2="45" y2="103" stroke="#8c3b2e" stroke-width="1"/>
+                    
+                    <circle cx="235" cy="105" r="3" fill="#c0a86a" stroke="#8c3b2e" stroke-width="0.5"/>
+                    <line x1="232" y1="105" x2="238" y2="105" stroke="#8c3b2e" stroke-width="1"/>
+                    <line x1="235" y1="102" x2="235" y2="108" stroke="#8c3b2e" stroke-width="1"/>
+                    
+                    <circle cx="135" cy="115" r="2.5" fill="#c0a86a" opacity="0.6"/>
+                    <circle cx="155" cy="110" r="2.5" fill="#c0a86a" opacity="0.6"/>
+                </svg>
+                <h3>Аэро-носитель</h3>
+                <div class="ship-class">Поддержка дронов</div>
+                <p>Разведка, коррекция огня и добивание. Сердце строя «Гнездо», но уязвим в ближнем бою.</p>
+            </div>
+
+            <!-- БОМБАРДИРОВЩИК: тяжёлый, бомбовые люки открыты, широкое брюхо, брандеры -->
+            <div class="ship-card">
+                <svg class="ship-silhouette" viewBox="0 0 280 140" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="bombGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#b89b5b" stop-opacity="0.85"/>
+                            <stop offset="100%" stop-color="#6b5a30" stop-opacity="0.7"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Корпус: широкое, раздувшееся брюхо -->
+                    <path d="M 30 55 Q 60 20 140 18 Q 210 20 250 55 Q 210 90 140 88 Q 60 90 30 55 Z" 
+                          fill="url(#bombGrad)" stroke="#c0a86a" stroke-width="1.5"/>
+                    <!-- Носовой конус (тупой, бронированный) -->
+                    <path d="M 250 55 L 268 48 L 263 55 L 268 62 Z" fill="#8c7440" stroke="#c0a86a" stroke-width="1"/>
+                    <!-- Хвостовые плавники: широкие, короткие -->
+                    <path d="M 30 55 L 8 25 L 22 25 L 30 50 Z" fill="url(#bombGrad)" stroke="#c0a86a" stroke-width="1"/>
+                    <path d="M 30 55 L 8 85 L 22 85 L 30 60 Z" fill="url(#bombGrad)" stroke="#c0a86a" stroke-width="1"/>
+                    <!-- Броневые полосы -->
+                    <line x1="35" y1="38" x2="248" y2="38" stroke="#5e4d28" stroke-width="2.5"/>
+                    <line x1="35" y1="72" x2="248" y2="72" stroke="#5e4d28" stroke-width="2.5"/>
+                    <!-- Бомбовые люки (открытые створки на брюхе) -->
+                    <path d="M 80 85 L 75 105 L 120 100 L 115 85 Z" fill="#070d12" stroke="#c0a86a" stroke-width="1"/>
+                    <path d="M 130 85 L 128 105 L 170 100 L 168 85 Z" fill="#070d12" stroke="#c0a86a" stroke-width="1"/>
+                    <path d="M 180 85 L 180 100 L 220 100 L 215 85 Z" fill="#070d12" stroke="#c0a86a" stroke-width="1"/>
+                    <!-- Бомбы/брандеры (висящие из люков) -->
+                    <ellipse cx="95" cy="108" rx="4" ry="7" fill="#8c3b2e" stroke="#c0a86a" stroke-width="0.5"/>
+                    <line x1="95" y1="115" x2="95" y2="120" stroke="#c0a86a" stroke-width="1"/>
+                    <polygon points="93,120 97,120 95,124" fill="#c0a86a"/>
+                    
+                    <ellipse cx="145" cy="110" rx="4" ry="7" fill="#8c3b2e" stroke="#c0a86a" stroke-width="0.5"/>
+                    <line x1="145" y1="117" x2="145" y2="122" stroke="#c0a86a" stroke-width="1"/>
+                    <polygon points="143,122 147,122 145,126" fill="#c0a86a"/>
+                    
+                    <ellipse cx="195" cy="108" rx="3.5" ry="6" fill="#8c3b2e" stroke="#c0a86a" stroke-width="0.5"/>
+                    <line x1="195" y1="114" x2="195" y2="119" stroke="#c0a86a" stroke-width="1"/>
+                    <polygon points="193,119 197,119 195,123" fill="#c0a86a"/>
+                    <!-- Гондола: узкая, бронированная -->
+                    <rect x="105" y="28" width="70" height="14" rx="2" fill="#17313b" stroke="#c0a86a" stroke-width="1"/>
+                    <!-- Орудийная башня сверху -->
+                    <rect x="130" y="22" width="20" height="8" rx="2" fill="#17313b" stroke="#c0a86a" stroke-width="1"/>
+                    <rect x="135" y="16" width="3" height="10" fill="#c0a86a"/>
+                    <!-- Моторные гондолы по бокам -->
+                    <rect x="40" y="60" width="25" height="10" rx="3" fill="#17313b" stroke="#c0a86a" stroke-width="0.5"/>
+                    <rect x="215" y="60" width="25" height="10" rx="3" fill="#17313b" stroke="#c0a86a" stroke-width="0.5"/>
+                    <!-- Винты -->
+                    <circle cx="40" cy="65" r="8" fill="none" stroke="#c0a86a" stroke-width="1.5"/>
+                    <line x1="32" y1="65" x2="48" y2="65" stroke="#c0a86a" stroke-width="1.5"/>
+                    <line x1="40" y1="57" x2="40" y2="73" stroke="#c0a86a" stroke-width="1.5"/>
+                    
+                    <circle cx="240" cy="65" r="8" fill="none" stroke="#c0a86a" stroke-width="1.5"/>
+                    <line x1="232" y1="65" x2="248" y2="65" stroke="#c0a86a" stroke-width="1.5"/>
+                    <line x1="240" y1="57" x2="240" y2="73" stroke="#c0a86a" stroke-width="1.5"/>
+                </svg>
+                <h3>Бомбардировщик</h3>
+                <div class="ship-class">Разрушитель башен</div>
+                <p>Осадный класс. Единственный, кто сносит эшелоны Небесной Цитадели. Требует эскорта.</p>
             </div>
         </div>
     </section>
 
-    <section id="fleet" class="section">
-        <h2>✈️ ФЛАГМАНЫ НЕБА</h2>
-        <div class="airship-showcase">
-            <div class="ship">[ ГРОЗОВОЙ ОРЁЛ ]<br>Лёгкий перехватчик</div>
-            <div class="ship">[ ЖЕЛЕЗНЫЙ ДИРИЖАБЛЬ ]<br>Тяжёлый крейсер</div>
-            <div class="ship">[ АЭРО-НОСИТЕЛЬ ]<br>Поддержка дронов</div>
-            <div class="ship">[ БОМБАРДИРОВЩИК ]<br>Разрушитель башен</div>
+    <!-- МАНИФЕСТ -->
+    <section id="manifesto" class="manifesto">
+        <div class="manifesto-text">
+            «У Союза Архипелагов нет второго флота: каждая потеря — навсегда, каждый экипаж — поимённо, каждая победа — выкуплена у ветра. Небо — последнее поле чести.»
+            <span class="manifesto-author">— Устав Союза Архипелагов</span>
         </div>
     </section>
 
-    <footer class="footer">
-        <p>AETHER COMMAND © 2048 · SKYFALL STUDIOS · «Небо — последнее поле чести»</p>
+    <footer>
+        AETHER COMMAND © 2026 · SKYFALL STUDIOS · Премиум модель · Ранний доступ 2027
     </footer>
+
+    <script>
+        const nav = document.getElementById('nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+    </script>
 </body>
 </html>

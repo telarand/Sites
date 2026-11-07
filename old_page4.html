@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <!-- Оптимизированный viewport для мобильных устройств -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>THE CHRONO-FIXER | Исправьте время. Измените всё.</title>
+    <!-- Подключаем Google Fonts (как в исходном коде, но добавим корректный preconnect) -->
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ---------- БАЗОВЫЕ СТИЛИ (оригинал с доработками) ---------- */
+        body {
+            margin: 0;
+            font-family: 'Rajdhani', sans-serif;
+            background: #1a1a2e;
+            color: #00ffcc;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        }
+        .header {
+            padding: 1.5rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid #00ffcc;
+        }
+        .nav {
+            display: flex;
+            flex-wrap: wrap;          /* перенос ссылок на мобильных */
+            justify-content: center;
+            gap: 0.8rem 1.8rem;
+        }
+        .nav a {
+            color: #00ffcc;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            padding: 0.4rem 0.2rem;   /* увеличенная область касания */
+            transition: color 0.2s, text-shadow 0.2s, border-bottom 0.2s;
+            border-bottom: 1px solid transparent;
+        }
+        .nav a:hover {
+            color: #ffffff;
+            text-shadow: 0 0 8px #00ffcc;
+            border-bottom-color: #00ffcc;
+        }
+        .nav a:active {
+            color: #ffffff;
+        }
+        .hero {
+            height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+        }
+        .hero h1 {
+            font-size: 4rem;
+            margin: 0;
+            background: linear-gradient(45deg, #00ffcc, #0088ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 255, 204, 0.5);
+            line-height: 1.1;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            margin: 1.5rem 0 0;
+        }
+        .section {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .core-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        .core-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 10px;
+            border: 1px solid #00ffcc;
+            text-align: center;
+            transition: 0.2s;
+        }
+        .core-card:hover {
+            background: rgba(0, 255, 204, 0.1);
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
+        }
+        .anomaly-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .anomaly {
+            background: rgba(0, 255, 204, 0.1);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #00ffcc;
+        }
+        .era-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 3rem;
+        }
+        .era-card {
+            height: 150px;
+            border: 1px solid #00ffcc;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.3);
+            font-weight: bold;
+            color: #aaffee;
+            padding: 0.5rem;
+            text-align: center;
+        }
+        .footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            border-top: 1px solid #00ffcc;
+            font-size: 0.8rem;
+            color: #88ddff;
+        }
+
+        /* ---------- КНОПКА НАЗАД — СТИЛИЗОВАННАЯ ХРОНО-КНОПКА ---------- */
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.8rem 2.2rem;
+            background: transparent;
+            border: 2px solid #00ffcc;
+            color: #00ffcc;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            border-radius: 40px;
+            transition: 0.3s;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
+            text-shadow: 0 0 5px #00ffcc;
+        }
+        .back-link:hover {
+            background: #00ffcc;
+            color: #0f3460;
+            border-color: #ffffff;
+            box-shadow: 0 0 30px #00ffcc;
+            text-shadow: none;
+        }
+        .back-link:active {
+            background: #00ffcc;
+            color: #0f3460;
+            border-color: #ffffff;
+            box-shadow: 0 0 30px #00ffcc;
+        }
+
+        /* ---------- АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ (≤900px) ---------- */
+        @media screen and (max-width: 900px) {
+            .hero h1 {
+                font-size: 3.2rem;
+            }
+            .hero p {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* ---------- АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ (≤768px) ---------- */
+        @media screen and (max-width: 768px) {
+            .header {
+                padding: 1.2rem 0.5rem;
+            }
+            .nav {
+                gap: 0.5rem 1.2rem;
+            }
+            .nav a {
+                font-size: 0.85rem;
+                letter-spacing: 0.5px;
+                padding: 0.5rem 0.2rem;
+            }
+
+            .hero {
+                height: 70vh;
+            }
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .hero p {
+                font-size: 1rem;
+                margin-top: 1rem;
+            }
+            .back-link {
+                margin-top: 1.5rem;
+                padding: 0.6rem 1.8rem;
+                font-size: 0.9rem;
+            }
+
+            .section {
+                padding: 3rem 1.2rem;
+            }
+            .section h2 {
+                font-size: 1.8rem !important;
+            }
+
+            .core-features {
+                grid-template-columns: 1fr;   /* карточки в столбик */
+                gap: 1.5rem;
+            }
+            .core-card {
+                padding: 1.6rem;
+            }
+
+            .anomaly-grid {
+                grid-template-columns: repeat(2, 1fr); /* два в ряд */
+                gap: 1rem;
+            }
+            .anomaly {
+                padding: 1.2rem;
+            }
+
+            .era-showcase {
+                grid-template-columns: 1fr;   /* один в ряд */
+                gap: 1rem;
+            }
+            .era-card {
+                height: 130px;
+            }
+        }
+
+        /* ---------- МАЛЕНЬКИЕ ТЕЛЕФОНЫ (≤480px) ---------- */
+        @media screen and (max-width: 480px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            .hero p {
+                font-size: 0.9rem;
+            }
+            .back-link {
+                padding: 0.5rem 1.4rem;
+                font-size: 0.8rem;
+            }
+
+            .nav a {
+                font-size: 0.75rem;
+            }
+
+            .section h2 {
+                font-size: 1.5rem !important;
+            }
+
+            .anomaly-grid {
+                grid-template-columns: 1fr;   /* окончательно в один столбец */
+            }
+            .era-card {
+                height: 120px;
+            }
+        }
+
+        /* ---------- ПЛАНШЕТЫ В ПОРТРЕТЕ (769-1024px) ---------- */
+        @media screen and (min-width: 769px) and (max-width: 1024px) {
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+            .section {
+                padding: 3.5rem 1.5rem;
+            }
+            .era-showcase {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* ---------- МИКРО-ПРАВКИ ---------- */
+        .section h2 {
+            font-size: 2rem;
+            text-align: center;
+            margin-top: 0;
+            word-break: break-word;
+        }
+        .core-card h3 {
+            margin-top: 0;
+            color: #bbffff;
+        }
+        .anomaly h4 {
+            margin-top: 0;
+            color: #ccffff;
+        }
+        .era-card {
+            color: #ccffff;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <a href="#core">Ядро</a>
+            <a href="#anomalies">Аномалии</a>
+            <a href="#eras">Эры</a>
+            <a href="#fix">Исправить</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div>
+            <h1>THE CHRONO-FIXER</h1>
+            <p style="font-size: 1.2rem;">Время сломано. Ваша работа — его починить.</p>
+            <!-- Стилизованная кнопка вместо простой ссылки -->
+            <a href="index.html" class="back-link">← Назад к прямоугольникам</a>
+        </div>
+    </section>
+
+    <section id="core" class="section">
+        <h2>ЯДРО РЕАЛЬНОСТИ</h2>
+        <p style="text-align: center; max-width: 800px; margin: 0 auto;">Вы — андроид-Исправитель, активированный для ликвидации Временного Вируса. Каждая миссия уникальна. Каждая смерть — урок. Возвращайтесь сильнее.</p>
+        
+        <div class="core-features">
+            <div class="core-card">
+                <h3>РОГАЛИК-ПРОГРЕСС</h3>
+                <p>Умирайте и возвращайтесь снова. Открывайте новые способности и комбинации аномалий.</p>
+            </div>
+            <div class="core-card">
+                <h3>СЛУЧАЙНЫЕ АНОМАЛИИ</h3>
+                <p>Каждая миссия предлагает новые временные силы. Адаптируйтесь или умрите.</p>
+            </div>
+            <div class="core-card">
+                <h3>НАКОПЛЕНИЕ ЗАРЯДА</h3>
+                <p>Уничтожайте врагов, чтобы активировать ультимативные хроно-способности.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="anomalies" class="section">
+        <h2>ВРЕМЕННЫЕ АНОМАЛИИ</h2>
+        <p style="text-align: center;">Случайные силы, которые вы получаете перед каждой миссией:</p>
+        
+        <div class="anomaly-grid">
+            <div class="anomaly">
+                <h4>ЗАМЕДЛЯЮЩАЯ ПУЛЯ</h4>
+                <p>Попадания создают пузыри замедленного времени.</p>
+            </div>
+            <div class="anomaly">
+                <h4>ЩИТ ИЗ БУДУЩЕГО</h4>
+                <p>Возвращает полученный урон обратно врагам.</p>
+            </div>
+            <div class="anomaly">
+                <h4>ТЕМПОРАЛЬНЫЙ КЛОН</h4>
+                <p>Создает статичную копию, которая отвлекает врагов.</p>
+            </div>
+            <div class="anomaly">
+                <h4>ХРОНО-ЛОВУШКА</h4>
+                <p>Замораживает любого, кто пересечет ее луч.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="eras" class="section">
+        <h2>ЗОНЫ ЗАРАЖЕНИЯ</h2>
+        <div class="era-showcase">
+            <div class="era-card">[ИКОНКА: Древний Рим с глитчами]</div>
+            <div class="era-card">[ИКОНКА: Викторианский Лондон с аномалиями]</div>
+            <div class="era-card">[ИКОНКА: Постапокалиптическое будущее]</div>
+            <div class="era-card">[ИКОНКА: Космическая станция с вирусами]</div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>THE CHRONO-FIXER — СИСТЕМА ВОССТАНОВЛЕНИЯ ВРЕМЕНИ АКТИВИРОВАНА</p>
+        <p>ПОДКЛЮЧАЙТЕСЬ. ИСПРАВЛЯЙТЕ. ВОЗВРАЩАЙТЕСЬ.</p>
+    </footer>
+</body>
+</html>
