@@ -3,94 +3,352 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Прямоугольники</title>
+    <title>Игровой Портал | Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --bg-void: #05050A;
+            --bg-panel: rgba(10, 20, 40, 0.6);
+            --cyan: #00F3FF;
+            --magenta: #B04CF0;
+            --amber: #FFB454;
+            --steel: #C7D3DC;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
         body {
-            background: linear-gradient(145deg, #1a2639 0%, #0e1a2b 100%);
-            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background-color: var(--bg-void);
+            color: var(--steel);
+            font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Фоновая сетка */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Шапка */
+        header {
+            position: fixed;
+            top: 0; width: 100%;
+            padding: 1.5rem 5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(5, 5, 10, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 243, 255, 0.1);
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 1.5rem;
+            letter-spacing: 4px;
+            color: #fff;
+            text-transform: uppercase;
+        }
+        .logo span { color: var(--cyan); }
+
+        nav { display: flex; gap: 2rem; align-items: center; }
+        
+        /* Ссылка на старую версию */
+        .old-link {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--amber);
+            text-decoration: none;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border: 1px solid var(--amber);
+            padding: 0.5rem 1rem;
+            transition: all 0.3s;
+        }
+        .old-link:hover {
+            background: var(--amber);
+            color: var(--bg-void);
+            box-shadow: 0 0 15px var(--amber);
+        }
+
+        /* Hero Секция */
+        .hero {
+            height: 60vh;
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            padding: 20px;
+            align-items: center;
+            text-align: center;
+            margin-top: 80px;
+            background: radial-gradient(circle at 50% 50%, rgba(0, 50, 100, 0.3) 0%, var(--bg-void) 70%);
         }
-        h1 {
-            color: #ffeaa5;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.6);
-            font-size: 2.5rem;
-            margin-bottom: 30px;
+
+        .hero h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            color: #fff;
+            text-shadow: 0 0 30px rgba(0, 243, 255, 0.6);
+            margin-bottom: 1rem;
             letter-spacing: 2px;
         }
-        .grid {
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--cyan);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        /* Сетка игр */
+        .games-section {
+            padding: 4rem 5%;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .games-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            max-width: 600px;
-            width: 100%;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
         }
-        .card {
-            background: #ffeaa5;
-            border-radius: 20px;
-            box-shadow: 0 15px 25px rgba(0,0,0,0.5);
-            aspect-ratio: 1 / 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 20px 35px rgba(255, 234, 165, 0.4);
-        }
-        .card a {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            height: 100%;
+
+        .game-card {
+            background: var(--bg-panel);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            padding: 2rem;
             text-decoration: none;
-            font-size: 5rem;
-            font-weight: 800;
-            color: #1e3d58;
-            border-radius: 20px;
-            background: radial-gradient(circle at 30% 30%, #fff3c9, #ffeaa5);
-            transition: background 0.2s;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 90% 100%, 0% 100%);
+            overflow: hidden;
         }
-        .card a:hover {
-            background: radial-gradient(circle at 30% 30%, #ffeeb8, #ffd97e);
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--cyan);
+            transition: width 0.4s;
         }
+
+        .game-card:hover {
+            border-color: var(--cyan);
+            transform: translateY(-10px);
+            background: rgba(10, 20, 40, 0.9);
+        }
+
+        .game-card:hover::before { width: 100%; opacity: 0.1; }
+
+        .card-id {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--magenta);
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .card-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: #fff;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .card-desc {
+            color: var(--steel);
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+            min-height: 50px;
+        }
+
+        .card-btn {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--cyan);
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border-bottom: 1px solid transparent;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .game-card:hover .card-btn {
+            border-bottom-color: var(--cyan);
+            color: #fff;
+        }
+
         footer {
-            margin-top: 40px;
-            color: #b0c4ce;
+            text-align: center;
+            padding: 3rem;
+            border-top: 1px solid rgba(0, 243, 255, 0.1);
+            margin-top: 4rem;
+            color: rgba(255,255,255,0.3);
             font-size: 0.9rem;
-            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 1rem 1.5rem; }
+            nav { gap: 1rem; }
+            .logo { font-size: 1.2rem; }
+            .old-link { padding: 0.4rem 0.8rem; font-size: 0.75rem; }
         }
     </style>
 </head>
 <body>
-    <h1>Выбери цифру</h1>
-    <div class="grid">
-        <div class="card"><a href="page1.html">1</a></div>
-        <div class="card"><a href="page2.html">2</a></div>
-        <div class="card"><a href="page3.html">3</a></div>
-        <div class="card"><a href="page4.html">4</a></div>
-        <div class="card"><a href="page5.html">5</a></div>
-        <div class="card"><a href="page6.html">6</a></div>
-        <div class="card"><a href="page7.html">7</a></div>
-        <div class="card"><a href="page8.html">8</a></div>
-        <div class="card"><a href="page9.html">9</a></div>
-	<div class="card"><a href="page10.html">10</a></div>
-	<div class="card"><a href="page11.html">11</a></div>
-	<div class="card"><a href="page12.html">12</a></div>
-	<div class="card"><a href="page13.html">13</a></div>
-	<div class="card"><a href="page14.html">14</a></div>
-	<div class="card"><a href="page15.html">15</a></div>
-    </div>
+
+    <header>
+        <div class="logo">GAMES<span>::</span>HUB</div>
+        <nav>
+            <a href="old_index.html" class="old-link">Старая версия (Архив)</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>НАШ ИГРОВОЙ ПОРТАЛ</h1>
+        <p>Выберите свою эпоху и погрузитесь в игру</p>
+    </section>
+
+    <section class="games-section">
+        <div class="games-grid">
+            <!-- Игра 1 -->
+            <a href="page1.html" class="game-card">
+                <span class="card-id">// ПРОЕКТ_01</span>
+                <h2 class="card-title">CHRONO COMMANDOS</h2>
+                <p class="card-desc">Тактический хроно-шутер. Остановите время, отдайте приказ и разорвите петлю.</p>
+                <span class="card-btn">ИГРАТЬ [ -> ]</span>
+            </a>
+
+            <!-- Игра 2 -->
+            <a href="page2.html" class="game-card">
+                <span class="card-id">// ПРОЕКТ_02</span>
+                <h2 class="card-title">SANDS OF WAR</h2>
+                <p class="card-desc">Две эпохи. Одна судьба. Прошлое определяет настоящее, вы определите будущее.</p>
+                <span class="card-btn">ИГРАТЬ [ -> ]</span>
+            </a>
+
+            <!-- Игра 3 -->
+            <a href="page3.html" class="game-card">
+                <span class="card-id">// ПРОЕКТ_03</span>
+                <h2 class="card-title">PARADOX LEGACY</h2>
+                <p class="card-desc">Расследуйте свои преступления. Отматывай время, мир забудет, ты — нет.</p>
+                <span class="card-btn">ИГРАТЬ [ -> ]</span>
+            </a>
+
+            <!-- Игра 4 -->
+            <a href="page4.html" class="game-card">
+                <span class="card-id">// ПРОЕКТ_04</span>
+                <h2 class="card-title">THE CHRONO-FIXER</h2>
+                <p class="card-desc">Время сломано. Ваша работа — его починить. Смерть — не поражение, а данные.</p>
+                <span class="card-btn">ИГРАТЬ [ -> ]</span>
+            </a>
+
+            <!-- Игра 5 -->
+            <a href="page5.html" class="game-card">
+                <span class="card-id">// ПРОЕКТ_05</span>
+                <h2 class="card-title">ECHOES OF NYX</h2>
+                <p class="card-desc">Резонанс магии. Последняя песня недопета. Твой голос — оружие.</p>
+                <span class="card-btn">ИГРАТЬ [ -> ]</span>
+            </a>
+
+            <!-- Игра 6 -->
+            <a href="page6.html" class="game-card">
+                <span class="card-id">// ПРОЕКТ_06</span>
+                <h2 class="card-title">NEON WRAITH</h2>
+                <p class="card-desc">Ты не взламываешь сеть. Ты становишься сетью. Одиночная кампания. Ко-оп «Синдикат».</p>
+                <span class="card-btn">ИГРАТЬ [ -> ]</span>
+            </a>
+
+            <!-- Игра 7 -->
+            <a href="page7.html" class="game-card">
+                <span class="card-id">// ПРОЕКТ_07</span>
+                <h2 class="card-title">MECH DREADNOUGHT</h2>
+                <p class="card-desc">Собери титана. Сокруши Колосса. То, что собрано в цеху, честно вернётся в бою массой и инерцией.</p>
+                <span class="card-btn">ИГРАТЬ [ -> ]</span>
+            </a>
+
+            <!-- Игра 8 -->
+            <a href="page8.html" class="game-card">
+                <span class="card-id">// ПРОЕКТ_08</span>
+                <h2 class="card-title">ABYSS VANGUARD</h2>
+                <p class="card-desc">14 километров тишины. Ты не один. Каждый метр вниз умножает давление на корпус и рассудок.</p>
+                <span class="card-btn">ИГРАТЬ [ -> ]</span>
+            </a>
+
+            <!-- Игра 9 -->
+            <a href="page9.html" class="game-card">
+                <span class="card-id">// ПРОЕКТ_09</span>
+                <h2 class="card-title">AETHER COMMAND</h2>
+                <p class="card-desc">Повелитель ветра. Тактик неба. Последняя надежда архипелагов и их дирижабельных флотов.</p>
+                <span class="card-btn">ИГРАТЬ [ -> ]</span>
+            </a>
+
+            <!-- Игра 10 -->
+            <a href="page10.html" class="game-card">
+                <span class="card-id">// ПРОЕКТ_10</span>
+                <h2 class="card-title">MINDSCAPE</h2>
+                <p class="card-desc">Сознание — многослойный лабиринт. Асимметричный кооператив. Не заблудитесь.</p>
+                <span class="card-btn">ИГРАТЬ [ -> ]</span>
+            </a>
+
+            <!-- Игра 11 -->
+            <a href="page11.html" class="game-card">
+                <span class="card-id">// ПРОЕКТ_11</span>
+                <h2 class="card-title">WASTELAND SYMBIOSIS</h2>
+                <p class="card-desc">Ты — то, что ты поглощаешь. Охота как сборка тела, эволюция как оружие.</p>
+                <span class="card-btn">ИГРАТЬ [ -> ]</span>
+            </a>
+
+            <!-- Игра 12 -->
+            <a href="page12.html" class="game-card">
+                <span class="card-id">// ПРОЕКТ_12</span>
+                <h2 class="card-title">COLOSSEUM OVERLORD</h2>
+                <p class="card-desc">Тактический менеджер гладиаторов. Тяните карты приказов в реальном времени и заставьте толпу скандировать ваше имя.</p>
+                <span class="card-btn">ИГРАТЬ [ -> ]</span>
+            </a>
+
+            <!-- Игра 13 -->
+            <a href="page13.html" class="game-card">
+                <span class="card-id">// ПРОЕКТ_13</span>
+                <h2 class="card-title">NEUROSCAPE</h2>
+                <p class="card-desc">Терапия через созидание грёз. Вы — ведущий терапевт «Дрим Лаб»: размещайте архетипы на холсте подсознания, и сон ответит.</p>
+                <span class="card-btn">ИГРАТЬ [ -> ]</span>
+            </a>
+
+            <!-- Игра 14 -->
+            <a href="page14.html" class="game-card">
+                <span class="card-id">// ПРОЕКТ_14</span>
+                <h2 class="card-title">ALCHEMICA</h2>
+                <p class="card-desc">Ignis mutat res — огонь меняет всё. Тигель и журнал опытов: каждая неудача становится данными, а не наказанием.</p>
+                <span class="card-btn">ИГРАТЬ [ -> ]</span>
+            </a>
+            <!-- Игра 15 -->
+            <a href="page15.html" class="game-card">
+                <span class="card-id">// ПРОЕКТ_15</span>
+                <h2 class="card-title">GALACTIC MENAGERIE</h2>
+                <p class="card-desc">Ковчег миров. Сохраните всё живое — даже то, что ещё не открыто. Инженерия среды важнее прокачки.</p>
+                <span class="card-btn">ИГРАТЬ [ -> ]</span>
+            </a>
+        </div>
+    </section>
+
+    <footer>
+        © 2024 Игровой Портал. Все права защищены.
+    </footer>
+
 </body>
 </html>

@@ -212,6 +212,27 @@
 
         .btn-primary:hover::before { left: 0; }
 
+        /* КНОПКА ВЫХОДА В HUD */
+        .exit-hud {
+            pointer-events: auto;
+            margin-left: 14px;
+            color: var(--amber);
+            text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border: 1px solid var(--amber);
+            padding: 2px 10px;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+        .exit-hud:hover {
+            background: var(--amber);
+            color: var(--bg-void);
+            box-shadow: 0 0 10px var(--amber);
+        }
+
         /* СЕКЦИИ */
         .section {
             position: relative;
@@ -403,7 +424,7 @@
     <div class="hud-overlay">
         <div class="hud-top">
             <div>KVO_SYS // ОПЕРАЦИЯ: ХРОНОС</div>
-            <div>УЗЕЛ: 774-ALPHA <span class="core-status">[ СТАБИЛЬНО ]</span></div>
+            <div>УЗЕЛ: 774-ALPHA <span class="core-status">[ СТАБИЛЬНО ]</span> <a href="index.html" class="exit-hud">[ Выйти ]</a></div>
         </div>
         <div class="hud-bottom">
             <div>ХРОНО-ЯДРО: 100% [||||||||||]</div>
