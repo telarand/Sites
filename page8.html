@@ -436,6 +436,404 @@
             .cursor { display: none; }
         }
     </style>
+
+    <style>
+    /* === UNIFIED RESPONSIVE ADAPTATION (PC / TABLET / PHONE) === */
+    /* Жёстко обрезаем горизонтальный перелив от декоративных фоновых слоёв и nowrap */
+    html, body {
+        overflow-x: hidden !important;
+        max-width: 100% !important;
+    }
+    /* Декоративные фоновые слои (крупные .grid-plane, .bg-text с nowrap и т.п.) — в границы экрана */
+    .grid-plane, .bg-text, .bg-text-large, .bg-grid, .overlay-fx,
+    .symbiote-silhouette, .mech-silhouette, .vignette, .bg-glow {
+        max-width: 100vw !important;
+        overflow: hidden !important;
+    }
+
+    /* Общие touch-улучшения для всех экранов */
+    * {
+        -webkit-tap-highlight-color: transparent;
+    }
+    body {
+        cursor: auto !important; /* вернуть обычный курсор — кастомный только для мыши */
+    }
+    a, button, [role="button"], .btn, .btn-primary, .game-card, .era-card, .mech-panel, .threat-card {
+        -webkit-tap-highlight-color: rgba(0, 243, 255, 0.2);
+        touch-action: manipulation;
+    }
+    /* Кастомные курсоры скрыты на touch (бесполезны и съедают ресурсы) */
+    .cursor, .cursor-dot, .cursor-outline, .cursor-ring,
+    .custom-cursor, #cursor, #cursorDot, #cursorRing {
+        display: none !important;
+    }
+
+    /* ============ ВЕРХНЯЯ ШТОРКА ВСЕГДА ВИДИМА ============ */
+    /* В шторке: название (logo), кнопка выхода, анимация (core-status),
+       навигация по секциям (#anchors). Оригинальный CSS некоторых страниц
+       скрывает её на планшете/телефоне (nav{display:none}, .nav-links{display:none},
+       .hud-overlay{display:none}). Отменяем это на ВСЕХ размерах через !important. */
+    header, nav, .nav, .nav-aaa, .nav-links, nav ul, .navbar, .topbar {
+        display: flex !important;
+        flex-wrap: wrap !important;
+    }
+    .nav-links li, nav ul li { display: list-item !important; }
+    nav a, .nav a, .nav-aaa a, .nav-links a, .exit-hud {
+        display: inline-block !important;
+    }
+    /* HUD-оверлей (название операции + статус + кнопка выхода) — всегда виден */
+    .hud-overlay {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    .hud-top, .hud-bottom { display: flex !important; }
+    .hud-corner { display: block !important; }
+    .hud-text  { display: block !important; }
+    .core-status { display: inline !important; }
+    .exit-hud { pointer-events: auto !important; }
+
+    /* ============ ПЛАНШЕТ: 768px – 1024px ============ */
+    @media (max-width: 1024px) {
+        /* Шапка / навигация — компактнее */
+        header, nav, .header, .navbar, .nav, .nav-aaa {
+            padding-left: 2rem !important;
+            padding-right: 2rem !important;
+            flex-wrap: wrap !important;
+            gap: 0.75rem !important;
+        }
+        .nav-links, nav ul, .nav-menu, .menu, .nav-aaa {
+            gap: 1rem !important;
+            flex-wrap: wrap !important;
+        }
+        .nav-links a, nav a, .nav a, .nav-aaa a {
+            font-size: 0.85rem !important;
+            letter-spacing: 1px !important;
+        }
+        .logo, .logo a {
+            font-size: 1.1rem !important;
+            letter-spacing: 2px !important;
+        }
+
+        /* Секции: умеренные отступы по бокам */
+        section, .section, .hero {
+            padding-left: 2rem !important;
+            padding-right: 2rem !important;
+        }
+        section, .section {
+            padding-top: 4rem !important;
+            padding-bottom: 4rem !important;
+        }
+
+        /* Заголовки секций в столбец */
+        .section-header, .sec-header, .section-head {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 0.75rem !important;
+            margin-bottom: 2.5rem !important;
+        }
+        .section-title, .section-title h2, h2.section-title {
+            font-size: 1.8rem !important;
+        }
+        .section-num {
+            font-size: 1.5rem !important;
+        }
+
+        /* Сетки → максимум 2 колонки на планшете */
+        .games-grid,
+        .mechanics-container, .mech-grid, .mechanics-grid,
+        .terminal-grid, .bestiary-grid, .bestiary-grid *,
+        .faction-grid, .glad-grid, .grid-3, .grid-3-cards,
+        .fleet-grid, .module-grid, .module-grid *,
+        .pillars, .pillars-container, .pillars *,
+        .species-list, .formations-grid, .footer-grid,
+        .rules-grid, .hunters-grid, .anomaly-list,
+        .body-section, .evo-tree, .dream-core-wrapper, .hud-showcase {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        }
+
+        /* Сложные асимметричные сетки → 1 колонка */
+        .eras-wrapper, .zones-grid, .region, .district-row,
+        .grid-3d, .body-section, .evo-tree {
+            grid-template-columns: 1fr !important;
+            grid-template-rows: auto !important;
+        }
+        .era-card:first-child,
+        .zone-1 {
+            grid-row: auto !important;
+            grid-column: auto !important;
+            min-height: 240px !important;
+        }
+
+        /* Большой hero-заголовок масштабируется */
+        .glitch-title, .hero h1, .hero-title, .hero-title-main {
+            font-size: clamp(2.5rem, 8vw, 5rem) !important;
+            line-height: 1 !important;
+        }
+        .hero-subtitle {
+            font-size: 0.9rem !important;
+            letter-spacing: 0.3em !important;
+        }
+        .hero-desc {
+            font-size: 1.05rem !important;
+            max-width: 90% !important;
+        }
+
+        /* HUD-шторка на планшете: компактная, но ВИДИМАЯ (название + статус + кнопка выхода) */
+        .hud-overlay {
+            padding: 12px 2rem !important;
+            font-size: 0.7rem !important;
+        }
+        .hud-top, .hud-bottom {
+            gap: 0.5rem !important;
+        }
+        .core-status { font-size: 0.65rem !important; }
+        .exit-hud {
+            font-size: 0.7rem !important;
+            padding: 3px 8px !important;
+            margin-left: 8px !important;
+        }
+
+        /* white-space: nowrap вызывает горизонтальный скролл — разрешаем перенос */
+        .nav-links, nav ul, .nav-aaa, .logo, .hero-subtitle, .section-title,
+        .hud-top, .hud-bottom {
+            white-space: normal !important;
+        }
+    }
+
+    /* ============ ТЕЛЕФОН: < 768px ============ */
+    @media (max-width: 768px) {
+        html {
+            font-size: 15px; /* база rem чуть меньше, чтобы влезало больше */
+        }
+
+        /* Шапка — компактная, переносится */
+        header, nav, .header, .navbar, .nav {
+            padding: 0.8rem 1rem !important;
+            flex-wrap: wrap !important;
+            gap: 0.5rem !important;
+            justify-content: space-between !important;
+        }
+        .logo, .logo a {
+            font-size: 0.95rem !important;
+            letter-spacing: 1px !important;
+        }
+        .logo-sym {
+            font-size: 1rem !important;
+        }
+
+        /* Навигация: ссылки в строку с переносом, мелким шрифтом */
+        .nav-links, nav ul, .nav-menu, .menu, .nav-aaa {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            gap: 0.4rem 0.7rem !important;
+            width: 100% !important;
+            justify-content: flex-start !important;
+            margin-top: 0.3rem !important;
+        }
+        .nav-links a, nav a, .nav a, .nav-aaa a, .nav-links li {
+            font-size: 0.72rem !important;
+            padding: 0.3rem 0.5rem !important;
+            letter-spacing: 0.5px !important;
+        }
+        .old-link, .exit-hud {
+            font-size: 0.7rem !important;
+            padding: 0.3rem 0.6rem !important;
+            letter-spacing: 1px !important;
+        }
+
+        /* Секции — короткие отступы */
+        section, .section {
+            padding: 3rem 1rem !important;
+        }
+        .hero {
+            padding: 5rem 1rem 3rem !important;
+            min-height: auto !important;
+            height: auto !important;
+            text-align: center;
+        }
+        /* 100vh на телефоне часто отрезает контент из-за адресной строки */
+        .hero { height: auto !important; }
+        .cta-section {
+            padding: 4rem 1rem !important;
+        }
+
+        /* ВСЕ сетки → 1 колонка на телефоне */
+        .games-grid,
+        .mechanics-container, .mech-grid, .mechanics-grid,
+        .terminal-grid, .bestiary-grid,
+        .faction-grid, .glad-grid, .grid-3, .grid-3-cards,
+        .fleet-grid, .module-grid,
+        .pillars, .pillars-container,
+        .species-list, .formations-grid, .footer-grid,
+        .rules-grid, .hunters-grid, .anomaly-list,
+        .body-section, .evo-tree, .dream-core-wrapper, .hud-showcase,
+        .eras-wrapper, .zones-grid, .region, .district-row, .grid-3d {
+            grid-template-columns: 1fr !important;
+            grid-template-rows: auto !important;
+            gap: 1rem !important;
+        }
+        .era-card:first-child,
+        .zone-1 {
+            grid-row: auto !important;
+            grid-column: auto !important;
+        }
+        .era-card {
+            min-height: 220px !important;
+        }
+
+        /* Заголовки секций */
+        .section-header, .sec-header, .section-head {
+            margin-bottom: 2rem !important;
+        }
+        .section-title, h2.section-title, .section-title h2,
+        .section-title, .sec-title {
+            font-size: 1.4rem !important;
+        }
+        .section-num {
+            font-size: 1.1rem !important;
+        }
+
+        /* Hero — крупный шрифт, но влезает по ширине */
+        .glitch-title, .hero h1, .hero-title, .hero-title-main {
+            font-size: clamp(2rem, 13vw, 3.5rem) !important;
+            line-height: 1.05 !important;
+            margin-bottom: 0.8rem !important;
+        }
+        .hero-subtitle {
+            font-size: 0.78rem !important;
+            letter-spacing: 0.2em !important;
+            padding: 6px 12px !important;
+        }
+        .hero-desc, .hero p {
+            font-size: 0.95rem !important;
+            max-width: 100% !important;
+            padding: 0 0.5rem !important;
+            margin-bottom: 2rem !important;
+        }
+
+        /* Кнопки — крупный тап-таргет, но компактнее по бокам */
+        .btn-primary, .btn, button, .cta-btn, .play-btn {
+            padding: 0.85rem 1.6rem !important;
+            font-size: 0.85rem !important;
+            letter-spacing: 2px !important;
+            display: inline-block !important;
+            text-align: center !important;
+        }
+
+        /* Карточки игр/механик — комфортные на тач */
+        .game-card, .mech-panel, .threat-card, .era-overlay {
+            padding: 1.2rem !important;
+        }
+        .card-title, .mech-title, .threat-name {
+            font-size: 1.15rem !important;
+        }
+        .card-desc, .mech-desc {
+            font-size: 0.95rem !important;
+            min-height: auto !important; /* фиксируемая мин. высота ломает поток на 1 колонке */
+        }
+
+        /* HUD-шторка на телефоне: компактная, но ВИДИМАЯ.
+           Содержит название операции, статус, кнопку выхода и навигацию по секциям —
+           их нельзя убирать, иначе пользователь не сможет выйти или перейти к разделу. */
+        .hud-overlay {
+            padding: 8px 1rem !important;
+            font-size: 0.62rem !important;
+            gap: 6px !important;
+        }
+        .hud-top, .hud-bottom {
+            gap: 0.4rem !important;
+            flex-wrap: wrap !important;
+            line-height: 1.3 !important;
+        }
+        .hud-text { font-size: 0.6rem !important; letter-spacing: 1px !important; }
+        .hud-corner { width: 14px !important; height: 14px !important; }
+        .core-status { font-size: 0.6rem !important; }
+        .exit-hud {
+            font-size: 0.62rem !important;
+            padding: 2px 6px !important;
+            margin-left: 6px !important;
+            letter-spacing: 1px !important;
+        }
+
+        /* Футер */
+        footer, .footer, .footer-grid {
+            padding: 2rem 1rem !important;
+            font-size: 0.85rem !important;
+        }
+
+        /* Стат-блоки и моноширинные списки читаемы */
+        .mech-stats, .stat-block, .stats {
+            font-size: 0.82rem !important;
+        }
+
+        /* CTA крупный шрифт */
+        .cta-section .glitch-title,
+        .cta .glitch-title {
+            font-size: clamp(2.5rem, 15vw, 4rem) !important;
+        }
+
+        /* Текст в контенте */
+        p, li {
+            font-size: 0.95rem !important;
+            line-height: 1.55 !important;
+        }
+
+        /* Декоративные SVG/силуэты не вылезают */
+        img, svg, video, .symbiote-silhouette, .mech-silhouette {
+            max-width: 100% !important;
+            height: auto !important;
+        }
+    }
+
+    /* ============ МАЛЕНЬКИЙ ТЕЛЕФОН: < 480px ============ */
+    @media (max-width: 480px) {
+        html {
+            font-size: 14px;
+        }
+        .glitch-title, .hero h1, .hero-title {
+            font-size: 1.85rem !important;
+        }
+        .hero-subtitle {
+            font-size: 0.7rem !important;
+            letter-spacing: 0.15em !important;
+        }
+        .nav-links a, nav a, .old-link, .exit-hud {
+            font-size: 0.66rem !important;
+            padding: 0.25rem 0.4rem !important;
+        }
+        .section-title, h2.section-title {
+            font-size: 1.2rem !important;
+        }
+        .game-card, .mech-panel, .threat-card {
+            padding: 1rem !important;
+        }
+        .btn-primary, .btn {
+            padding: 0.75rem 1.2rem !important;
+            font-size: 0.78rem !important;
+            letter-spacing: 1px !important;
+        }
+    }
+
+    /* ============ ОРИЕНТАЦИЯ: альбомная на телефоне ============ */
+    @media (max-width: 900px) and (orientation: landscape) {
+        .hero {
+            min-height: 100vh !important;
+            padding: 4rem 1.5rem 2rem !important;
+        }
+        section, .section {
+            padding-top: 2.5rem !important;
+            padding-bottom: 2.5rem !important;
+        }
+    }
+
+    /* ============ Печать (бонус, не мешает) ============ */
+    @media print {
+        .hud-overlay, .hud-corner, .hud-text, body::before, body::after,
+        .bg-grid, .overlay-fx { display: none !important; }
+        body { background: #fff !important; color: #000 !important; }
+    }
+    </style>
+
 </head>
 <body>
     <div class="cursor"></div>
